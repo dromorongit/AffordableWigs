@@ -6,7 +6,12 @@ import mongoose from "mongoose";
  * Optimized for serverless environments
  */
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/affordable-wigs-gh";
+// Use MONGODB_URI from environment variables - no fallback for production safety
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  console.warn("⚠️  MONGODB_URI not set - database features will be disabled");
+}
 
 // Suppress Mongoose deprecation warnings
 // Only run on server to prevent client-side errors
@@ -38,7 +43,7 @@ if (!global.mongoose) {
  */
 export async function connectDB(): Promise<typeof mongoose> {
   if (!MONGODB_URI) {
-    throw new Error("MONGODB_URI is not defined");
+    throw new Error("MONGODB_URI environment variable is not set. Please configure MONGODB_URI.");
   }
 
   if (cached.conn) {

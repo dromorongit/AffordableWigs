@@ -68,7 +68,7 @@ const categories: CategoryData[] = [
   },
 ];
 
-// Sample product data
+// Sample product data - ALL products have isActive: true
 const products: ProductData[] = [
   // Ready-to-Wear Wigs
   {
@@ -88,6 +88,7 @@ const products: ProductData[] = [
     isFeatured: true,
     isBestSeller: true,
     isNewArrival: false,
+    isActive: true,
     tags: ["body wave", "ready to wear", "premium", "natural"],
     texture: "Body Wave",
     length: "14 inches",
@@ -111,6 +112,7 @@ const products: ProductData[] = [
     isFeatured: true,
     isBestSeller: false,
     isNewArrival: true,
+    isActive: true,
     tags: ["silky straight", "luxury", "virgin hair", "premium"],
     texture: "Silky Straight",
     length: "16 inches",
@@ -132,6 +134,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: true,
+    isActive: true,
     tags: ["loose wave", "deep wave", "volume", "natural"],
     texture: "Loose Deep Wave",
     length: "14 inches",
@@ -153,6 +156,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: false,
+    isActive: true,
     tags: ["curly", "boho", "fun", "playful"],
     texture: "Curly",
     length: "12 inches",
@@ -178,6 +182,7 @@ const products: ProductData[] = [
     isFeatured: true,
     isBestSeller: true,
     isNewArrival: false,
+    isActive: true,
     tags: ["brazilian", "body wave", "bundle", "premium hair"],
     texture: "Body Wave",
     length: "12-18 inches",
@@ -198,6 +203,7 @@ const products: ProductData[] = [
     isFeatured: true,
     isBestSeller: false,
     isNewArrival: false,
+    isActive: true,
     tags: ["deep wave", "bundle", "glamorous", "voluminous"],
     texture: "Deep Wave",
     length: "14-20 inches",
@@ -218,6 +224,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: false,
+    isActive: true,
     tags: ["straight", "bundle", "versatile", "customizable"],
     texture: "Straight",
     length: "10-16 inches",
@@ -238,6 +245,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: true,
+    isActive: true,
     tags: ["kinky curly", "bundle", "natural", "texture"],
     texture: "Kinky Curly",
     length: "12-18 inches",
@@ -261,6 +269,7 @@ const products: ProductData[] = [
     isFeatured: true,
     isBestSeller: true,
     isNewArrival: false,
+    isActive: true,
     tags: ["closure", "transparent", "lace", "seamless"],
     laceType: "Transparent Swiss Lace",
     size: "4x4",
@@ -280,6 +289,7 @@ const products: ProductData[] = [
     isFeatured: true,
     isBestSeller: false,
     isNewArrival: true,
+    isActive: true,
     tags: ["closure", "HD lace", "premium", "natural hairline"],
     laceType: "HD Lace",
     size: "4x4",
@@ -299,6 +309,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: false,
+    isActive: true,
     tags: ["closure", "free part", "versatile", "flexible"],
     laceType: "Swiss Lace",
     size: "4x4",
@@ -318,6 +329,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: true,
+    isActive: true,
     tags: ["closure", "360 lace", "full coverage", "versatile"],
     laceType: "Swiss Lace",
     size: "360",
@@ -341,6 +353,7 @@ const products: ProductData[] = [
     isFeatured: true,
     isBestSeller: true,
     isNewArrival: false,
+    isActive: true,
     tags: ["frontal", "HD lace", "baby hair", "premium"],
     laceType: "HD Lace",
     size: "13x4",
@@ -360,6 +373,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: false,
+    isActive: true,
     tags: ["frontal", "swiss lace", "comfortable", "natural"],
     laceType: "Swiss Lace",
     size: "13x4",
@@ -379,6 +393,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: true,
+    isActive: true,
     tags: ["frontal", "13x6", "versatile", "full coverage"],
     laceType: "Swiss Lace",
     size: "13x6",
@@ -398,6 +413,7 @@ const products: ProductData[] = [
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: false,
+    isActive: true,
     tags: ["frontal", "transparent", "all skin tones", "versatile"],
     laceType: "Transparent Lace",
     size: "13x4",
@@ -411,24 +427,60 @@ function categoryNameToSlug(name: string): string {
 
 async function seedDatabase() {
   console.log("🌱 Starting database seed...");
+  console.log("-----------------------------------");
+
+  // Check for MONGODB_URI
+  if (!process.env.MONGODB_URI) {
+    console.error("❌ MONGODB_URI environment variable is not set!");
+    console.error("   Please set MONGODB_URI before running the seed script.");
+    console.error("   Example: MONGODB_URI=mongodb://... npm run seed");
+    process.exit(1);
+  }
 
   try {
+    // Connect to MongoDB
+    console.log("📡 Connecting to MongoDB...");
     await connectDB();
-    console.log("✅ Connected to MongoDB");
+    console.log("✅ MongoDB connected successfully");
+    console.log(`   Connection: ${process.env.MONGODB_URI.replace(/\/\/.*?:.*?@/, "//***:***@")}`);
+    console.log("-----------------------------------");
 
-    // Clear existing data
+    // Check existing data
+    const existingCategories = await Category.countDocuments();
+    const existingProducts = await Product.countDocuments();
+    console.log(`📊 Existing data:`);
+    console.log(`   Categories: ${existingCategories}`);
+    console.log(`   Products: ${existingProducts}`);
+    console.log("-----------------------------------");
+
+    // Clear existing data (safe for reseeding)
+    console.log("🗑️  Clearing existing categories and products...");
     await Category.deleteMany({});
     await Product.deleteMany({});
-    console.log("🗑️ Cleared existing categories and products");
+    console.log("✅ Cleared existing data");
+    console.log("-----------------------------------");
 
-    // Create categories
-    const createdCategories = await Category.insertMany(categories);
-    console.log(`✅ Created ${createdCategories.length} categories`);
+    // Create categories with upsert-style approach
+    console.log("📁 Inserting categories...");
+    let categoriesInserted = 0;
+    for (const cat of categories) {
+      await Category.updateOne(
+        { slug: cat.slug },
+        { $set: cat },
+        { upsert: true }
+      );
+      categoriesInserted++;
+    }
+    console.log(`✅ Inserted ${categoriesInserted} categories`);
+
+    // Get created categories
+    const createdCategories = await Category.find().lean();
+    console.log("-----------------------------------");
 
     // Create category slug to ObjectId map
     const categoryMap = new Map<string, Types.ObjectId>();
     createdCategories.forEach((cat) => {
-      categoryMap.set(cat.slug, cat._id);
+      categoryMap.set(cat.slug, cat._id as Types.ObjectId);
     });
 
     // Map products to include category ObjectId
@@ -436,7 +488,7 @@ async function seedDatabase() {
       const categorySlug = categoryNameToSlug(product.categoryName);
       const categoryId = categoryMap.get(categorySlug);
       if (!categoryId) {
-        console.warn(`Warning: Category not found for product ${product.name}`);
+        console.warn(`⚠️  Warning: Category not found for product "${product.name}"`);
       }
       return {
         ...product,
@@ -444,19 +496,47 @@ async function seedDatabase() {
       };
     });
 
-    // Remove the temporary categoryName field and add category as ObjectId
+    // Filter products that have valid category and prepare for insert
     const productsToInsert = productsWithCategory
       .filter((p) => p.category)
       .map(({ categoryName, ...rest }) => rest);
 
-    // Create products
-    const createdProducts = await Product.insertMany(productsToInsert);
-    console.log(`✅ Created ${createdProducts.length} products`);
+    // Insert products
+    console.log("📦 Inserting products...");
+    let productsInserted = 0;
+    for (const product of productsToInsert) {
+      await Product.updateOne(
+        { slug: product.slug },
+        { $set: product },
+        { upsert: true }
+      );
+      productsInserted++;
+    }
+    console.log(`✅ Inserted ${productsInserted} products`);
+    console.log("-----------------------------------");
+
+    // Verify the data
+    const finalCategories = await Category.countDocuments();
+    const finalProducts = await Product.countDocuments();
+    const activeProducts = await Product.countDocuments({ isActive: true });
+
+    console.log("📊 Final data:");
+    console.log(`   Categories: ${finalCategories}`);
+    console.log(`   Products (total): ${finalProducts}`);
+    console.log(`   Products (active): ${activeProducts}`);
+    console.log("-----------------------------------");
 
     console.log("🎉 Database seeding completed successfully!");
+    console.log("");
+    console.log("Next steps:");
+    console.log("   1. Visit /shop to see products");
+    console.log("   2. Visit /shop/[slug] for product details");
+    console.log("");
+
     process.exit(0);
   } catch (error) {
-    console.error("❌ Error seeding database:", error);
+    console.error("❌ Error seeding database:");
+    console.error(error);
     process.exit(1);
   }
 }
