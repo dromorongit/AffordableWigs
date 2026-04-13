@@ -6,7 +6,6 @@ import { BRAND } from "@/constants";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { CartItem } from "@/types/cart";
-import { BRAND } from "@/constants";
 import { Container, Section } from "@/components/ui";
 
 export default function CartPage() {
