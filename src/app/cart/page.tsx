@@ -2,16 +2,12 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { BRAND } from "@/constants";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { CartItem } from "@/types/cart";
-import { BRAND, PAGE_METADATA } from "@/constants";
+import { BRAND } from "@/constants";
 import { Container, Section } from "@/components/ui";
-
-export const metadata = {
-  title: PAGE_METADATA.cart?.title || "Shopping Cart - Affordable Wigs Gh",
-  description: PAGE_METADATA.cart?.description || "Review your selected wigs and proceed to checkout.",
-};
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BRAND, PAGE_METADATA, CONTACT } from "@/constants";
+import { BRAND, CONTACT } from "@/constants";
 import { Container, Section } from "@/components/ui";
 
 export default function CheckoutFailedPage() {

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { CartItem, CustomerInfo, OrderData } from "@/types/cart";
-import { BRAND, PAGE_METADATA, CONTACT } from "@/constants";
+import { BRAND, CONTACT } from "@/constants";
 import { Container, Section, Button } from "@/components/ui";
 
 // Form field types

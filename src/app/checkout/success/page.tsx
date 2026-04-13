@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { BRAND, PAGE_METADATA, CONTACT } from "@/constants";
+import { BRAND, CONTACT } from "@/constants";
 import { Container, Section, Button } from "@/components/ui";
 
 interface OrderDetails {
