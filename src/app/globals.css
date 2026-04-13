@@ -1,80 +1,88 @@
 @import "tailwindcss";
 
-/* Luxury Black & Gold Design System for Affordable Wigs Gh */
+/* Modern Premium Beauty Brand Design System for Affordable Wigs Gh */
+
+/* Redesigned for luxury, editorial, and feminine aesthetics */
+
 
 /* Brand Colors */
 :root {
-  /* Primary: Black */
+  /* Primary: Black - Softer, more luxurious */
   --color-primary: #0a0a0a;
   --color-primary-light: #1a1a1a;
-  --color-primary-dark: #000000;
+  --color-primary-dark: #050505;
   
-  /* Secondary: Gold */
-  --color-gold: #d4a853;
-  --color-gold-light: #e8c87a;
-  --color-gold-dark: #b8923d;
-  --color-gold-muted: #c9a74a;
+  /* Secondary: Gold - Refined, not too yellow */
+  --color-gold: #c9a84a;
+  --color-gold-light: #dbbf70;
+  --color-gold-dark: #a68c3a;
+  --color-gold-muted: #b89c4a;
   
-  /* Neutral Colors */
+  /* Neutral Colors - Warmer, more elegant */
   --color-white: #ffffff;
   --color-off-white: #fafafa;
-  --color-cream: #f5f3ef;
-  --color-silver: #e5e5e5;
-  --color-gray-100: #f3f3f3;
-  --color-gray-200: #e5e5e5;
-  --color-gray-300: #d4d4d4;
-  --color-gray-400: #a3a3a3;
-  --color-gray-500: #737373;
-  --color-gray-600: #525252;
+  --color-cream: #f9f7f2;
+  --color-ivory: #f5f2e8;
+  --color-silver: #e8e8e8;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #eeeeee;
+  --color-gray-300: #e0e0e0;
+  --color-gray-400: #b0b0b0;
+  --color-gray-500: #808080;
+  --color-gray-600: #5a5a5a;
   --color-gray-700: #404040;
-  --color-gray-800: #262626;
-  --color-gray-900: #171717;
+  --color-gray-800: #252525;
+  --color-gray-900: #151515;
   
   /* Semantic Colors */
   --color-text-primary: #0a0a0a;
-  --color-text-secondary: #525252;
-  --color-text-muted: #737373;
+  --color-text-secondary: #5a5a5a;
+  --color-text-muted: #808080;
   --color-text-light: #fafafa;
-  --color-border: #e5e5e5;
-  --color-border-light: #f3f3f3;
+  --color-border: #e8e8e8;
+  --color-border-light: #f0f0f0;
   
-  /* Spacing Scale */
-  --spacing-xs: 0.25rem;   /* 4px */
-  --spacing-sm: 0.5rem;    /* 8px */
-  --spacing-md: 1rem;      /* 16px */
-  --spacing-lg: 1.5rem;    /* 24px */
-  --spacing-xl: 2rem;      /* 32px */
-  --spacing-2xl: 3rem;     /* 48px */
-  --spacing-3xl: 4rem;     /* 64px */
-  --spacing-4xl: 6rem;    /* 96px */
+  /* Spacing Scale - More generous for editorial feel */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --spacing-4xl: 6rem;
+  --spacing-5xl: 8rem;
   
   /* Container Width */
-  --container-max: 1280px;
+  --container-max: 1400px;
   --container-padding: 1.5rem;
   
-  /* Border Radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
+  /* Border Radius - Smoother, less boxy */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 16px;
   --radius-full: 9999px;
   
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 400ms ease;
+  /* Transitions - Smoother */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  /* Shadows - More subtle and elegant */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-gold: 0 4px 20px rgba(201, 168, 74, 0.15);
   
-  /* Font Families */
-  --font-heading: "Playfair Display", Georgia, serif;
-  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Font Families - Elegant and readable */
+  --font-heading: "Cormorant Garamond", Georgia, serif;
+  --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-accent: "Cormorant Garamond", Georgia, serif;
 }
 
-/* Base Styles */
+/* Base Styles - Modern Editorial */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -91,24 +99,38 @@ body {
   font-family: var(--font-body);
   color: var(--color-text-primary);
   background-color: var(--color-white);
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 16px;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
+
+/* Elegant heading sizes */
+h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+h2 { font-size: clamp(2rem, 4vw, 3rem); }
+h3 { font-size: clamp(1.5rem, 3vw, 2.25rem); }
+h4 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 button {
   font-family: inherit;
   cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* Utility Classes */

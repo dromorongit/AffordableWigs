@@ -1,20 +1,22 @@
 import type { Metadata, Viewport } from 'next';
-import { Playfair_Display, Inter } from 'next/font/google';
+import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 import { NavBar } from '@/components/layout/NavBar';
 import { Footer } from '@/components/layout/Footer';
 import { SEO } from '@/constants/brand';
 import './globals.css';
 
-// Load Google Fonts
-const playfairDisplay = Playfair_Display({
+// Load Google Fonts - Elegant editorial typography
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-playfair',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-heading',
   display: 'swap',
 });
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
+  weight: ['400', '500', '700'],
+  variable: '--font-body',
   display: 'swap',
 });
 
@@ -61,7 +63,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfairDisplay.variable} ${inter.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body className="font-sans antialiased min-h-screen flex flex-col">
         <NavBar />
         <main className="flex-grow pt-[72px]">

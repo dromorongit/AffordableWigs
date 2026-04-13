@@ -6,13 +6,13 @@ interface LuxuryCardProps {
   className?: string;
   hover?: boolean;
   padding?: 'none' | 'sm' | 'md' | 'lg';
-  background?: 'default' | 'dark';
+  background?: 'default' | 'dark' | 'cream';
   onClick?: () => void;
 }
 
 /**
- * LuxuryCard Component
- * Premium card styling with hover effects for product and service displays
+ * LuxuryCard Component - Redesigned for Premium Modern Look
+ * Elegant, subtle cards with refined styling - no more boxy borders
  */
 export function LuxuryCard({
   children,
@@ -24,23 +24,28 @@ export function LuxuryCard({
 }: LuxuryCardProps) {
   const paddingClasses = {
     none: '',
-    sm: 'p-4',
+    sm: 'p-5',
     md: 'p-6',
     lg: 'p-8',
   };
 
+  // Softer, more elegant backgrounds
   const backgroundClasses = {
     default: 'bg-white',
-    dark: 'bg-[#1a1a1a]',
+    dark: 'bg-[#111111]',
+    cream: 'bg-[#f9f7f2]',
   };
+
 
   return (
     <div
       className={cn(
-        'rounded-lg overflow-hidden',
-        'border border-gray-200',
+        // More elegant styling - no heavy borders
+        'rounded-[4px] overflow-hidden',
+        'border border-gray-100',
         backgroundClasses[background],
-        hover && 'transition-all duration-300 hover:shadow-xl hover:-translate-y-1',
+        // Refined hover - subtle lift with shadow, not dramatic
+        hover && 'transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-0.5',
         paddingClasses[padding],
         onClick && 'cursor-pointer',
         className

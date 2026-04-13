@@ -354,7 +354,7 @@ export default function Home() {
       </Section>
 
       {/* Social Proof / CTA */}
-      <Section background="gold-light">
+      <Section background="ivory">
         <Container>
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-semibold text-[#0a0a0a] mb-4">
