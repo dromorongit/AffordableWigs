@@ -118,7 +118,7 @@ export function Footer() {
               © {currentYear} {BRAND.name}. All rights reserved.
             </p>
             <p className="text-gray-500 text-sm">
-              Made with love in Ghana 🇬🇭
+              Developed with love in Ghana by Dromor Narh
             </p>
           </div>
         </div>

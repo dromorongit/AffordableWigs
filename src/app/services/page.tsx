@@ -1,100 +1,109 @@
+import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { Button } from '@/components/ui/Button';
 import { LuxuryCard } from '@/components/ui/LuxuryCard';
 import { Badge } from '@/components/ui/Badge';
-import { CONTACT } from '@/constants/brand';
+import { CONTACT, BRAND } from '@/constants/brand';
 
 /**
  * Services Page
  * Professional wig styling services offered by the brand
+ * Phase 2 - Fully implemented with premium luxury branding
  */
 export default function ServicesPage() {
-  const services = [
+  const mainServices = [
     {
       icon: "✂️",
       name: "Wig Styling",
-      description: "Professional cutting and styling to give your wig a natural, personalized look that complements your face shape and style preferences.",
-      price: "From GH₵ 150",
-      duration: "1-2 hours"
+      description: "Transform your look with our professional styling services. Whether you need a fresh cut, custom shaping, or a complete transformation, our experts will give your wig a natural, personalized look that complements your face shape and style preferences.",
+      features: ["Custom Cutting", "Shaping & Trimming", "Style Customization", "Natural finish"]
     },
     {
-      icon: "🎨",
-      name: "Color Customization",
-      description: "Want to change up your look? We offer professional coloring services to give your wig a fresh, vibrant appearance.",
-      price: "From GH₵ 200",
-      duration: "2-3 hours"
-    },
-    {
-      icon: "👗",
-      name: "Wig Plucking",
-      description: "Our experts will pluck the hairline to create a more natural, seamless look that matches your skin tone and hairline.",
-      price: "From GH₵ 80",
-      duration: "45 mins - 1 hour"
-    },
-    {
-      icon: "💆‍♀️",
-      name: "Hair Treatment",
-      description: "Deep conditioning and treatment services to keep your wig looking healthy, shiny, and luxurious for longer.",
-      price: "From GH₵ 100",
-      duration: "1 hour"
+      icon: "💎",
+      name: "Wig Consultation",
+      description: "Not sure which wig suits you best? Our expert consultation helps you find the perfect match for your face shape, lifestyle, and budget. Get personalized recommendations from our experienced team.",
+      features: ["Face Shape Analysis", "Style Recommendations", "Budget-friendly options", "Expert advice"]
     }
   ];
 
+  // Additional services removed per brand requirements
+
   return (
     <>
-      {/* Hero Section */}
-      <Section background="dark" padding="large">
+      {/* Premium Hero Section */}
+      <section className="relative py-20 md:py-32 bg-[#0a0a0a] overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#d4a853] to-transparent" />
+        </div>
+        
         <Container>
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <div className="relative z-10 text-center">
+            <Badge variant="gold" className="mb-6">
               Our Services
+            </Badge>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              Professional <span className="text-[#d4a853]">Wig Services</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Professional wig styling and customization services to help you achieve your perfect look
+              Expert styling and consultation services to help you achieve your perfect look
             </p>
           </div>
         </Container>
-      </Section>
+        
+        {/* Gold Accent Line */}
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#d4a853] to-transparent" />
+      </section>
 
-      {/* Services List */}
-      <Section>
+      {/* Main Services */}
+      <Section background="cream">
         <Container>
           <SectionHeading 
-            title="What We Offer"
-            subtitle="Expert services to keep your wigs looking their best"
+            title="Our Core Services"
+            subtitle="Professional services to transform your look"
             hasLine
           />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-            {services.map((service, index) => (
-              <LuxuryCard key={index} className="flex flex-col">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 bg-[#f5f3ef] rounded-full flex items-center justify-center flex-shrink-0">
+            {mainServices.map((service, index) => (
+              <LuxuryCard key={index} className="relative">
+                {index === 0 && (
+                  <Badge variant="gold" className="absolute -top-3 left-6">Popular</Badge>
+                )}
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-16 h-16 bg-[#0a0a0a] rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-3xl">{service.icon}</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-[#0a0a0a] mb-1">
+                    <h3 className="text-2xl font-semibold text-[#0a0a0a] mb-2">
                       {service.name}
                     </h3>
-                    <Badge variant="gold" size="sm">{service.duration}</Badge>
                   </div>
                 </div>
-                <p className="text-[#525252] flex-grow mb-4">
+                <p className="text-[#525252] text-lg mb-6">
                   {service.description}
                 </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <span className="text-lg font-semibold text-[#d4a853]">
-                    {service.price}
-                  </span>
+                <div className="pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-[#0a0a0a] mb-3">What's included:</p>
+                  <ul className="space-y-2">
+                    {service.features.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-2 text-[#525252]">
+                        <span className="w-1.5 h-1.5 bg-[#d4a853] rounded-full" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-6">
                   <a 
                     href={CONTACT.whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button variant="primary" size="sm">
-                      Book Now
+                    <Button variant="primary" size="lg" fullWidth>
+                      Inquire Now
                     </Button>
                   </a>
                 </div>
@@ -133,24 +142,31 @@ export default function ServicesPage() {
       </Section>
 
       {/* CTA */}
-      <Section>
+      <Section background="dark">
         <Container>
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-semibold text-[#0a0a0a] mb-4">
+            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
               Ready to Transform Your Look?
             </h2>
-            <p className="text-[#525252] mb-8">
+            <p className="text-gray-400 mb-8">
               Chat with us on WhatsApp to discuss your styling needs and book an appointment.
             </p>
-            <a 
-              href={CONTACT.whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="gold" size="lg">
-                💬 Chat with Us on WhatsApp
-              </Button>
-            </a>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a 
+                href={CONTACT.whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="gold" size="lg">
+                  💬 Chat with Us
+                </Button>
+              </a>
+              <Link href="/contact">
+                <Button variant="secondary" size="lg" className="text-white border-white hover:bg-white hover:text-[#0a0a0a]">
+                  Get Directions
+                </Button>
+              </Link>
+            </div>
           </div>
         </Container>
       </Section>

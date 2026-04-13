@@ -60,8 +60,50 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#d4a853] to-transparent" />
       </section>
 
-      {/* Featured Categories */}
+      {/* Brand Introduction */}
       <Section background="cream">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <Badge variant="gold" className="mb-4">
+                Our Brand
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-[#0a0a0a] mb-6">
+                Luxury Wigs, Affordable Prices
+              </h2>
+              <p className="text-[#525252] text-lg mb-6">
+                At {BRAND.name}, we believe every woman deserves to feel confident and beautiful. 
+                Our mission is to bring you premium quality wigs and professional styling services 
+                at prices that don't break the bank.
+              </p>
+              <p className="text-[#525252] mb-8">
+                Founded with a passion for helping women look their absolute best, we've become 
+                a trusted name in the Ghanaian wig industry. Whether you're looking for a ready-to-wear 
+                wig, custom styling, or expert consultation, we're here to make your beauty dreams a reality.
+              </p>
+              <Link href="/about" className="inline-flex items-center text-[#d4a853] font-medium hover:underline">
+                Learn more about us →
+              </Link>
+            </div>
+            <div className="relative">
+              <div className="aspect-square bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-8xl block mb-4">✨</span>
+                  <span className="text-white text-2xl font-light tracking-widest uppercase">
+                    {BRAND.tagline}
+                  </span>
+                </div>
+              </div>
+              {/* Gold accent corner */}
+              <div className="absolute -top-2 -right-2 w-16 h-16 border-t-2 border-r-2 border-[#d4a853] rounded-tr-lg" />
+              <div className="absolute -bottom-2 -left-2 w-16 h-16 border-b-2 border-l-2 border-[#d4a853] rounded-bl-lg" />
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Featured Categories */}
+      <Section>
         <Container>
           <SectionHeading 
             title="Our Collection"
@@ -76,8 +118,8 @@ export default function Home() {
                 className="text-center group cursor-pointer"
                 hover
               >
-                <div className="aspect-square bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
-                  <span className="text-4xl group-hover:scale-110 transition-transform">
+                <div className="aspect-square bg-[#f5f3ef] rounded-lg mb-4 flex items-center justify-center">
+                  <span className="text-4xl group-hover:scale-110 transition-transform duration-300">
                     {index === 0 && '💇‍♀️'}
                     {index === 1 && '✨'}
                     {index === 2 && '🎀'}
@@ -193,6 +235,65 @@ export default function Home() {
             <Link href="/services">
               <Button variant="gold">Explore All Services</Button>
             </Link>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Why Choose Us */}
+      <Section background="cream">
+        <Container>
+          <SectionHeading 
+            title="Why Choose Us"
+            subtitle="Experience the Affordable Wigs Gh difference"
+            hasLine
+          />
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+            {[
+              { icon: '💰', title: 'Affordable Luxury', desc: 'Premium quality wigs at prices that fit your budget' },
+              { icon: '✨', title: 'Quality First', desc: 'Every wig selected for premium materials and craftsmanship' },
+              { icon: '💇‍♀️', title: 'Expert Styling', desc: 'Professional services to achieve your perfect look' },
+              { icon: '🤝', title: 'Trusted by Many', desc: 'Hundreds of satisfied customers across Ghana' }
+            ].map((reason, index) => (
+              <LuxuryCard key={index} className="text-center">
+                <div className="text-4xl mb-3">{reason.icon}</div>
+                <h3 className="text-lg font-semibold text-[#0a0a0a] mb-2">{reason.title}</h3>
+                <p className="text-sm text-[#525252]">{reason.desc}</p>
+              </LuxuryCard>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* Social Gallery */}
+      <Section>
+        <Container>
+          <SectionHeading 
+            title="Follow Our Journey"
+            subtitle="See our latest styles and transformations on social media"
+            hasLine
+          />
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+              <div 
+                key={item}
+                className="aspect-square bg-gradient-to-br from-[#f5f3ef] to-gray-200 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                <span className="text-3xl">📸</span>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center mt-8">
+            <a 
+              href="https://www.instagram.com/affordable__wigs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-[#d4a853] font-medium hover:underline"
+            >
+              Follow us on Instagram →
+            </a>
           </div>
         </Container>
       </Section>

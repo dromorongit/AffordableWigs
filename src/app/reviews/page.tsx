@@ -1,12 +1,16 @@
+import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { Button } from '@/components/ui/Button';
 import { LuxuryCard } from '@/components/ui/LuxuryCard';
+import { Badge } from '@/components/ui/Badge';
+import { CONTACT } from '@/constants/brand';
 
 /**
  * Reviews Page
- * Customer testimonials and reviews - full implementation in Phase 2
+ * Customer testimonials and reviews
+ * Phase 2 - Fully implemented with premium luxury branding
  */
 export default function ReviewsPage() {
   const reviews = [
@@ -62,36 +66,47 @@ export default function ReviewsPage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <Section background="dark" padding="large">
+      {/* Premium Hero Section */}
+      <section className="relative py-20 md:py-32 bg-[#0a0a0a] overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#d4a853] to-transparent" />
+        </div>
+        
         <Container>
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Customer Reviews
+          <div className="relative z-10 text-center">
+            <Badge variant="gold" className="mb-6">
+              Testimonials
+            </Badge>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              Customer <span className="text-[#d4a853]">Reviews</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               See what our customers have to say about their experience with us
             </p>
           </div>
         </Container>
-      </Section>
+        
+        {/* Gold Accent Line */}
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#d4a853] to-transparent" />
+      </section>
 
       {/* Reviews Stats */}
-      <Section padding="small" background="cream">
+      <Section background="cream">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-[#d4a853] mb-2">200+</div>
-              <p className="text-[#525252]">Happy Customers</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[#d4a853] mb-2">4.9</div>
-              <p className="text-[#525252]">Average Rating</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[#d4a853] mb-2">50+</div>
-              <p className="text-[#525252]">5-Star Reviews</p>
-            </div>
+            <LuxuryCard className="text-center py-8">
+              <div className="text-4xl md:text-5xl font-bold text-[#d4a853] mb-2">200+</div>
+              <p className="text-[#525252] font-medium">Happy Customers</p>
+            </LuxuryCard>
+            <LuxuryCard className="text-center py-8">
+              <div className="text-4xl md:text-5xl font-bold text-[#d4a853] mb-2">4.9</div>
+              <p className="text-[#525252] font-medium">Average Rating</p>
+            </LuxuryCard>
+            <LuxuryCard className="text-center py-8">
+              <div className="text-4xl md:text-5xl font-bold text-[#d4a853] mb-2">50+</div>
+              <p className="text-[#525252] font-medium">5-Star Reviews</p>
+            </LuxuryCard>
           </div>
         </Container>
       </Section>
@@ -143,20 +158,33 @@ export default function ReviewsPage() {
         </Container>
       </Section>
 
-      {/* Write Review CTA */}
-      <Section background="gold-light">
+      {/* Trust CTA */}
+      <Section background="dark">
         <Container>
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-semibold text-[#0a0a0a] mb-4">
-              Share Your Experience
+            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
+              Want to Share Your Experience?
             </h2>
-            <p className="text-[#525252] mb-8">
+            <p className="text-gray-400 mb-8">
               Have you purchased from us? We'd love to hear about your experience! 
-              Leave a review and help other women make informed decisions.
+              Chat with us to share your thoughts.
             </p>
-            <Button variant="primary" size="lg">
-              Write a Review
-            </Button>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a 
+                href={CONTACT.whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="gold" size="lg">
+                  Share Your Review
+                </Button>
+              </a>
+              <Link href="/services">
+                <Button variant="secondary" size="lg" className="text-white border-white hover:bg-white hover:text-[#0a0a0a]">
+                  Explore Services
+                </Button>
+              </Link>
+            </div>
           </div>
         </Container>
       </Section>
