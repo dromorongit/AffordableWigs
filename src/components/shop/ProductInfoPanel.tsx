@@ -1,16 +1,39 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useCart } from "@/context/CartContext";
+import { CartItemProduct } from "@/types/cart";
 import { IProductPopulated } from "@/types/product";
 import { BRAND, CONTACT } from "@/constants";
 import { Button } from "@/components/ui";
-import { FiCheck, FiMessageCircle } from "react-icons/fi";
+import { FiCheck, FiMessageCircle, FiShoppingBag } from "react-icons/fi";
 
 interface ProductInfoPanelProps {
   product: IProductPopulated;
 }
 
+// Convert IProductPopulated to CartItemProduct
+function convertToCartProduct(product: IProductPopulated): CartItemProduct {
+  return {
+    _id: product._id.toString(),
+    name: product.name,
+    slug: product.slug,
+    price: product.price,
+    mainImage: product.mainImage,
+    shortDescription: product.shortDescription,
+    category: product.category ? {
+      name: product.category.name,
+      slug: product.category.slug,
+    } : undefined,
+  };
+}
+
 export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
+  const { addToCart, setIsCartOpen } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
+
   const {
     name,
     price,
@@ -41,6 +64,20 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
     `Hi Affordable Wigs Gh, I'm interested in "${name}". Is it available?`
   );
   const whatsAppLink = `${CONTACT.whatsappLink}?text=${whatsAppMessage}`;
+
+  const handleAddToCart = () => {
+    if (!isInStock) return;
+    
+    setIsAdding(true);
+    const cartProduct = convertToCartProduct(product);
+    addToCart(cartProduct, quantity);
+    
+    // Show feedback briefly
+    setTimeout(() => {
+      setIsAdding(false);
+      setIsCartOpen(true);
+    }, 500);
+  };
 
   return (
     <div className="space-y-6">
@@ -110,6 +147,62 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
           </span>
         )}
       </div>
+
+      {/* Quantity Selector */}
+      {isInStock && (
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-brand-gray">Quantity</span>
+          <div className="flex items-center border border-brand-light-gray rounded-premium">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              disabled={quantity <= 1}
+              className="w-10 h-10 flex items-center justify-center text-brand-gray hover:text-brand-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+              </svg>
+            </button>
+            <span className="w-12 h-10 flex items-center justify-center border-x border-brand-light-gray text-brand-black font-medium">
+              {quantity}
+            </span>
+            <button
+              onClick={() => setQuantity(Math.min(stockQuantity, quantity + 1))}
+              disabled={quantity >= stockQuantity}
+              className="w-10 h-10 flex items-center justify-center text-brand-gray hover:text-brand-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add to Cart Button */}
+      {isInStock && (
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={handleAddToCart}
+          disabled={isAdding}
+          className="w-full flex items-center justify-center gap-2"
+        >
+          {isAdding ? (
+            <>
+              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Adding...
+            </>
+          ) : (
+            <>
+              <FiShoppingBag className="w-5 h-5" />
+              Add to Cart
+            </>
+          )}
+        </Button>
+      )}
 
       {/* WhatsApp Inquiry Button */}
       <a

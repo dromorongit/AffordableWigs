@@ -195,4 +195,12 @@ export const PAGE_METADATA = {
     title: "Shop - Affordable Wigs Gh",
     description: "Browse our premium collection of wigs, bundles, closures, and frontals at Affordable Wigs Gh.",
   },
+  cart: {
+    title: "Shopping Cart - Affordable Wigs Gh",
+    description: "Review your selected wigs and proceed to checkout.",
+  },
+  checkout: {
+    title: "Checkout - Affordable Wigs Gh",
+    description: "Complete your purchase securely with Paystack.",
+  },
 } as const;
