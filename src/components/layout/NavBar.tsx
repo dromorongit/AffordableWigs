@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
 
 /**
- * NavBar Component
- * Sticky responsive header with brand logo, navigation links, and WhatsApp CTA
+ * NavBar Component - Modern Clean Style
+ * Minimal, light, elegant header
  */
 export function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,7 +27,7 @@ export function NavBar() {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-md py-3' 
+          ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' 
           : 'bg-white py-5'
       )}
     >
@@ -35,7 +35,7 @@ export function NavBar() {
         <nav className="flex items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-semibold tracking-tight text-[#0a0a0a]">
+            <span className="text-xl font-normal tracking-tight text-[#0a0a0a]">
               {BRAND.name}
             </span>
           </Link>
@@ -46,7 +46,7 @@ export function NavBar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-[#525252] hover:text-[#d4a853] transition-colors uppercase tracking-wider"
+                className="text-sm font-medium text-[#525252] hover:text-[#d4a853] transition-colors"
               >
                 {link.label}
               </Link>
@@ -64,7 +64,7 @@ export function NavBar() {
             >
               <Button variant="gold" size="sm">
                 <span className="mr-2">💬</span>
-                Chat on WhatsApp
+                Chat
               </Button>
             </a>
 
@@ -102,13 +102,13 @@ export function NavBar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
+          <div className="lg:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
             <div className="flex flex-col gap-4">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium text-[#525252] hover:text-[#d4a853] transition-colors uppercase tracking-wider py-2"
+                  className="text-sm font-medium text-[#525252] hover:text-[#d4a853] transition-colors py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}

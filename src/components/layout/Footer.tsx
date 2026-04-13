@@ -5,20 +5,20 @@ import { Container } from '@/components/ui/Container';
 import { BRAND, CONTACT, SOCIALS, NAV_LINKS } from '@/constants/brand';
 
 /**
- * Footer Component
- * Site-wide footer with brand info, quick links, contact details, and social links
+ * Footer Component - Modern Clean Style
+ * Elegant dark footer with subtle accents
  */
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#0a0a0a] text-white pt-16 pb-8">
+    <footer className="bg-[#1a1a1a] text-white pt-16 pb-8">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand Section */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">{BRAND.name}</h3>
-            <p className="text-gray-400 text-sm mb-4">
+            <h3 className="text-lg font-normal mb-4">{BRAND.name}</h3>
+            <p className="text-gray-400 text-sm mb-4 leading-relaxed">
               {BRAND.description}
             </p>
             <p className="text-[#d4a853] text-sm">
@@ -28,7 +28,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider mb-4 text-[#d4a853]">
+            <h4 className="text-xs font-medium uppercase tracking-[0.15em] mb-5 text-[#d4a853]">
               Quick Links
             </h4>
             <ul className="space-y-3">
@@ -47,22 +47,22 @@ export function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider mb-4 text-[#d4a853]">
+            <h4 className="text-xs font-medium uppercase tracking-[0.15em] mb-5 text-[#d4a853]">
               Contact Us
             </h4>
             <ul className="space-y-3">
               <li className="text-gray-400 text-sm">
-                <span className="block text-white mb-1">Phone:</span>
+                <span className="block text-white mb-1 font-medium">Phone:</span>
                 <a href={`tel:${CONTACT.phone}`} className="hover:text-[#d4a853] transition-colors">
                   {CONTACT.phone}
                 </a>
               </li>
               <li className="text-gray-400 text-sm">
-                <span className="block text-white mb-1">Location:</span>
+                <span className="block text-white mb-1 font-medium">Location:</span>
                 {CONTACT.location}
               </li>
               <li className="text-gray-400 text-sm">
-                <span className="block text-white mb-1">WhatsApp:</span>
+                <span className="block text-white mb-1 font-medium">WhatsApp:</span>
                 <a 
                   href={CONTACT.whatsappLink}
                   target="_blank"
@@ -77,7 +77,7 @@ export function Footer() {
 
           {/* Social Links */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider mb-4 text-[#d4a853]">
+            <h4 className="text-xs font-medium uppercase tracking-[0.15em] mb-5 text-[#d4a853]">
               Follow Us
             </h4>
             <div className="flex gap-4">
@@ -86,7 +86,7 @@ export function Footer() {
                   href={SOCIALS.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-[#1a1a1a] rounded-full flex items-center justify-center hover:bg-[#d4a853] hover:text-[#0a0a0a] transition-colors"
+                  className="w-10 h-10 bg-[#2a2a2a] rounded-full flex items-center justify-center hover:bg-[#d4a853] hover:text-[#0a0a0a] transition-colors"
                   aria-label="Instagram"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -99,7 +99,7 @@ export function Footer() {
                   href={SOCIALS.tiktok}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-[#1a1a1a] rounded-full flex items-center justify-center hover:bg-[#d4a853] hover:text-[#0a0a0a] transition-colors"
+                  className="w-10 h-10 bg-[#2a2a2a] rounded-full flex items-center justify-center hover:bg-[#d4a853] hover:text-[#0a0a0a] transition-colors"
                   aria-label="TikTok"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-[#262626]">
+        <div className="mt-12 pt-8 border-t border-[#2a2a2a]">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">
               © {currentYear} {BRAND.name}. All rights reserved.

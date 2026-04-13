@@ -11,8 +11,8 @@ interface LuxuryCardProps {
 }
 
 /**
- * LuxuryCard Component - Redesigned for Premium Modern Look
- * Elegant, subtle cards with refined styling - no more boxy borders
+ * LuxuryCard Component - Modern Soft Style
+ * Clean, borderless, shadow-based design
  */
 export function LuxuryCard({
   children,
@@ -24,28 +24,28 @@ export function LuxuryCard({
 }: LuxuryCardProps) {
   const paddingClasses = {
     none: '',
-    sm: 'p-5',
-    md: 'p-6',
-    lg: 'p-8',
+    sm: 'p-4',
+    md: 'p-5',
+    lg: 'p-6',
   };
 
-  // Softer, more elegant backgrounds
+  // Soft, elegant backgrounds
   const backgroundClasses = {
     default: 'bg-white',
-    dark: 'bg-[#111111]',
-    cream: 'bg-[#f9f7f2]',
+    dark: 'bg-[#1a1a1a]',
+    cream: 'bg-[#faf9f7]',
   };
 
 
   return (
     <div
       className={cn(
-        // More elegant styling - no heavy borders
-        'rounded-[4px] overflow-hidden',
-        'border border-gray-100',
+        // Modern soft styling - no heavy borders
+        'rounded-lg overflow-hidden',
+        'shadow-sm',
         backgroundClasses[background],
-        // Refined hover - subtle lift with shadow, not dramatic
-        hover && 'transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-0.5',
+        // Subtle hover - soft lift with shadow
+        hover && 'transition-all duration-300 ease-out hover:shadow-md hover:-translate-y-0.5',
         paddingClasses[padding],
         onClick && 'cursor-pointer',
         className

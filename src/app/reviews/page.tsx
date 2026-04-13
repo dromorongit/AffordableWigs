@@ -3,14 +3,12 @@ import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { Button } from '@/components/ui/Button';
-import { LuxuryCard } from '@/components/ui/LuxuryCard';
 import { Badge } from '@/components/ui/Badge';
 import { CONTACT } from '@/constants/brand';
 
 /**
- * Reviews Page
- * Customer testimonials and reviews
- * Phase 2 - Fully implemented with premium luxury branding
+ * Reviews Page - Minimal Clean Design
+ * Light, airy, elegant aesthetic
  */
 export default function ReviewsPage() {
   const reviews = [
@@ -66,68 +64,68 @@ export default function ReviewsPage() {
 
   return (
     <>
-      {/* Premium Hero Section */}
-      <section className="relative py-20 md:py-32 bg-[#0a0a0a] overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#d4a853] to-transparent" />
+      {/* Hero Section - Light & Clean */}
+      <section className="relative py-24 md:py-32 bg-[#faf9f7] overflow-hidden">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 right-10 w-72 h-72 bg-[#d4a853]/5 rounded-full blur-3xl" />
         </div>
         
         <Container>
-          <div className="relative z-10 text-center">
-            <Badge variant="gold" className="mb-6">
+          <div className="relative z-10 text-center max-w-2xl mx-auto">
+            <p className="text-xs font-medium text-[#d4a853] tracking-[0.2em] uppercase mb-4">
               Testimonials
-            </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            </p>
+            <h1 className="text-4xl md:text-5xl font-normal text-[#0a0a0a] mb-6">
               Customer <span className="text-[#d4a853]">Reviews</span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg text-[#525252]">
               See what our customers have to say about their experience with us
             </p>
           </div>
         </Container>
-        
-        {/* Gold Accent Line */}
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#d4a853] to-transparent" />
       </section>
 
-      {/* Reviews Stats */}
-      <Section background="cream">
+      {/* Reviews Stats - Clean Grid */}
+      <Section padding="large">
         <Container>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <LuxuryCard className="text-center py-8">
-              <div className="text-4xl md:text-5xl font-bold text-[#d4a853] mb-2">200+</div>
-              <p className="text-[#525252] font-medium">Happy Customers</p>
-            </LuxuryCard>
-            <LuxuryCard className="text-center py-8">
-              <div className="text-4xl md:text-5xl font-bold text-[#d4a853] mb-2">4.9</div>
-              <p className="text-[#525252] font-medium">Average Rating</p>
-            </LuxuryCard>
-            <LuxuryCard className="text-center py-8">
-              <div className="text-4xl md:text-5xl font-bold text-[#d4a853] mb-2">50+</div>
-              <p className="text-[#525252] font-medium">5-Star Reviews</p>
-            </LuxuryCard>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div className="p-6 bg-[#faf9f7] rounded-lg">
+              <div className="text-4xl md:text-5xl font-normal text-[#d4a853] mb-2">200+</div>
+              <p className="text-[#737373] font-medium">Happy Customers</p>
+            </div>
+            <div className="p-6 bg-[#faf9f7] rounded-lg">
+              <div className="text-4xl md:text-5xl font-normal text-[#d4a853] mb-2">4.9</div>
+              <p className="text-[#737373] font-medium">Average Rating</p>
+            </div>
+            <div className="p-6 bg-[#faf9f7] rounded-lg">
+              <div className="text-4xl md:text-5xl font-normal text-[#d4a853] mb-2">50+</div>
+              <p className="text-[#737373] font-medium">5-Star Reviews</p>
+            </div>
           </div>
         </Container>
       </Section>
 
-      {/* Reviews List */}
-      <Section>
+      {/* Reviews List - Clean Grid */}
+      <Section background="cream" padding="large">
         <Container>
-          <SectionHeading 
-            title="What Our Customers Say"
-            hasLine
-          />
+          <div className="text-center mb-12">
+            <p className="text-xs font-medium text-[#d4a853] tracking-[0.2em] uppercase mb-3">
+              Feedback
+            </p>
+            <h2 className="text-3xl md:text-4xl font-normal text-[#0a0a0a]">
+              What Our Customers Say
+            </h2>
+          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {reviews.map((review, index) => (
-              <LuxuryCard key={index}>
+              <div key={index} className="bg-white p-6 rounded-lg shadow-sm">
                 {/* Rating Stars */}
                 <div className="flex gap-1 mb-3">
                   {[...Array(5)].map((_, i) => (
                     <span 
                       key={i} 
-                      className={i < review.rating ? "text-[#d4a853]" : "text-gray-300"}
+                      className={i < review.rating ? "text-[#d4a853]" : "text-gray-200"}
                     >
                       ★
                     </span>
@@ -135,37 +133,37 @@ export default function ReviewsPage() {
                 </div>
                 
                 {/* Review Title */}
-                <h3 className="text-lg font-semibold text-[#0a0a0a] mb-2">
+                <h3 className="text-lg font-medium text-[#0a0a0a] mb-2">
                   {review.title}
                 </h3>
                 
                 {/* Review Text */}
-                <p className="text-[#525252] mb-4 italic">
+                <p className="text-[#737373] mb-4 leading-relaxed">
                   "{review.text}"
                 </p>
                 
                 {/* Author Info */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div>
-                    <p className="font-semibold text-[#0a0a0a]">{review.name}</p>
-                    <p className="text-sm text-[#737373]">{review.location}</p>
+                    <p className="font-medium text-[#0a0a0a]">{review.name}</p>
+                    <p className="text-sm text-[#a3a3a3]">{review.location}</p>
                   </div>
-                  <p className="text-xs text-[#737373]">{review.date}</p>
+                  <p className="text-xs text-[#a3a3a3]">{review.date}</p>
                 </div>
-              </LuxuryCard>
+              </div>
             ))}
           </div>
         </Container>
       </Section>
 
-      {/* Trust CTA */}
-      <Section background="dark">
+      {/* Trust CTA - Light & Clean */}
+      <Section padding="xlarge">
         <Container>
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-normal text-[#0a0a0a] mb-4">
               Want to Share Your Experience?
             </h2>
-            <p className="text-gray-400 mb-8">
+            <p className="text-[#525252] mb-8">
               Have you purchased from us? We'd love to hear about your experience! 
               Chat with us to share your thoughts.
             </p>
@@ -180,7 +178,7 @@ export default function ReviewsPage() {
                 </Button>
               </a>
               <Link href="/services">
-                <Button variant="secondary" size="lg" className="text-white border-white hover:bg-white hover:text-[#0a0a0a]">
+                <Button variant="secondary" size="lg" className="border-[#0a0a0a] text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white">
                   Explore Services
                 </Button>
               </Link>
