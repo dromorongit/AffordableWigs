@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/lib/seed.ts"
+    "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/lib/seed.ts"
   },
   "dependencies": {
     "mongoose": "^8.0.0",

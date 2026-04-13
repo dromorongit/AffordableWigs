@@ -26,6 +26,7 @@ interface ProductData {
   isFeatured: boolean;
   isBestSeller: boolean;
   isNewArrival: boolean;
+  isActive: boolean;
   tags: string[];
   texture?: string;
   length?: string;
