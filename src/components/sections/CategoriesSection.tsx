@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { PRODUCTS } from "@/constants";
 import { Container, Section } from "@/components/ui";
+import { getCategories } from "@/lib/products";
 
-export function CategoriesSection() {
+export async function CategoriesSection() {
+  const categories = await getCategories();
+
   return (
     <Section background="white" padding="lg">
       <Container>
@@ -18,10 +20,10 @@ export function CategoriesSection() {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {PRODUCTS.map((category, index) => (
+          {categories.map((category, index) => (
             <Link
-              key={category.id}
-              href={`/products/${category.slug}`}
+              key={category._id.toString()}
+              href={`/shop?category=${category.slug}`}
               className="group"
             >
               <div className="relative aspect-square bg-brand-cream rounded-premium overflow-hidden transition-all duration-500 group-hover:shadow-premium-hover">
@@ -51,3 +53,5 @@ export function CategoriesSection() {
     </Section>
   );
 }
+
+export default CategoriesSection;

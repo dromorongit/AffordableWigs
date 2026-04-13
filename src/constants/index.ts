@@ -162,6 +162,7 @@ export const WHY_CHOOSE_US = [
 // Navigation Links
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
   { href: "/reviews", label: "Reviews" },
@@ -189,5 +190,9 @@ export const PAGE_METADATA = {
   contact: {
     title: "Contact Us - Affordable Wigs Gh",
     description: "Get in touch with Affordable Wigs Gh. We're here to help with all your wig needs.",
+  },
+  shop: {
+    title: "Shop - Affordable Wigs Gh",
+    description: "Browse our premium collection of wigs, bundles, closures, and frontals at Affordable Wigs Gh.",
   },
 } as const;
