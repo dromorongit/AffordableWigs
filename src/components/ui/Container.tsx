@@ -1,32 +1,20 @@
-import { cn } from '@/utils';
-
-/**
- * Container Component
- * Provides consistent max-width and padding throughout the site
- */
 interface ContainerProps {
   children: React.ReactNode;
   className?: string;
-  size?: 'default' | 'full' | 'narrow' | 'wide';
+  size?: "sm" | "md" | "lg" | "full";
 }
 
-export function Container({ children, className, size = 'default' }: ContainerProps) {
-  const sizeClasses = {
-    default: 'max-w-[1280px]',
-    full: 'max-w-full',
-    narrow: 'max-w-[800px]',
-    wide: 'max-w-[1440px]',
+export function Container({ children, className = "", size = "lg" }: ContainerProps) {
+  const sizes = {
+    sm: "max-w-4xl",
+    md: "max-w-5xl",
+    lg: "max-w-7xl",
+    full: "max-w-full",
   };
 
   return (
-    <div className={cn(
-      'mx-auto w-full px-6',
-      sizeClasses[size],
-      className
-    )}>
+    <div className={`mx-auto w-full px-4 sm:px-6 lg:px-8 ${sizes[size]} ${className}`}>
       {children}
     </div>
   );
 }
-
-export default Container;

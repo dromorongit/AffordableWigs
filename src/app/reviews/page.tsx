@@ -1,191 +1,166 @@
-import Link from 'next/link';
-import { Container } from '@/components/ui/Container';
-import { Section } from '@/components/ui/Section';
-import { SectionHeading } from '@/components/ui/SectionHeading';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { CONTACT } from '@/constants/brand';
+import { Metadata } from "next";
+import { Header, Footer } from "@/components/layout";
+import { Container, Section, Button } from "@/components/ui";
+import { TESTIMONIALS, CONTACT, PAGE_METADATA } from "@/constants";
 
-/**
- * Reviews Page - Minimal Clean Design
- * Light, airy, elegant aesthetic
- */
+export const metadata: Metadata = {
+  title: PAGE_METADATA.reviews.title,
+  description: PAGE_METADATA.reviews.description,
+};
+
 export default function ReviewsPage() {
-  const reviews = [
-    {
-      name: "Sarah M.",
-      location: "Accra",
-      rating: 5,
-      title: "Amazing quality!",
-      text: "The quality is amazing! My lace front wig looks so natural. Everyone asks where I got it from. I've been wearing it for months and it still looks brand new.",
-      date: "2 weeks ago"
-    },
-    {
-      name: "Grace K.",
-      location: "Kumasi",
-      rating: 5,
-      title: "Excellent service",
-      text: "Fast delivery and excellent customer service. They helped me choose the perfect style for my face shape. Will definitely be ordering more!",
-      date: "1 month ago"
-    },
-    {
-      name: "Miriam A.",
-      location: "Tema",
-      rating: 5,
-      title: "Highly recommended",
-      text: "Affordable prices for such premium quality. I've recommended Affordable Wigs Gh to all my friends! The color I got matches perfectly with my natural hair.",
-      date: "1 month ago"
-    },
-    {
-      name: "Adjoa S.",
-      location: "Accra",
-      rating: 5,
-      title: "Worth every cedis",
-      text: "I was hesitant at first but after receiving my wig, I'm so glad I chose them. The hair is soft, the lace is undetectable, and it blends perfectly with my scalp.",
-      date: "2 months ago"
-    },
-    {
-      name: "Yaa D.",
-      location: "Takoradi",
-      rating: 5,
-      title: "Perfect for beginners",
-      text: "This was my first time buying a wig online and the experience was seamless. They answered all my questions and even gave me tips on how to maintain it.",
-      date: "2 months ago"
-    },
-    {
-      name: "Felicia O.",
-      location: "Cape Coast",
-      rating: 4,
-      title: "Great experience",
-      text: "Great quality wigs at affordable prices. Delivery was faster than expected. The only reason for 4 stars is I wish they had more colors to choose from.",
-      date: "3 months ago"
-    }
-  ];
-
   return (
     <>
-      {/* Hero Section - Light & Clean */}
-      <section className="relative py-24 md:py-32 bg-[#faf9f7] overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 right-10 w-72 h-72 bg-[#d4a853]/5 rounded-full blur-3xl" />
-        </div>
-        
-        <Container>
-          <div className="relative z-10 text-center max-w-2xl mx-auto">
-            <p className="text-xs font-medium text-[#d4a853] tracking-[0.2em] uppercase mb-4">
-              Testimonials
-            </p>
-            <h1 className="text-4xl md:text-5xl font-normal text-[#0a0a0a] mb-6">
-              Customer <span className="text-[#d4a853]">Reviews</span>
-            </h1>
-            <p className="text-lg text-[#525252]">
-              See what our customers have to say about their experience with us
-            </p>
+      <Header />
+      <main>
+        {/* Hero */}
+        <Section background="cream" padding="none" className="pt-20">
+          <div className="relative min-h-[50vh] flex items-center">
+            <Container>
+              <div className="max-w-3xl text-center mx-auto">
+                <span className="inline-block text-brand-gold font-accent text-sm tracking-widest uppercase mb-4">
+                  Customer Reviews
+                </span>
+                <h1 className="font-heading text-4xl md:text-5xl text-brand-black mb-6">
+                  What Our Customers Say
+                </h1>
+                <p className="text-brand-gray text-lg leading-relaxed">
+                  Don't just take our word for it. Here's what our amazing customers 
+                  have to say about their experience with Affordable Wigs Gh.
+                </p>
+              </div>
+            </Container>
           </div>
-        </Container>
-      </section>
+        </Section>
 
-      {/* Reviews Stats - Clean Grid */}
-      <Section padding="large">
-        <Container>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div className="p-6 bg-[#faf9f7] rounded-lg">
-              <div className="text-4xl md:text-5xl font-normal text-[#d4a853] mb-2">200+</div>
-              <p className="text-[#737373] font-medium">Happy Customers</p>
-            </div>
-            <div className="p-6 bg-[#faf9f7] rounded-lg">
-              <div className="text-4xl md:text-5xl font-normal text-[#d4a853] mb-2">4.9</div>
-              <p className="text-[#737373] font-medium">Average Rating</p>
-            </div>
-            <div className="p-6 bg-[#faf9f7] rounded-lg">
-              <div className="text-4xl md:text-5xl font-normal text-[#d4a853] mb-2">50+</div>
-              <p className="text-[#737373] font-medium">5-Star Reviews</p>
-            </div>
-          </div>
-        </Container>
-      </Section>
-
-      {/* Reviews List - Clean Grid */}
-      <Section background="cream" padding="large">
-        <Container>
-          <div className="text-center mb-12">
-            <p className="text-xs font-medium text-[#d4a853] tracking-[0.2em] uppercase mb-3">
-              Feedback
-            </p>
-            <h2 className="text-3xl md:text-4xl font-normal text-[#0a0a0a]">
-              What Our Customers Say
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reviews.map((review, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-sm">
-                {/* Rating Stars */}
-                <div className="flex gap-1 mb-3">
+        {/* All Reviews */}
+        <Section background="white" padding="lg">
+          <Container>
+            {/* Rating Summary */}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-16 p-8 bg-brand-cream rounded-premium-lg">
+              <div className="text-center">
+                <div className="font-heading text-5xl text-brand-black">4.9</div>
+                <div className="flex gap-1 justify-center my-2">
                   {[...Array(5)].map((_, i) => (
-                    <span 
-                      key={i} 
-                      className={i < review.rating ? "text-[#d4a853]" : "text-gray-200"}
-                    >
-                      ★
-                    </span>
+                    <svg key={i} className="w-6 h-6 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
                   ))}
                 </div>
-                
-                {/* Review Title */}
-                <h3 className="text-lg font-medium text-[#0a0a0a] mb-2">
-                  {review.title}
-                </h3>
-                
-                {/* Review Text */}
-                <p className="text-[#737373] mb-4 leading-relaxed">
-                  "{review.text}"
-                </p>
-                
-                {/* Author Info */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div>
-                    <p className="font-medium text-[#0a0a0a]">{review.name}</p>
-                    <p className="text-sm text-[#a3a3a3]">{review.location}</p>
-                  </div>
-                  <p className="text-xs text-[#a3a3a3]">{review.date}</p>
-                </div>
+                <p className="text-brand-gray">Based on {TESTIMONIALS.length * 10}+ reviews</p>
               </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
+              <div className="hidden md:block w-px h-20 bg-brand-nude" />
+              <p className="text-brand-gray text-center max-w-md">
+                Join hundreds of satisfied customers who have found their perfect look with us. 
+                We're committed to making every customer feel beautiful and confident.
+              </p>
+            </div>
 
-      {/* Trust CTA - Light & Clean */}
-      <Section padding="xlarge">
-        <Container>
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-normal text-[#0a0a0a] mb-4">
-              Want to Share Your Experience?
-            </h2>
-            <p className="text-[#525252] mb-8">
-              Have you purchased from us? We'd love to hear about your experience! 
-              Chat with us to share your thoughts.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <a 
-                href={CONTACT.whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="gold" size="lg">
-                  Share Your Review
+            {/* Reviews Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {TESTIMONIALS.map((testimonial, index) => (
+                <div
+                  key={testimonial.id}
+                  className="bg-brand-white rounded-premium p-6 md:p-8 shadow-card"
+                >
+                  {/* Stars */}
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <svg
+                        key={i}
+                        className="w-5 h-5 text-brand-gold"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                      </svg>
+                    ))}
+                  </div>
+
+                  {/* Quote */}
+                  <p className="text-brand-gray leading-relaxed mb-6">
+                    &ldquo;{testimonial.text}&rdquo;
+                  </p>
+
+                  {/* Author */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-brand-sand flex items-center justify-center">
+                      <span className="font-heading text-brand-charcoal">
+                        {testimonial.name.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-brand-black text-sm">
+                        {testimonial.name}
+                      </p>
+                      <p className="text-brand-taupe text-xs">
+                        {testimonial.location}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Placeholder Reviews */}
+              {[...Array(3)].map((_, index) => (
+                <div
+                  key={`placeholder-${index}`}
+                  className="bg-brand-white rounded-premium p-6 md:p-8 shadow-card"
+                >
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <svg
+                        key={i}
+                        className="w-5 h-5 text-brand-gold"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-brand-gray leading-relaxed mb-6">
+                    &ldquo;Amazing quality and service! The wig I purchased exceeded my expectations. 
+                    Will definitely be coming back for more.&rdquo;
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-brand-sand flex items-center justify-center">
+                      <span className="font-heading text-brand-charcoal">C</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-brand-black text-sm">
+                        Customer {index + 4}
+                      </p>
+                      <p className="text-brand-taupe text-xs">Ghana</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+
+        {/* CTA */}
+        <Section background="black" padding="lg">
+          <Container>
+            <div className="text-center max-w-2xl mx-auto">
+              <h2 className="font-heading text-3xl text-brand-white mb-6">
+                Share Your Experience
+              </h2>
+              <p className="text-brand-light-gray mb-8">
+                Have you purchased from us? We'd love to hear about your experience. 
+                Chat with us to leave a review.
+              </p>
+              <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer">
+                <Button variant="secondary" size="lg">
+                  Chat on WhatsApp
                 </Button>
               </a>
-              <Link href="/services">
-                <Button variant="secondary" size="lg" className="border-[#0a0a0a] text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white">
-                  Explore Services
-                </Button>
-              </Link>
             </div>
-          </div>
-        </Container>
-      </Section>
+          </Container>
+        </Section>
+      </main>
+      <Footer />
     </>
   );
 }

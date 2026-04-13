@@ -1,51 +1,35 @@
-import { cn } from '@/utils';
-
-/**
- * Section Component - Redesigned for Editorial Feel
- * More generous spacing, refined background options
- */
 interface SectionProps {
   children: React.ReactNode;
   className?: string;
-  background?: 'default' | 'cream' | 'dark' | 'white' | 'ivory';
-  padding?: 'default' | 'none' | 'small' | 'large' | 'xlarge';
+  background?: "white" | "cream" | "ivory" | "sand" | "black";
+  padding?: "none" | "sm" | "md" | "lg" | "xl";
 }
 
-export function Section({ 
-  children, 
-  className, 
-  background = 'default',
-  padding = 'default' 
+export function Section({
+  children,
+  className = "",
+  background = "white",
+  padding = "lg",
 }: SectionProps) {
-  // Refined, warmer backgrounds
-  const backgroundClasses = {
-    default: 'bg-white',
-    cream: 'bg-[#f9f7f2]',
-    dark: 'bg-[#0a0a0a]',
-    white: 'bg-white',
-    ivory: 'bg-[#f5f2e8]',
+  const backgrounds = {
+    white: "bg-brand-white",
+    cream: "bg-brand-cream",
+    ivory: "bg-brand-ivory",
+    sand: "bg-brand-sand",
+    black: "bg-brand-black",
   };
 
-  // More generous padding for editorial feel
-  const paddingClasses = {
-    default: 'py-20 md:py-28',
-    none: 'py-0',
-    small: 'py-12 md:py-16',
-    large: 'py-24 md:py-32',
-    xlarge: 'py-32 md:py-40',
+  const paddings = {
+    none: "py-0",
+    sm: "py-8 md:py-10",
+    md: "py-12 md:py-16",
+    lg: "py-16 md:py-22 lg:py-26",
+    xl: "py-22 md:py-26 lg:py-30",
   };
-
 
   return (
-    <section className={cn(
-      'w-full',
-      backgroundClasses[background],
-      paddingClasses[padding],
-      className
-    )}>
+    <section className={`${backgrounds[background]} ${paddings[padding]} ${className}`}>
       {children}
     </section>
   );
 }
-
-export default Section;

@@ -1,284 +1,129 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
-/* Modern Premium Beauty Brand Design System for Affordable Wigs Gh */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Redesigned for luxury, editorial, and feminine aesthetics */
-
-
-/* Brand Colors */
 :root {
-  /* Primary: Black - Softer, more luxurious */
-  --color-primary: #0a0a0a;
-  --color-primary-light: #1a1a1a;
-  --color-primary-dark: #050505;
-  
-  /* Secondary: Gold - Refined, not too yellow */
-  --color-gold: #c9a84a;
-  --color-gold-light: #dbbf70;
-  --color-gold-dark: #a68c3a;
-  --color-gold-muted: #b89c4a;
-  
-  /* Neutral Colors - Warmer, more elegant */
-  --color-white: #ffffff;
-  --color-off-white: #fafafa;
-  --color-cream: #f9f7f2;
-  --color-ivory: #f5f2e8;
-  --color-silver: #e8e8e8;
-  --color-gray-100: #f5f5f5;
-  --color-gray-200: #eeeeee;
-  --color-gray-300: #e0e0e0;
-  --color-gray-400: #b0b0b0;
-  --color-gray-500: #808080;
-  --color-gray-600: #5a5a5a;
-  --color-gray-700: #404040;
-  --color-gray-800: #252525;
-  --color-gray-900: #151515;
-  
-  /* Semantic Colors */
-  --color-text-primary: #0a0a0a;
-  --color-text-secondary: #5a5a5a;
-  --color-text-muted: #808080;
-  --color-text-light: #fafafa;
-  --color-border: #e8e8e8;
-  --color-border-light: #f0f0f0;
-  
-  /* Spacing Scale - More generous for editorial feel */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-  --spacing-3xl: 4rem;
-  --spacing-4xl: 6rem;
-  --spacing-5xl: 8rem;
-  
-  /* Container Width */
-  --container-max: 1400px;
-  --container-padding: 1.5rem;
-  
-  /* Border Radius - Smoother, less boxy */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --radius-xl: 16px;
-  --radius-full: 9999px;
-  
-  /* Transitions - Smoother */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* Shadows - More subtle and elegant */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
-  --shadow-gold: 0 4px 20px rgba(201, 168, 74, 0.15);
-  
-  /* Font Families - Elegant and readable */
-  --font-heading: "Cormorant Garamond", Georgia, serif;
-  --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-accent: "Cormorant Garamond", Georgia, serif;
+  --brand-white: #FFFFFF;
+  --brand-cream: #FDFBF7;
+  --brand-ivory: #FAF8F5;
+  --brand-sand: #F5F0EB;
+  --brand-nude: #E8E0D8;
+  --brand-taupe: #8B8578;
+  --brand-gold: #C9A962;
+  --brand-gold-light: #D4BC7D;
+  --brand-gold-dark: #B39548;
+  --brand-black: #1A1A1A;
+  --brand-charcoal: #2D2D2D;
+  --brand-gray: #6B6B6B;
+  --brand-light-gray: #F0F0F0;
 }
 
-/* Base Styles - Modern Editorial */
 * {
   box-sizing: border-box;
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
+html,
 body {
-  font-family: var(--font-body);
-  color: var(--color-text-primary);
-  background-color: var(--color-white);
-  line-height: 1.7;
-  font-size: 16px;
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--brand-white);
+  color: var(--brand-black);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
+  font-family: 'Playfair Display', serif;
   font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
-
-/* Elegant heading sizes */
-h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
-h2 { font-size: clamp(2rem, 4vw, 3rem); }
-h3 { font-size: clamp(1.5rem, 3vw, 2.25rem); }
-h4 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
 
 a {
   color: inherit;
   text-decoration: none;
-  transition: color var(--transition-fast);
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Utility Classes */
-.container {
-  width: 100%;
-  max-width: var(--container-max);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--container-padding);
-  padding-right: var(--container-padding);
-}
-
-.text-gold {
-  color: var(--color-gold);
-}
-
-.bg-primary {
-  background-color: var(--color-primary);
-}
-
-.bg-cream {
-  background-color: var(--color-cream);
-}
-
-/* Button Base Styles */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.025em;
-  text-transform: uppercase;
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-base);
-  cursor: pointer;
-}
-
-.btn-primary {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  border: 1px solid var(--color-primary);
-}
-
-.btn-primary:hover {
-  background-color: var(--color-primary-light);
-  border-color: var(--color-primary-light);
-}
-
-.btn-gold {
-  background-color: var(--color-gold);
-  color: var(--color-primary);
-  border: 1px solid var(--color-gold);
-}
-
-.btn-gold:hover {
-  background-color: var(--color-gold-light);
-  border-color: var(--color-gold-light);
-}
-
-.btn-outline {
-  background-color: transparent;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-}
-
-.btn-outline:hover {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-}
-
-.btn-ghost {
-  background-color: transparent;
-  color: var(--color-primary);
-  border: none;
-}
-
-.btn-ghost:hover {
-  color: var(--color-gold);
-}
-
-/* Section Styles */
-.section {
-  padding: var(--spacing-3xl) 0;
-}
-
-.section-title {
-  font-size: 2.5rem;
-  margin-bottom: var(--spacing-lg);
-  text-align: center;
-}
-
-.section-subtitle {
-  font-size: 1.125rem;
-  color: var(--color-text-muted);
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto var(--spacing-2xl);
-}
-
-/* Card Styles */
-.card {
-  background-color: var(--color-white);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  transition: all var(--transition-base);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-4px);
-}
-
-/* Gold Accent Line */
-.gold-line {
-  width: 60px;
-  height: 2px;
-  background-color: var(--color-gold);
-  margin: var(--spacing-md) auto;
-}
-
-/* Selection Color */
-::selection {
-  background-color: var(--color-gold);
-  color: var(--color-primary);
-}
-
-/* Custom Scrollbar */
+/* Premium scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-gray-100);
+  background: var(--brand-cream);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-gray-400);
-  border-radius: var(--radius-full);
+  background: var(--brand-nude);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray-500);
+  background: var(--brand-taupe);
 }
 
-/* Focus Styles */
-:focus-visible {
-  outline: 2px solid var(--color-gold);
+/* Selection color */
+::selection {
+  background: var(--brand-gold);
+  color: var(--brand-white);
+}
+
+/* Premium focus states */
+*:focus-visible {
+  outline: 2px solid var(--brand-gold);
   outline-offset: 2px;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Animation utilities */
+.animate-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.slide-in-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* Hide scrollbar but allow scrolling */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

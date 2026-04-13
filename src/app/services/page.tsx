@@ -1,172 +1,160 @@
-import Link from 'next/link';
-import { Container } from '@/components/ui/Container';
-import { Section } from '@/components/ui/Section';
-import { SectionHeading } from '@/components/ui/SectionHeading';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { CONTACT, BRAND } from '@/constants/brand';
+import { Metadata } from "next";
+import { Header, Footer } from "@/components/layout";
+import { Container, Section, Button } from "@/components/ui";
+import { SERVICES, CONTACT, PAGE_METADATA } from "@/constants";
 
-/**
- * Services Page - Elegant Simplified Style
- * Clean, light, minimal aesthetic
- */
+export const metadata: Metadata = {
+  title: PAGE_METADATA.services.title,
+  description: PAGE_METADATA.services.description,
+};
+
 export default function ServicesPage() {
-  const mainServices = [
-    {
-      icon: "✂️",
-      name: "Wig Styling",
-      description: "Transform your look with our professional styling services. Whether you need a fresh cut, custom shaping, or a complete transformation, our experts will give your wig a natural, personalized look that complements your face shape and style preferences.",
-      features: ["Custom Cutting", "Shaping & Trimming", "Style Customization", "Natural finish"]
-    },
-    {
-      icon: "💎",
-      name: "Wig Consultation",
-      description: "Not sure which wig suits you best? Our expert consultation helps you find the perfect match for your face shape, lifestyle, and budget. Get personalized recommendations from our experienced team.",
-      features: ["Face Shape Analysis", "Style Recommendations", "Budget-friendly options", "Expert advice"]
-    }
-  ];
-
   return (
     <>
-      {/* Hero Section - Light & Clean */}
-      <section className="relative py-24 md:py-32 bg-[#faf9f7] overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 right-10 w-72 h-72 bg-[#d4a853]/5 rounded-full blur-3xl" />
-        </div>
-        
-        <Container>
-          <div className="relative z-10 text-center max-w-2xl mx-auto">
-            <p className="text-xs font-medium text-[#d4a853] tracking-[0.2em] uppercase mb-4">
-              Our Services
-            </p>
-            <h1 className="text-4xl md:text-5xl font-normal text-[#0a0a0a] mb-6">
-              Professional <span className="text-[#d4a853]">Wig Services</span>
-            </h1>
-            <p className="text-lg text-[#525252]">
-              Expert styling and consultation services to help you achieve your perfect look
-            </p>
-          </div>
-        </Container>
-      </section>
-
-      {/* Main Services - Clean Layout */}
-      <Section padding="large">
-        <Container>
-          <div className="text-center mb-12">
-            <p className="text-xs font-medium text-[#d4a853] tracking-[0.2em] uppercase mb-3">
-              What We Offer
-            </p>
-            <h2 className="text-3xl md:text-4xl font-normal text-[#0a0a0a]">
-              Our Core Services
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {mainServices.map((service, index) => (
-              <div key={index} className="bg-[#faf9f7] p-8 rounded-lg">
-                {index === 0 && (
-                  <Badge variant="gold" className="mb-4 text-xs">Popular</Badge>
-                )}
-                <div className="flex items-center gap-4 mb-5">
-                  <div className="w-14 h-14 bg-[#d4a853]/10 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">{service.icon}</span>
-                  </div>
-                  <h3 className="text-2xl font-normal text-[#0a0a0a]">
-                    {service.name}
-                  </h3>
-                </div>
-                <p className="text-[#525252] mb-6 leading-relaxed">
-                  {service.description}
+      <Header />
+      <main>
+        {/* Hero */}
+        <Section background="cream" padding="none" className="pt-20">
+          <div className="relative min-h-[60vh] flex items-center">
+            <Container>
+              <div className="max-w-3xl">
+                <span className="inline-block text-brand-gold font-accent text-sm tracking-widest uppercase mb-4">
+                  Our Services
+                </span>
+                <h1 className="font-heading text-4xl md:text-5xl text-brand-black mb-6">
+                  Professional Wig Services
+                </h1>
+                <p className="text-brand-gray text-lg leading-relaxed">
+                  We offer professional wig styling and consultation services to help 
+                  you find the perfect look. Our expert team is dedicated to making you 
+                  look and feel your best.
                 </p>
-                <div className="pt-5 border-t border-gray-200">
-                  <p className="text-sm font-medium text-[#0a0a0a] mb-3">What's included:</p>
-                  <ul className="space-y-2">
-                    {service.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-[#737373]">
-                        <span className="w-1.5 h-1.5 bg-[#d4a853] rounded-full" />
-                        {feature}
-                      </li>
-                    ))}
+              </div>
+            </Container>
+          </div>
+        </Section>
+
+        {/* Services Detail */}
+        <Section background="white" padding="lg">
+          <Container>
+            <div className="space-y-16">
+              {/* Service 1 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div className="order-2 lg:order-1">
+                  <div className="w-16 h-16 rounded-full bg-brand-gold/10 flex items-center justify-center mb-6">
+                    <svg className="w-8 h-8 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1l-2.36-2.36c.5-.23 1.05-.36 1.64-.36 2.21 0 4 1.79 4 4s-1.79 4-4 4-4-1.79-4-4c0-.59.13-1.14.36-1.64L7 10H1l7-7 2.64 2.64z" />
+                    </svg>
+                  </div>
+                  <h2 className="font-heading text-2xl md:text-3xl text-brand-black mb-4">
+                    {SERVICES[0].name}
+                  </h2>
+                  <p className="text-brand-gray leading-relaxed mb-6">
+                    {SERVICES[0].description}. Our professional stylists are 
+                    trained to transform your wig into a stunning look that complements 
+                    your features and personal style.
+                  </p>
+                  <ul className="space-y-3 mb-8">
+                    <li className="flex items-center gap-3 text-brand-gray">
+                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                      </svg>
+                      Custom cut and style
+                    </li>
+                    <li className="flex items-center gap-3 text-brand-gray">
+                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                      </svg>
+                      Color treatment
+                    </li>
+                    <li className="flex items-center gap-3 text-brand-gray">
+                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                      </svg>
+                      Styling and maintenance tips
+                    </li>
                   </ul>
+                  <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer">
+                    <Button variant="primary" size="md">
+                      Book Now
+                    </Button>
+                  </a>
                 </div>
-                <div className="mt-6">
-                  <a 
-                    href={CONTACT.whatsappLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button variant="gold" size="lg" fullWidth>
-                      Inquire Now
+                <div className="order-1 lg:order-2 relative aspect-square lg:aspect-[4/5]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-sand to-brand-ivory rounded-premium-lg" />
+                </div>
+              </div>
+
+              {/* Service 2 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div className="relative aspect-square lg:aspect-[4/5]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-sand to-brand-ivory rounded-premium-lg" />
+                </div>
+                <div>
+                  <div className="w-16 h-16 rounded-full bg-brand-gold/10 flex items-center justify-center mb-6">
+                    <svg className="w-8 h-8 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
+                    </svg>
+                  </div>
+                  <h2 className="font-heading text-2xl md:text-3xl text-brand-black mb-4">
+                    {SERVICES[1].name}
+                  </h2>
+                  <p className="text-brand-gray leading-relaxed mb-6">
+                    {SERVICES[1].description}. Not sure which wig suits you best? 
+                    Our expert consultation helps you choose the perfect wig based on 
+                    your face shape, lifestyle, and preferences.
+                  </p>
+                  <ul className="space-y-3 mb-8">
+                    <li className="flex items-center gap-3 text-brand-gray">
+                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                      </svg>
+                      Face shape analysis
+                    </li>
+                    <li className="flex items-center gap-3 text-brand-gray">
+                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                      </svg>
+                      Personalized recommendations
+                    </li>
+                    <li className="flex items-center gap-3 text-brand-gray">
+                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                      </svg>
+                      Quality guidance
+                    </li>
+                  </ul>
+                  <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer">
+                    <Button variant="primary" size="md">
+                      Book Consultation
                     </Button>
                   </a>
                 </div>
               </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
+            </div>
+          </Container>
+        </Section>
 
-      {/* Process Section - Clean Steps */}
-      <Section background="cream" padding="large">
-        <Container>
-          <div className="text-center mb-12">
-            <p className="text-xs font-medium text-[#d4a853] tracking-[0.2em] uppercase mb-3">
-              How It Works
-            </p>
-            <h2 className="text-3xl md:text-4xl font-normal text-[#0a0a0a]">
-              Getting Your Wig Styled
-            </h2>
-          </div>
-          
-          {/* Clean 4-step horizontal process */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              { step: "01", title: "Contact Us", desc: "Reach out via WhatsApp or visit our location" },
-              { step: "02", title: "Consultation", desc: "We'll discuss your style preferences and needs" },
-              { step: "03", title: "Service", desc: "Our experts work their magic on your wig" },
-              { step: "04", title: "Pick Up", desc: "Collect your beautifully styled wig" }
-            ].map((item, index) => (
-              <div key={index} className="text-center p-5">
-                <div className="w-12 h-12 bg-[#d4a853] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-sm font-medium text-[#0a0a0a]">{item.step}</span>
-                </div>
-                <h3 className="font-medium text-[#0a0a0a] mb-2">{item.title}</h3>
-                <p className="text-sm text-[#737373]">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      {/* CTA - Light & Clean */}
-      <Section padding="xlarge">
-        <Container>
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-normal text-[#0a0a0a] mb-4">
-              Ready to Transform Your Look?
-            </h2>
-            <p className="text-[#525252] mb-8">
-              Chat with us on WhatsApp to discuss your styling needs and book an appointment.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <a 
-                href={CONTACT.whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="gold" size="lg">
-                  💬 Chat with Us
+        {/* CTA */}
+        <Section background="black" padding="lg">
+          <Container>
+            <div className="text-center max-w-2xl mx-auto">
+              <h2 className="font-heading text-3xl text-brand-white mb-6">
+                Ready to Transform Your Look?
+              </h2>
+              <p className="text-brand-light-gray mb-8">
+                Chat with us on WhatsApp to book your appointment or learn more about our services.
+              </p>
+              <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer">
+                <Button variant="secondary" size="lg">
+                  Chat on WhatsApp
                 </Button>
               </a>
-              <Link href="/contact">
-                <Button variant="secondary" size="lg" className="border-[#0a0a0a] text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white">
-                  Get Directions
-                </Button>
-              </Link>
             </div>
-          </div>
-        </Container>
-      </Section>
+          </Container>
+        </Section>
+      </main>
+      <Footer />
     </>
   );
 }
