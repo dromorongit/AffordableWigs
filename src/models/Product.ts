@@ -132,7 +132,6 @@ const ProductSchema = new Schema<IProduct>(
 );
 
 // Create indexes for better query performance
-ProductSchema.index({ slug: 1 });
 ProductSchema.index({ category: 1 });
 ProductSchema.index({ isActive: 1 });
 ProductSchema.index({ isFeatured: 1 });

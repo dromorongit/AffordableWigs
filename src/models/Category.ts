@@ -50,7 +50,6 @@ const CategorySchema = new Schema<ICategory>(
 );
 
 // Create indexes for better query performance
-CategorySchema.index({ slug: 1 });
 CategorySchema.index({ isActive: 1, sortOrder: 1 });
 
 const Category: Model<ICategory> =
