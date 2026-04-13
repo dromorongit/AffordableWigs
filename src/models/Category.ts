@@ -52,7 +52,8 @@ const CategorySchema = new Schema<ICategory>(
 // Create indexes for better query performance
 CategorySchema.index({ isActive: 1, sortOrder: 1 });
 
+// Safely create the model - check if mongoose is properly initialized
 const Category: Model<ICategory> =
-  mongoose.models.Category || mongoose.model<ICategory>("Category", CategorySchema);
+  mongoose.models?.Category || mongoose.model<ICategory>("Category", CategorySchema);
 
 export default Category;

@@ -141,7 +141,8 @@ ProductSchema.index({ price: 1 });
 ProductSchema.index({ createdAt: -1 });
 ProductSchema.index({ name: "text", tags: "text" });
 
+// Safely create the model - check if mongoose is properly initialized
 const Product: Model<IProduct> =
-  mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
+  mongoose.models?.Product || mongoose.model<IProduct>("Product", ProductSchema);
 
 export default Product;
