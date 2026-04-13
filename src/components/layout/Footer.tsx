@@ -105,7 +105,7 @@ export function Footer() {
               &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
             </p>
             <p className="text-brand-gray text-sm">
-              Made with love in Ghana
+              Developed with love in Ghana by Dromor Narh. 🇬🇭
             </p>
           </div>
         </div>
