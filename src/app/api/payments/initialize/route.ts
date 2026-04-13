@@ -4,7 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import Order, { IOrderItem, ICustomerInfo } from "@/models/Order";
 
 // Initialize Paystack with secret key
-const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY);
+const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY!);
 
 // Generate unique order number
 function generateOrderNumber(): string {
@@ -62,6 +62,8 @@ export async function POST(request: NextRequest) {
     const transaction = await paystack.transaction.initialize({
       amount: amountInKobo,
       email: customer.email,
+      first_name: customer.fullName.split(' ')[0],
+      last_name: customer.fullName.split(' ').slice(1).join(' ') || customer.fullName,
       currency: "GHS",
       reference: `${orderNumber}-${Date.now()}`,
       callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/success`,

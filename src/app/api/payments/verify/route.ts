@@ -4,7 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 
 // Initialize Paystack with secret key
-const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY);
+const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY!);
 
 export async function POST(request: NextRequest) {
   try {
