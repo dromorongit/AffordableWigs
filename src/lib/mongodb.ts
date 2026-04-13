@@ -8,8 +8,9 @@ import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/affordable-wigs-gh";
 
-// Suppress Mongoose deprecation warnings in production
-if (process.env.NODE_ENV === "production") {
+// Suppress Mongoose deprecation warnings
+// Only run on server to prevent client-side errors
+if (typeof window === "undefined") {
   mongoose.set("strict", false);
   mongoose.set("debug", false);
 }
