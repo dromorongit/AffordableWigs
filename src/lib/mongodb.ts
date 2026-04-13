@@ -3,10 +3,16 @@ import mongoose from "mongoose";
 /**
  * MongoDB Connection Utility
  * This module provides a connection to MongoDB using Mongoose
- * For use in future phases with real database operations
+ * Optimized for serverless environments
  */
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/affordable-wigs-gh";
+
+// Suppress Mongoose deprecation warnings in production
+if (process.env.NODE_ENV === "production") {
+  mongoose.set("strict", false);
+  mongoose.set("debug", false);
+}
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -30,6 +36,10 @@ if (!global.mongoose) {
  * Uses caching to prevent multiple connections in development
  */
 export async function connectDB(): Promise<typeof mongoose> {
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI is not defined");
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
@@ -37,10 +47,17 @@ export async function connectDB(): Promise<typeof mongoose> {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      // Serverless-friendly options
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
       return mongoose;
+    }).catch((err) => {
+      cached.promise = null;
+      throw err;
     });
   }
 
@@ -59,7 +76,9 @@ export async function connectDB(): Promise<typeof mongoose> {
  * Useful for graceful shutdown
  */
 export async function closeDB(): Promise<void> {
-  await mongoose.connection.close();
+  if (mongoose.connection.readyState) {
+    await mongoose.connection.close();
+  }
   cached.conn = null;
   cached.promise = null;
 }
