@@ -1,6 +1,6 @@
 import { getCurrentAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
 import { connectDB } from "@/lib/mongodb";
@@ -10,12 +10,18 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Get the current path to check if we're on the login page
-  const headersList = headers();
-  const pathname = headersList.get("x-invoke-path") || "";
+  // Check if this is the login page by checking cookies
+  // If there's no admin_token cookie, skip redirect for login page
+  const cookieStore = cookies();
+  const hasAuthCookie = cookieStore.has("admin_token");
   
-  // Skip authentication check for login page
-  if (pathname === "/admin/login") {
+  // Also check via getCurrentAdmin which reads the cookie
+  const admin = await getCurrentAdmin();
+  
+  // Skip authentication check if no cookie exists (user is on login page)
+  // and we need to verify this is actually the login page
+  if (!hasAuthCookie) {
+    // Let the login page render without auth
     return (
       <div className="min-h-screen bg-gray-50">
         {children}
@@ -23,9 +29,7 @@ export default async function AdminLayout({
     );
   }
   
-  // Check authentication
-  const admin = await getCurrentAdmin();
-  
+  // If has cookie but no valid admin, redirect to login
   if (!admin) {
     redirect("/admin/login");
   }
