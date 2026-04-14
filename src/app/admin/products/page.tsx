@@ -46,7 +46,7 @@ export default function AdminProductsPage() {
     shortDescription: "",
     description: "",
     mainImage: "",
-    images: "",
+    images: [] as string[],
     isFeatured: false,
     isBestSeller: false,
     isNewArrival: false,
@@ -93,7 +93,7 @@ export default function AdminProductsPage() {
       price: parseFloat(formData.price),
       compareAtPrice: formData.compareAtPrice ? parseFloat(formData.compareAtPrice) : undefined,
       stockQuantity: parseInt(formData.stockQuantity),
-      images: formData.images ? formData.images.split(",").map((img) => img.trim()) : [],
+      images: formData.images || [],
     };
 
     try {
@@ -152,7 +152,7 @@ export default function AdminProductsPage() {
       shortDescription: product.shortDescription || "",
       description: product.description || "",
       mainImage: product.mainImage || "",
-      images: product.images?.join(", ") || "",
+      images: product.images || [],
       isFeatured: product.isFeatured,
       isBestSeller: product.isBestSeller,
       isNewArrival: product.isNewArrival,
@@ -171,7 +171,7 @@ export default function AdminProductsPage() {
       shortDescription: "",
       description: "",
       mainImage: "",
-      images: "",
+      images: [],
       isFeatured: false,
       isBestSeller: false,
       isNewArrival: false,
@@ -443,15 +443,41 @@ export default function AdminProductsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Additional Images (comma-separated URLs)
+                  Additional Images
                 </label>
-                <input
-                  type="text"
-                  value={formData.images}
-                  onChange={(e) => setFormData({ ...formData, images: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
-                  placeholder="https://..., https://..."
+                <ImageUploader
+                  value={formData.images[0] || ""}
+                  onChange={(url) => {
+                    const currentImages = formData.images || [];
+                    if (url && !currentImages.includes(url)) {
+                      setFormData({ ...formData, images: [...currentImages, url] });
+                    }
+                  }}
+                  label=""
                 />
+                {formData.images && formData.images.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {formData.images.map((img, idx) => (
+                      <div key={idx} className="relative group">
+                        <img
+                          src={img}
+                          alt={`Additional ${idx + 1}`}
+                          className="w-16 h-16 object-cover rounded-lg border"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newImages = formData.images.filter((_, i) => i !== idx);
+                            setFormData({ ...formData, images: newImages });
+                          }}
+                          className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full"
+                        >
+                          <FiX className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Description */}
