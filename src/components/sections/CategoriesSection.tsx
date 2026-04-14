@@ -23,10 +23,10 @@ export async function CategoriesSection() {
           {categories.map((category, index) => {
             // Category images mapping
             const categoryImages: Record<string, string> = {
-              "ready-to-wear-wigs": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&q=80",
-              "wig-bundles": "https://images.unsplash.com/photo-1603366645788-5f16c7d4911e?w=600&q=80",
-              "closures": "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=600&q=80",
-              "frontals": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80",
+              "ready-to-wear-wigs": "/images/readywigs.jpg",
+              "wig-bundles": "/images/wigbundles.jpg",
+              "closures": "/images/readywigs.jpg",
+              "frontals": "/images/frontals.jpg",
             };
             
             const imageUrl = categoryImages[category.slug] || "";
