@@ -188,7 +188,7 @@ export default function CheckoutPage() {
     <main className="pt-20">
       <Section background="cream" padding="sm">
         <Container>
-          <h1 className="font-heading text-3xl md:text-4xl text-brand-black">
+          <h1 className="font-heading text-3xl md:text-4xl text-text-primary">
             Checkout
           </h1>
         </Container>
@@ -198,10 +198,10 @@ export default function CheckoutPage() {
         <Container>
           {cart.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-brand-gray mb-8">Your cart is empty.</p>
+              <p className="text-text-light mb-8">Your cart is empty.</p>
               <Link
                 href="/shop"
-                className="inline-block px-8 py-3 bg-brand-black text-brand-white rounded-premium font-medium hover:bg-brand-charcoal transition-colors"
+                className="inline-block px-8 py-3 bg-primary text-white rounded-premium font-medium hover:bg-primary-700 transition-colors"
               >
                 Continue Shopping
               </Link>
@@ -210,8 +210,8 @@ export default function CheckoutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Delivery Form */}
               <div className="lg:col-span-2">
-                <div className="bg-brand-white rounded-premium p-6 border border-brand-light-gray">
-                  <h2 className="font-heading text-xl text-brand-black mb-6">
+                <div className="bg-background rounded-premium p-6 border border-neutral-light">
+                  <h2 className="font-heading text-xl text-text-primary mb-6">
                     Delivery Details
                   </h2>
 
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
                       <div key={field.name}>
                         <label
                           htmlFor={field.name}
-                          className="block text-sm font-medium text-brand-gray mb-2"
+                          className="block text-sm font-medium text-text-light mb-2"
                         >
                           {field.label}
                           {field.required && (
@@ -243,10 +243,10 @@ export default function CheckoutPage() {
                             onChange={handleChange}
                             placeholder={field.placeholder}
                             rows={3}
-                            className={`w-full px-4 py-3 border rounded-premium text-brand-black placeholder:text-brand-taupe focus:outline-none focus:ring-2 focus:ring-brand-gold/50 transition-colors ${
+                            className={`w-full px-4 py-3 border rounded-premium text-text-primary placeholder:text-neutral-taupe focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors ${
                               formErrors[field.name]
                                 ? "border-red-500"
-                                : "border-brand-light-gray focus:border-brand-gold"
+                                : "border-neutral-light focus:border-primary"
                             }`}
                           />
                         ) : (
@@ -257,10 +257,10 @@ export default function CheckoutPage() {
                             value={formData[field.name]}
                             onChange={handleChange}
                             placeholder={field.placeholder}
-                            className={`w-full px-4 py-3 border rounded-premium text-brand-black placeholder:text-brand-taupe focus:outline-none focus:ring-2 focus:ring-brand-gold/50 transition-colors ${
+                            className={`w-full px-4 py-3 border rounded-premium text-text-primary placeholder:text-neutral-taupe focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors ${
                               formErrors[field.name]
                                 ? "border-red-500"
-                                : "border-brand-light-gray focus:border-brand-gold"
+                                : "border-neutral-light focus:border-primary"
                             }`}
                           />
                         )}
@@ -278,8 +278,8 @@ export default function CheckoutPage() {
 
               {/* Order Summary */}
               <div className="lg:col-span-1">
-                <div className="bg-brand-white rounded-premium p-6 border border-brand-light-gray sticky top-24">
-                  <h2 className="font-heading text-xl text-brand-black mb-6">
+                <div className="bg-background rounded-premium p-6 border border-neutral-light sticky top-24">
+                  <h2 className="font-heading text-xl text-text-primary mb-6">
                     Order Summary
                   </h2>
 
@@ -288,9 +288,9 @@ export default function CheckoutPage() {
                     {cart.items.map((item: CartItem) => (
                       <div
                         key={item.product._id}
-                        className="flex gap-3 pb-4 border-b border-brand-light-gray last:border-0"
+                        className="flex gap-3 pb-4 border-b border-neutral-light last:border-0"
                       >
-                        <div className="relative w-16 h-20 flex-shrink-0 bg-brand-ivory rounded-md overflow-hidden">
+                        <div className="relative w-16 h-20 flex-shrink-0 bg-background-ivory rounded-md overflow-hidden">
                           {item.product.mainImage ? (
                             <Image
                               src={item.product.mainImage}
@@ -301,7 +301,7 @@ export default function CheckoutPage() {
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <svg
-                                className="w-8 h-8 text-brand-nude"
+                                className="w-8 h-8 text-neutral-nude"
                                 fill="currentColor"
                                 viewBox="0 0 24 24"
                               >
@@ -312,13 +312,13 @@ export default function CheckoutPage() {
                         </div>
 
                         <div className="flex-1">
-                          <p className="text-sm text-brand-black line-clamp-1">
+                          <p className="text-sm text-text-primary line-clamp-1">
                             {item.product.name}
                           </p>
-                          <p className="text-xs text-brand-taupe">
+                          <p className="text-xs text-neutral-taupe">
                             Qty: {item.quantity}
                           </p>
-                          <p className="text-sm font-medium text-brand-black mt-1">
+                          <p className="text-sm font-medium text-text-primary mt-1">
                             {BRAND.currencySymbol}
                             {(item.product.price * item.quantity).toLocaleString()}
                           </p>
@@ -328,17 +328,17 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Subtotal */}
-                  <div className="flex justify-between items-center py-3 border-t border-brand-light-gray">
-                    <span className="text-brand-gray">Subtotal</span>
-                    <span className="text-lg font-medium text-brand-black">
+                  <div className="flex justify-between items-center py-3 border-t border-neutral-light">
+                    <span className="text-text-light">Subtotal</span>
+                    <span className="text-lg font-medium text-text-primary">
                       {BRAND.currencySymbol}{cart.subtotal.toLocaleString()}
                     </span>
                   </div>
 
                   {/* Total */}
-                  <div className="flex justify-between items-center py-3 border-t border-brand-light-gray">
-                    <span className="font-medium text-brand-black">Total</span>
-                    <span className="text-xl font-medium text-brand-black">
+                  <div className="flex justify-between items-center py-3 border-t border-neutral-light">
+                    <span className="font-medium text-text-primary">Total</span>
+                    <span className="text-xl font-medium text-text-primary">
                       {BRAND.currencySymbol}{cart.subtotal.toLocaleString()}
                     </span>
                   </div>
@@ -396,14 +396,14 @@ export default function CheckoutPage() {
                   </Button>
 
                   {/* Help Text */}
-                  <p className="mt-4 text-xs text-brand-taupe text-center">
+                  <p className="mt-4 text-xs text-neutral-taupe text-center">
                     You will be redirected to Paystack to complete your payment securely.
                   </p>
 
                   {/* Cancel Link */}
                   <Link
                     href="/cart"
-                    className="block w-full mt-3 py-3 text-brand-gray text-center hover:text-brand-black transition-colors text-sm"
+                    className="block w-full mt-3 py-3 text-text-light text-center hover:text-text-primary transition-colors text-sm"
                   >
                     Return to Cart
                   </Link>

@@ -11,12 +11,12 @@ export function Header() {
   const { itemCount, setIsCartOpen } = useCart();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-brand-white/95 backdrop-blur-md border-b border-brand-light-gray">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-neutral-light">
       <Container>
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <span className="font-heading text-xl md:text-2xl font-semibold text-brand-black tracking-tight">
+            <span className="font-heading text-xl md:text-2xl font-semibold text-text-primary tracking-tight">
               {BRAND.name}
             </span>
           </Link>
@@ -27,7 +27,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-brand-gray hover:text-brand-black transition-colors duration-300 text-sm font-medium tracking-wide"
+                className="text-text-light hover:text-primary transition-colors duration-300 text-sm font-medium tracking-wide"
               >
                 {link.label}
               </Link>
@@ -39,7 +39,7 @@ export function Header() {
             {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-brand-gray hover:text-brand-black transition-colors"
+              className="relative p-2 text-text-light hover:text-primary transition-colors"
               aria-label="Open cart"
             >
               <svg
@@ -56,7 +56,7 @@ export function Header() {
                 />
               </svg>
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
                   {itemCount > 9 ? "9+" : itemCount}
                 </span>
               )}
@@ -66,7 +66,7 @@ export function Header() {
               href={CONTACT.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-brand-gray hover:text-brand-gold transition-colors"
+              className="text-sm text-text-light hover:text-primary transition-colors"
             >
               <span className="font-medium">{CONTACT.phone}</span>
             </a>
@@ -77,7 +77,7 @@ export function Header() {
             {/* Mobile Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-brand-gray hover:text-brand-black transition-colors"
+              className="relative p-2 text-text-light hover:text-primary transition-colors"
               aria-label="Open cart"
             >
               <svg
@@ -94,7 +94,7 @@ export function Header() {
                 />
               </svg>
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
                   {itemCount > 9 ? "9+" : itemCount}
                 </span>
               )}
@@ -134,13 +134,13 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-brand-light-gray">
+          <div className="md:hidden py-4 border-t border-neutral-light">
             <nav className="flex flex-col gap-4">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-brand-gray hover:text-brand-black transition-colors py-2 text-base font-medium"
+                  className="text-text-light hover:text-primary transition-colors py-2 text-base font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}

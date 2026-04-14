@@ -13,10 +13,10 @@ export async function FeaturedProductsSection() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div>
-            <span className="inline-block text-brand-gold font-accent text-sm tracking-widest uppercase mb-4">
+            <span className="inline-block text-primary font-accent text-sm tracking-widest uppercase mb-4">
               Featured
             </span>
-            <h2 className="font-heading text-3xl md:text-4xl text-brand-black">
+            <h2 className="font-heading text-3xl md:text-4xl text-text-primary">
               Our Popular Wigs
             </h2>
           </div>

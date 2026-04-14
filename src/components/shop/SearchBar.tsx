@@ -36,11 +36,11 @@ export function SearchBar() {
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           placeholder="Search products..."
-          className="w-full px-4 py-3 pl-12 text-sm bg-brand-white border border-brand-nude rounded-premium-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-colors"
+          className="w-full px-4 py-3 pl-12 text-sm bg-background border border-neutral-nude rounded-premium-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
         />
         <button
           type="submit"
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-gray hover:text-brand-gold transition-colors"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-text-light hover:text-primary transition-colors"
         >
           <FiSearch className="w-5 h-5" />
         </button>

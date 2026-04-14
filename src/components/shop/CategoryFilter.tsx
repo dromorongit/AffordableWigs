@@ -30,7 +30,7 @@ export function CategoryFilter({ categories }: CategoryFilterProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="font-heading text-sm text-brand-black uppercase tracking-wide mb-3">
+      <h3 className="font-heading text-sm text-text-primary uppercase tracking-wide mb-3">
         Categories
       </h3>
       <ul className="flex flex-col gap-2">
@@ -39,8 +39,8 @@ export function CategoryFilter({ categories }: CategoryFilterProps) {
             href={createCategoryUrl(null)}
             className={`block text-sm py-2 px-3 rounded-premium-sm transition-all duration-200 ${
               !activeCategory
-                ? "bg-brand-black text-brand-white"
-                : "text-brand-gray hover:text-brand-black hover:bg-brand-sand"
+                ? "bg-primary text-white"
+                : "text-text-light hover:text-primary hover:bg-background-sand"
             }`}
           >
             All Products
@@ -52,8 +52,8 @@ export function CategoryFilter({ categories }: CategoryFilterProps) {
               href={createCategoryUrl(category.slug)}
               className={`block text-sm py-2 px-3 rounded-premium-sm transition-all duration-200 ${
                 activeCategory === category.slug
-                  ? "bg-brand-black text-brand-white"
-                  : "text-brand-gray hover:text-brand-black hover:bg-brand-sand"
+                  ? "bg-primary text-white"
+                  : "text-text-light hover:text-primary hover:bg-background-sand"
               }`}
             >
               {category.name}

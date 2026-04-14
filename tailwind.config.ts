@@ -9,7 +9,43 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Premium luxury beauty brand colors
+        // Premium luxury beauty brand - Burgundy based
+        primary: {
+          DEFAULT: "#800020",
+          50: "#FDF3F5",
+          100: "#FAE8EC",
+          200: "#F5D1D9",
+          300: "#EAB3BF",
+          400: "#DC8A9A",
+          500: "#CE6175",
+          600: "#800020",
+          700: "#6A001A",
+          800: "#540015",
+          900: "#3E0010",
+        },
+        // Background colors - white/soft neutral
+        background: {
+          DEFAULT: "#FFFFFF",
+          cream: "#FDFBF7",
+          ivory: "#FAF8F5",
+          sand: "#F5F0EB",
+          soft: "#F8F8F8",
+        },
+        // Text colors - black/charcoal
+        text: {
+          DEFAULT: "#1A1A1A",
+          primary: "#1A1A1A",
+          secondary: "#2D2D2D",
+          muted: "#4A4A4A",
+          light: "#6B6B6B",
+        },
+        // Neutral colors
+        neutral: {
+          nude: "#E8E0D8",
+          taupe: "#8B8578",
+          light: "#F0F0F0",
+        },
+        // Legacy brand colors (deprecated - use primary instead)
         brand: {
           white: "#FFFFFF",
           cream: "#FDFBF7",
@@ -17,9 +53,6 @@ const config: Config = {
           sand: "#F5F0EB",
           nude: "#E8E0D8",
           taupe: "#8B8578",
-          gold: "#C9A962",
-          "gold-light": "#D4BC7D",
-          "gold-dark": "#B39548",
           black: "#1A1A1A",
           charcoal: "#2D2D2D",
           gray: "#6B6B6B",
@@ -42,6 +75,9 @@ const config: Config = {
         "premium-hover": "0 8px 30px rgba(0, 0, 0, 0.1)",
         "card": "0 2px 12px rgba(0, 0, 0, 0.04)",
         "card-hover": "0 8px 24px rgba(0, 0, 0, 0.08)",
+        "soft": "0 2px 8px rgba(0, 0, 0, 0.04)",
+        "elegant": "0 4px 16px rgba(128, 0, 32, 0.1)",
+        "elegant-hover": "0 8px 24px rgba(128, 0, 32, 0.15)",
       },
       borderRadius: {
         "premium": "12px",

@@ -7,10 +7,10 @@ export function WhyChooseUsSection() {
       <Container>
         {/* Section Header */}
         <div className="text-center mb-12">
-          <span className="inline-block text-brand-gold font-accent text-sm tracking-widest uppercase mb-4">
+          <span className="inline-block text-primary font-accent text-sm tracking-widest uppercase mb-4">
             Why Choose Us
           </span>
-          <h2 className="font-heading text-3xl md:text-4xl text-brand-black">
+          <h2 className="font-heading text-3xl md:text-4xl text-text-primary">
             The Affordable Wigs Gh Difference
           </h2>
         </div>
@@ -23,9 +23,9 @@ export function WhyChooseUsSection() {
               className="text-center"
             >
               {/* Icon */}
-              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-brand-gold/10 flex items-center justify-center">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                 <svg
-                  className="w-7 h-7 text-brand-gold"
+                  className="w-7 h-7 text-primary"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -45,10 +45,10 @@ export function WhyChooseUsSection() {
               </div>
 
               {/* Content */}
-              <h3 className="font-heading text-lg text-brand-black mb-2">
+              <h3 className="font-heading text-lg text-text-primary mb-2">
                 {feature.title}
               </h3>
-              <p className="text-brand-gray text-sm leading-relaxed">
+              <p className="text-text-light text-sm leading-relaxed">
                 {feature.description}
               </p>
             </div>

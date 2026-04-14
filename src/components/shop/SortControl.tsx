@@ -21,13 +21,13 @@ export function SortControl() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="font-heading text-sm text-brand-black uppercase tracking-wide mb-3">
+      <h3 className="font-heading text-sm text-text-primary uppercase tracking-wide mb-3">
         Sort By
       </h3>
       <select
         value={currentSort}
         onChange={(e) => router.push(createSortUrl(e.target.value))}
-        className="w-full px-4 py-3 text-sm bg-brand-white border border-brand-nude rounded-premium-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-colors cursor-pointer"
+        className="w-full px-4 py-3 text-sm bg-background border border-neutral-nude rounded-premium-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer"
       >
         {PRODUCT_SORT_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

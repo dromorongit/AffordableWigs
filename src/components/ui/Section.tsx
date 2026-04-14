@@ -12,11 +12,11 @@ export function Section({
   padding = "lg",
 }: SectionProps) {
   const backgrounds = {
-    white: "bg-brand-white",
-    cream: "bg-brand-cream",
-    ivory: "bg-brand-ivory",
-    sand: "bg-brand-sand",
-    black: "bg-brand-black",
+    white: "bg-background",
+    cream: "bg-background-cream",
+    ivory: "bg-background-ivory",
+    sand: "bg-background-sand",
+    black: "bg-text-primary",
   };
 
   const paddings = {

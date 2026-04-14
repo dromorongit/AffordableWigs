@@ -60,26 +60,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <Section background="cream" padding="sm">
         <Container>
           <nav className="flex items-center gap-2 text-sm">
-            <Link href="/" className="text-brand-gray hover:text-brand-gold transition-colors">
+            <Link href="/" className="text-text-light hover:text-primary transition-colors">
               Home
             </Link>
-            <span className="text-brand-taupe">/</span>
-            <Link href="/shop" className="text-brand-gray hover:text-brand-gold transition-colors">
+            <span className="text-neutral-taupe">/</span>
+            <Link href="/shop" className="text-text-light hover:text-primary transition-colors">
               Shop
             </Link>
             {categoryName && (
               <>
-                <span className="text-brand-taupe">/</span>
+                <span className="text-neutral-taupe">/</span>
                 <Link
                   href={`/shop?category=${categorySlug}`}
-                  className="text-brand-gray hover:text-brand-gold transition-colors"
+                  className="text-text-light hover:text-primary transition-colors"
                 >
                   {categoryName}
                 </Link>
               </>
             )}
-            <span className="text-brand-taupe">/</span>
-            <span className="text-brand-black truncate max-w-xs">{product.name}</span>
+            <span className="text-neutral-taupe">/</span>
+            <span className="text-text-primary truncate max-w-xs">{product.name}</span>
           </nav>
         </Container>
       </Section>

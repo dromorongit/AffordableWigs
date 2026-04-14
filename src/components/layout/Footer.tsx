@@ -5,20 +5,20 @@ import { FaInstagram, FaTiktok, FaWhatsapp, FaPhone, FaMapMarkerAlt } from "reac
 
 export function Footer() {
   return (
-    <footer className="bg-brand-black text-brand-white py-16 md:py-22">
+    <footer className="bg-text-primary text-white py-16 md:py-22">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand Info */}
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block mb-4">
-              <span className="font-heading text-2xl font-semibold text-brand-white tracking-tight">
+              <span className="font-heading text-2xl font-semibold text-white tracking-tight">
                 {BRAND.name}
               </span>
             </Link>
-            <p className="text-brand-light-gray text-sm leading-relaxed mb-6">
+            <p className="text-neutral-light text-sm leading-relaxed mb-6">
               {BRAND.description}
             </p>
-            <p className="text-brand-gold font-heading text-lg">
+            <p className="text-primary font-heading text-lg">
               {BRAND.tagline}
             </p>
           </div>
@@ -31,7 +31,7 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-brand-light-gray hover:text-brand-white transition-colors text-sm"
+                  className="text-neutral-light hover:text-white transition-colors text-sm"
                 >
                   {link.label}
                 </Link>
@@ -47,16 +47,16 @@ export function Footer() {
                 href={CONTACT.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-brand-light-gray hover:text-brand-white transition-colors"
+                className="flex items-center gap-3 text-neutral-light hover:text-white transition-colors"
               >
                 <FaWhatsapp className="w-5 h-5" />
                 <span className="text-sm">WhatsApp: {CONTACT.whatsapp}</span>
               </a>
-              <p className="flex items-center gap-3 text-brand-light-gray text-sm">
+              <p className="flex items-center gap-3 text-neutral-light text-sm">
                 <FaPhone className="w-5 h-5" />
                 <span>{CONTACT.phone}</span>
               </p>
-              <p className="flex items-start gap-3 text-brand-light-gray text-sm">
+              <p className="flex items-start gap-3 text-neutral-light text-sm">
                 <FaMapMarkerAlt className="w-5 h-5 mt-0.5" />
                 <span>{CONTACT.location}</span>
               </p>
@@ -71,7 +71,7 @@ export function Footer() {
                 href={SOCIALS.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-brand-charcoal flex items-center justify-center hover:bg-brand-gold transition-colors"
+                className="w-10 h-10 rounded-full bg-text-secondary flex items-center justify-center hover:bg-primary transition-colors"
                 aria-label="Instagram"
               >
                 <FaInstagram className="w-5 h-5" />
@@ -80,7 +80,7 @@ export function Footer() {
                 href={SOCIALS.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-brand-charcoal flex items-center justify-center hover:bg-brand-gold transition-colors"
+                className="w-10 h-10 rounded-full bg-text-secondary flex items-center justify-center hover:bg-primary transition-colors"
                 aria-label="TikTok"
               >
                 <FaTiktok className="w-5 h-5" />
@@ -99,12 +99,12 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-brand-gray/30">
+        <div className="mt-16 pt-8 border-t border-neutral-light/30">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-brand-gray text-sm">
+            <p className="text-neutral-light text-sm">
               &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
             </p>
-            <p className="text-brand-gray text-sm">
+            <p className="text-neutral-light text-sm">
               Developed with love in Ghana by Dromor Narh. 🇬🇭
             </p>
           </div>

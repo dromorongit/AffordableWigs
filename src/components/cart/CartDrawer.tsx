@@ -20,15 +20,15 @@ export function CartDrawer() {
       />
 
       {/* Drawer */}
-      <div className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-brand-white z-50 shadow-xl flex flex-col">
+      <div className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-background z-50 shadow-xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-brand-light-gray">
-          <h2 className="font-heading text-xl font-semibold text-brand-black">
+        <div className="flex items-center justify-between p-6 border-b border-neutral-light">
+          <h2 className="font-heading text-xl font-semibold text-text-primary">
             Your Cart ({cart.items.length})
           </h2>
           <button
             onClick={() => setIsCartOpen(false)}
-            className="p-2 text-brand-gray hover:text-brand-black transition-colors"
+            className="p-2 text-text-light hover:text-text-primary transition-colors"
             aria-label="Close cart"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,13 +41,13 @@ export function CartDrawer() {
         <div className="flex-1 overflow-y-auto p-6">
           {cart.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <svg className="w-16 h-16 text-brand-light-gray mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-16 h-16 text-neutral-light mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              <p className="text-brand-gray mb-4">Your cart is empty</p>
+              <p className="text-text-light mb-4">Your cart is empty</p>
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="text-brand-gold hover:text-brand-black transition-colors font-medium"
+                className="text-primary hover:text-primary-700 transition-colors font-medium"
               >
                 Continue Shopping
               </button>
@@ -57,10 +57,10 @@ export function CartDrawer() {
               {cart.items.map((item: CartItem) => (
                 <div
                   key={item.product._id}
-                  className="flex gap-4 p-4 bg-brand-sand/30 rounded-premium"
+                  className="flex gap-4 p-4 bg-background-sand/30 rounded-premium"
                 >
                   {/* Product Image */}
-                  <div className="relative w-20 h-24 flex-shrink-0 bg-brand-ivory rounded-md overflow-hidden">
+                  <div className="relative w-20 h-24 flex-shrink-0 bg-background-ivory rounded-md overflow-hidden">
                     {item.product.mainImage ? (
                       <Image
                         src={item.product.mainImage}
@@ -70,7 +70,7 @@ export function CartDrawer() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-brand-nude" fill="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-8 h-8 text-neutral-nude" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
                         </svg>
                       </div>
@@ -79,10 +79,10 @@ export function CartDrawer() {
 
                   {/* Product Details */}
                   <div className="flex-1 flex flex-col">
-                    <h3 className="font-heading text-sm font-medium text-brand-black line-clamp-2">
+                    <h3 className="font-heading text-sm font-medium text-text-primary line-clamp-2">
                       {item.product.name}
                     </h3>
-                    <p className="text-sm text-brand-taupe mt-1">
+                    <p className="text-sm text-neutral-taupe mt-1">
                       {BRAND.currencySymbol}{item.product.price.toLocaleString()}
                     </p>
 
@@ -91,18 +91,18 @@ export function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
                         disabled={item.quantity <= 1}
-                        className="w-8 h-8 flex items-center justify-center border border-brand-light-gray rounded-md text-brand-gray hover:text-brand-black hover:border-brand-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-8 h-8 flex items-center justify-center border border-neutral-light rounded-md text-text-light hover:text-text-primary hover:border-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                         </svg>
                       </button>
-                      <span className="text-sm font-medium text-brand-black w-8 text-center">
+                      <span className="text-sm font-medium text-text-primary w-8 text-center">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center border border-brand-light-gray rounded-md text-brand-gray hover:text-brand-black hover:border-brand-black transition-colors"
+                        className="w-8 h-8 flex items-center justify-center border border-neutral-light rounded-md text-text-light hover:text-text-primary hover:border-text-primary transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -114,7 +114,7 @@ export function CartDrawer() {
                   {/* Remove Button */}
                   <button
                     onClick={() => removeFromCart(item.product._id)}
-                    className="self-start p-1 text-brand-taupe hover:text-red-500 transition-colors"
+                    className="self-start p-1 text-neutral-taupe hover:text-red-500 transition-colors"
                     aria-label="Remove item"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,11 +129,11 @@ export function CartDrawer() {
 
         {/* Footer */}
         {cart.items.length > 0 && (
-          <div className="p-6 border-t border-brand-light-gray bg-brand-sand/20">
+          <div className="p-6 border-t border-neutral-light bg-background-sand/20">
             {/* Subtotal */}
             <div className="flex items-center justify-between mb-4">
-              <span className="text-brand-gray">Subtotal</span>
-              <span className="text-lg font-medium text-brand-black">
+              <span className="text-text-light">Subtotal</span>
+              <span className="text-lg font-medium text-text-primary">
                 {BRAND.currencySymbol}{cart.subtotal.toLocaleString()}
               </span>
             </div>
@@ -142,7 +142,7 @@ export function CartDrawer() {
             <Link
               href="/checkout"
               onClick={() => setIsCartOpen(false)}
-              className="block w-full py-3 bg-brand-black text-brand-white text-center rounded-premium font-medium hover:bg-brand-charcoal transition-colors"
+              className="block w-full py-3 bg-primary text-white text-center rounded-premium font-medium hover:bg-primary-700 transition-colors"
             >
               Proceed to Checkout
             </Link>
@@ -150,7 +150,7 @@ export function CartDrawer() {
             {/* Continue Shopping */}
             <button
               onClick={() => setIsCartOpen(false)}
-              className="block w-full py-3 mt-3 text-brand-gray text-center hover:text-brand-black transition-colors text-sm"
+              className="block w-full py-3 mt-3 text-text-light text-center hover:text-text-primary transition-colors text-sm"
             >
               Continue Shopping
             </button>

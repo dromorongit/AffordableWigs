@@ -13,13 +13,13 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const baseStyles = "inline-flex items-center justify-center font-medium transition-all duration-300 rounded-premium focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "inline-flex items-center justify-center font-medium transition-all duration-300 rounded-premium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-brand-black text-brand-white hover:bg-brand-charcoal active:bg-brand-black shadow-premium hover:shadow-premium-hover",
-    secondary: "bg-brand-gold text-brand-white hover:bg-brand-gold-dark active:bg-brand-gold-dark shadow-premium hover:shadow-premium-hover",
-    outline: "border-2 border-brand-black text-brand-black hover:bg-brand-black hover:text-brand-white",
-    ghost: "text-brand-black hover:bg-brand-light-gray",
+    primary: "bg-primary text-white hover:bg-primary-700 active:bg-primary-800 shadow-elegant hover:shadow-elegant-hover",
+    secondary: "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-elegant hover:shadow-elegant-hover",
+    outline: "border-2 border-primary text-primary hover:bg-primary hover:text-white",
+    ghost: "text-text-primary hover:bg-neutral-light",
   };
   
   const sizes = {

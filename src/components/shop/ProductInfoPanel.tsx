@@ -55,9 +55,9 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
 
   // Determine badges
   const badges: { text: string; className: string }[] = [];
-  if (isNewArrival) badges.push({ text: "New Arrival", className: "bg-brand-gold text-brand-white" });
-  if (isBestSeller) badges.push({ text: "Best Seller", className: "bg-brand-black text-brand-white" });
-  if (isFeatured) badges.push({ text: "Featured", className: "bg-brand-charcoal text-brand-white" });
+  if (isNewArrival) badges.push({ text: "New Arrival", className: "bg-primary text-white" });
+  if (isBestSeller) badges.push({ text: "Best Seller", className: "bg-text-primary text-white" });
+  if (isFeatured) badges.push({ text: "Featured", className: "bg-text-secondary text-white" });
 
   const isInStock = stockQuantity > 0;
   const whatsAppMessage = encodeURIComponent(
@@ -85,14 +85,14 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
       {category && (
         <Link
           href={`/shop?category=${category.slug}`}
-          className="text-sm text-brand-gold hover:underline"
+          className="text-sm text-primary hover:underline"
         >
           {category.name}
         </Link>
       )}
 
       {/* Product Name */}
-      <h1 className="font-heading text-3xl md:text-4xl text-brand-black">
+      <h1 className="font-heading text-3xl md:text-4xl text-text-primary">
         {name}
       </h1>
 
@@ -112,21 +112,21 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
 
       {/* Short Description */}
       {shortDescription && (
-        <p className="text-brand-gray text-lg">{shortDescription}</p>
+        <p className="text-text-light text-lg">{shortDescription}</p>
       )}
 
       {/* Price */}
       <div className="flex items-center gap-3">
-        <span className="text-3xl font-medium text-brand-black">
+        <span className="text-3xl font-medium text-text-primary">
           {BRAND.currencySymbol}{price.toLocaleString()}
         </span>
         {compareAtPrice && compareAtPrice > price && (
-          <span className="text-xl text-brand-taupe line-through">
+          <span className="text-xl text-neutral-taupe line-through">
             {BRAND.currencySymbol}{compareAtPrice.toLocaleString()}
           </span>
         )}
         {compareAtPrice && compareAtPrice > price && (
-          <span className="px-2 py-1 bg-brand-gold text-brand-white text-xs font-medium rounded">
+          <span className="px-2 py-1 bg-primary text-white text-xs font-medium rounded">
             Save {BRAND.currencySymbol}{(compareAtPrice - price).toLocaleString()}
           </span>
         )}
@@ -151,24 +151,24 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
       {/* Quantity Selector */}
       {isInStock && (
         <div className="flex items-center gap-4">
-          <span className="text-sm text-brand-gray">Quantity</span>
-          <div className="flex items-center border border-brand-light-gray rounded-premium">
+          <span className="text-sm text-text-light">Quantity</span>
+          <div className="flex items-center border border-neutral-light rounded-premium">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               disabled={quantity <= 1}
-              className="w-10 h-10 flex items-center justify-center text-brand-gray hover:text-brand-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-10 h-10 flex items-center justify-center text-text-light hover:text-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
               </svg>
             </button>
-            <span className="w-12 h-10 flex items-center justify-center border-x border-brand-light-gray text-brand-black font-medium">
+            <span className="w-12 h-10 flex items-center justify-center border-x border-neutral-light text-text-primary font-medium">
               {quantity}
             </span>
             <button
               onClick={() => setQuantity(Math.min(stockQuantity, quantity + 1))}
               disabled={quantity >= stockQuantity}
-              className="w-10 h-10 flex items-center justify-center text-brand-gray hover:text-brand-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-10 h-10 flex items-center justify-center text-text-light hover:text-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -223,9 +223,9 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
 
       {/* Description */}
       {description && (
-        <div className="pt-4 border-t border-brand-nude">
+        <div className="pt-4 border-t border-neutral-nude">
           <h3 className="font-heading text-lg mb-3">Description</h3>
-          <div className="text-brand-gray leading-relaxed whitespace-pre-line">
+          <div className="text-text-light leading-relaxed whitespace-pre-line">
             {description}
           </div>
         </div>
@@ -233,37 +233,37 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
 
       {/* Product Specifications */}
       {(length || texture || capSize || laceType || density) && (
-        <div className="pt-4 border-t border-brand-nude">
+        <div className="pt-4 border-t border-neutral-nude">
           <h3 className="font-heading text-lg mb-3">Specifications</h3>
           <div className="space-y-2">
             {texture && (
               <div className="flex justify-between text-sm">
-                <span className="text-brand-taupe">Texture</span>
-                <span className="text-brand-black font-medium">{texture}</span>
+                <span className="text-neutral-taupe">Texture</span>
+                <span className="text-text-primary font-medium">{texture}</span>
               </div>
             )}
             {length && (
               <div className="flex justify-between text-sm">
-                <span className="text-brand-taupe">Length</span>
-                <span className="text-brand-black font-medium">{length}</span>
+                <span className="text-neutral-taupe">Length</span>
+                <span className="text-text-primary font-medium">{length}</span>
               </div>
             )}
             {capSize && (
               <div className="flex justify-between text-sm">
-                <span className="text-brand-taupe">Cap Size</span>
-                <span className="text-brand-black font-medium">{capSize}</span>
+                <span className="text-neutral-taupe">Cap Size</span>
+                <span className="text-text-primary font-medium">{capSize}</span>
               </div>
             )}
             {laceType && (
               <div className="flex justify-between text-sm">
-                <span className="text-brand-taupe">Lace Type</span>
-                <span className="text-brand-black font-medium">{laceType}</span>
+                <span className="text-neutral-taupe">Lace Type</span>
+                <span className="text-text-primary font-medium">{laceType}</span>
               </div>
             )}
             {density && (
               <div className="flex justify-between text-sm">
-                <span className="text-brand-taupe">Density</span>
-                <span className="text-brand-black font-medium">{density}</span>
+                <span className="text-neutral-taupe">Density</span>
+                <span className="text-text-primary font-medium">{density}</span>
               </div>
             )}
           </div>
@@ -272,14 +272,14 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
 
       {/* Tags */}
       {tags && tags.length > 0 && (
-        <div className="pt-4 border-t border-brand-nude">
+        <div className="pt-4 border-t border-neutral-nude">
           <h3 className="font-heading text-sm mb-3">Tags</h3>
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (
               <Link
                 key={tag}
                 href={`/shop?search=${encodeURIComponent(tag)}`}
-                className="px-3 py-1 text-xs bg-brand-sand text-brand-gray rounded-full hover:bg-brand-nude transition-colors"
+                className="px-3 py-1 text-xs bg-background-sand text-text-light rounded-full hover:bg-neutral-nude transition-colors"
               >
                 {tag}
               </Link>
