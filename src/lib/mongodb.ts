@@ -96,4 +96,7 @@ export function getConnection(): typeof mongoose {
   return mongoose;
 }
 
-export default mongoose;
+export default connectDB;
+
+// Alias for backwards compatibility
+export const dbConnect = connectDB;
