@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
+import { Header, Footer } from "@/components/layout";
 import { Container, Section } from "@/components/ui";
 import { ShopHero, FilterBar, ProductGrid, EmptyState } from "@/components/shop";
 import { getProducts, getCategories, getProductsCount } from "@/lib/products";
@@ -74,47 +75,51 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   ]);
 
   return (
-    <main>
-      {/* Shop Hero */}
-      <ShopHero />
+    <>
+      <Header />
+      <main className="pt-20">
+        {/* Shop Hero */}
+        <ShopHero />
 
-      {/* Shop Content */}
-      <Section background="white" padding="lg">
-        <Container>
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Sidebar - Filters */}
-            <aside className="w-full lg:w-64 flex-shrink-0">
-              <Suspense fallback={<FilterBarLoading />}>
-                <FilterBar categories={categories} />
-              </Suspense>
-            </aside>
+        {/* Shop Content */}
+        <Section background="white" padding="lg">
+          <Container>
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Sidebar - Filters */}
+              <aside className="w-full lg:w-64 flex-shrink-0">
+                <Suspense fallback={<FilterBarLoading />}>
+                  <FilterBar categories={categories} />
+                </Suspense>
+              </aside>
 
-            {/* Main Content - Products */}
-            <div className="flex-1">
-              {/* Results count */}
-              <div className="mb-6">
-                <p className="text-brand-gray">
-                  {totalProducts} {totalProducts === 1 ? "product" : "products"} found
-                  {search && ` for "${search}"`}
-                  {category && ` in ${categories.find((c) => c.slug === category)?.name || category}`}
-                </p>
+              {/* Main Content - Products */}
+              <div className="flex-1">
+                {/* Results count */}
+                <div className="mb-6">
+                  <p className="text-brand-gray">
+                    {totalProducts} {totalProducts === 1 ? "product" : "products"} found
+                    {search && ` for "${search}"`}
+                    {category && ` in ${categories.find((c) => c.slug === category)?.name || category}`}
+                  </p>
+                </div>
+
+                {/* Products Grid */}
+                <Suspense fallback={<ProductsLoading />}>
+                  {products.length > 0 ? (
+                    <ProductGrid products={products} />
+                  ) : (
+                    <EmptyState
+                      title="No products found"
+                      message="We couldn't find any products matching your criteria. Try adjusting your filters or search terms."
+                    />
+                  )}
+                </Suspense>
               </div>
-
-              {/* Products Grid */}
-              <Suspense fallback={<ProductsLoading />}>
-                {products.length > 0 ? (
-                  <ProductGrid products={products} />
-                ) : (
-                  <EmptyState
-                    title="No products found"
-                    message="We couldn't find any products matching your criteria. Try adjusting your filters or search terms."
-                  />
-                )}
-              </Suspense>
             </div>
-          </div>
-        </Container>
-      </Section>
-    </main>
+          </Container>
+        </Section>
+      </main>
+      <Footer />
+    </>
   );
 }
