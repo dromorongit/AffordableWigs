@@ -16,9 +16,11 @@ export function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <span className="font-heading text-xl md:text-2xl font-semibold text-text-primary tracking-tight">
-              {BRAND.name}
-            </span>
+            <img 
+              src="/assets/images/affordablelogo.jpg" 
+              alt="Affordable Wigs Gh"
+              className="h-12 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
