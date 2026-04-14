@@ -1,5 +1,6 @@
 import { getCurrentAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
 import { connectDB } from "@/lib/mongodb";
@@ -9,6 +10,19 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Get the current path to check if we're on the login page
+  const headersList = headers();
+  const pathname = headersList.get("x-invoke-path") || "";
+  
+  // Skip authentication check for login page
+  if (pathname === "/admin/login") {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {children}
+      </div>
+    );
+  }
+  
   // Check authentication
   const admin = await getCurrentAdmin();
   
