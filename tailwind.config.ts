@@ -23,6 +23,18 @@ const config: Config = {
           800: "#540015",
           900: "#3E0010",
         },
+        burgundy: {
+          50: "#FDF3F5",
+          100: "#FAE8EC",
+          200: "#F5D1D9",
+          300: "#EAB3BF",
+          400: "#DC8A9A",
+          500: "#CE6175",
+          600: "#A01030",
+          700: "#800020",
+          800: "#6A001A",
+          900: "#540015",
+        },
         // Background colors - white/soft neutral
         background: {
           DEFAULT: "#FFFFFF",

@@ -1,6 +1,12 @@
+export { default as Admin } from "./Admin";
+export type { IAdmin } from "./Admin";
 export { default as Category } from "./Category";
 export type { ICategory } from "./Category";
 export { default as Product } from "./Product";
 export type { IProduct } from "./Product";
 export { default as Order } from "./Order";
 export type { IOrder, IOrderItem, ICustomerInfo } from "./Order";
+export { default as Service } from "./Service";
+export type { IService } from "./Service";
+export { default as Review } from "./Review";
+export type { IReview } from "./Review";
