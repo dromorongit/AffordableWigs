@@ -1,6 +1,30 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { BRAND, CONTACT } from "@/constants";
 import { Container, Button, Section } from "@/components/ui";
+
+function AnimatedCounter({ target, suffix = "", duration = 2000 }: { target: number; suffix?: string; duration?: number }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = target;
+    const incrementTime = duration / end;
+    const timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start >= end) {
+        clearInterval(timer);
+      }
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [target, duration]);
+
+  return <span>{count}{suffix}</span>;
+}
 
 export function HeroSection() {
   return (
@@ -26,7 +50,7 @@ export function HeroSection() {
                 {BRAND.description}. Discover our stunning collection of premium wigs, bundles, closures, and frontals designed to make you look and feel absolutely stunning.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/contact">
+                <Link href="/shop">
                   <Button variant="primary" size="lg">
                     Explore Collection
                   </Button>
@@ -46,15 +70,15 @@ export function HeroSection() {
               <div className="mt-12 pt-8 border-t border-neutral-nude">
                 <div className="flex flex-wrap gap-8">
                   <div>
-                    <span className="block font-heading text-2xl text-text-primary">500+</span>
+                    <span className="block font-heading text-2xl text-text-primary"><AnimatedCounter target={500} suffix="+" /> </span>
                     <span className="text-text-light text-sm">Happy Customers</span>
                   </div>
                   <div>
-                    <span className="block font-heading text-2xl text-text-primary">4.9</span>
+                    <span className="block font-heading text-2xl text-text-primary"><AnimatedCounter target={4} suffix=".9" /> </span>
                     <span className="text-text-light text-sm">Star Rating</span>
                   </div>
                   <div>
-                    <span className="block font-heading text-2xl text-text-primary">50+</span>
+                    <span className="block font-heading text-2xl text-text-primary"><AnimatedCounter target={50} suffix="+" /> </span>
                     <span className="text-text-light text-sm">Wig Styles</span>
                   </div>
                 </div>
