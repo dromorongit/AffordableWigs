@@ -19,7 +19,7 @@ export async function POST() {
     // Create initial admin
     const admin = await Admin.create({
       email: "admin@affordablewigsgh.com",
-      password: "admin123",
+      password: "Security@00",
       name: "Admin",
     });
 
