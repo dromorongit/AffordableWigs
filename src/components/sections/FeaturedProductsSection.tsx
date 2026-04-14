@@ -4,6 +4,9 @@ import { Container, Section, Button } from "@/components/ui";
 import { getFeaturedProducts } from "@/lib/products";
 import { ProductGrid } from "@/components/shop";
 
+// Revalidate every 60 seconds to ensure fresh featured products
+export const revalidate = 60;
+
 export async function FeaturedProductsSection() {
   const featuredProducts = await getFeaturedProducts(4);
 

@@ -1,6 +1,8 @@
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
+import Service from "@/models/Service";
+import Review from "@/models/Review";
 
 export interface ProductSortOption {
   label: string;
@@ -321,5 +323,101 @@ export async function getNewArrivalProducts(limit = 4) {
   } catch (error) {
     console.error("Error fetching new arrivals:", error);
     return [];
+  }
+}
+
+/**
+ * Fetch all active services
+ */
+export async function getServices() {
+  try {
+    const connected = await ensureConnection();
+    if (!connected) return [];
+
+    const services = await Service.find({ isActive: true })
+      .sort({ sortOrder: 1 })
+      .lean()
+      .exec();
+
+    return services;
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    return [];
+  }
+}
+
+/**
+ * Fetch visible reviews
+ */
+export async function getVisibleReviews(limit = 10) {
+  try {
+    const connected = await ensureConnection();
+    if (!connected) return [];
+
+    const reviews = await Review.find({ isVisible: true })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean()
+      .exec();
+
+    return reviews;
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    return [];
+  }
+}
+
+/**
+ * Fetch all visible reviews (for reviews page)
+ */
+export async function getAllVisibleReviews() {
+  try {
+    const connected = await ensureConnection();
+    if (!connected) return [];
+
+    const reviews = await Review.find({ isVisible: true })
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    return reviews;
+  } catch (error) {
+    console.error("Error fetching all reviews:", error);
+    return [];
+  }
+}
+
+/**
+ * Get total count of visible reviews
+ */
+export async function getReviewsCount() {
+  try {
+    const connected = await ensureConnection();
+    if (!connected) return 0;
+
+    const count = await Review.countDocuments({ isVisible: true }).exec();
+    return count;
+  } catch (error) {
+    console.error("Error counting reviews:", error);
+    return 0;
+  }
+}
+
+/**
+ * Calculate average rating from visible reviews
+ */
+export async function getAverageRating() {
+  try {
+    const connected = await ensureConnection();
+    if (!connected) return 0;
+
+    const reviews = await Review.find({ isVisible: true }).lean().exec();
+    if (reviews.length === 0) return 0;
+
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    return totalRating / reviews.length;
+  } catch (error) {
+    console.error("Error calculating average rating:", error);
+    return 0;
   }
 }

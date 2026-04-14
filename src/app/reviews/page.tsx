@@ -1,14 +1,25 @@
 import { Metadata } from "next";
 import { Header, Footer } from "@/components/layout";
 import { Container, Section, Button } from "@/components/ui";
-import { TESTIMONIALS, CONTACT, PAGE_METADATA } from "@/constants";
+import { getAllVisibleReviews, getReviewsCount, getAverageRating } from "@/lib/products";
+import { CONTACT, PAGE_METADATA } from "@/constants";
+
+// Revalidate every 60 seconds to ensure fresh review data
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: PAGE_METADATA.reviews.title,
   description: PAGE_METADATA.reviews.description,
 };
 
-export default function ReviewsPage() {
+export default async function ReviewsPage() {
+  const reviews = await getAllVisibleReviews();
+  const totalReviews = await getReviewsCount();
+  const averageRating = await getAverageRating();
+  
+  // Calculate average rating to one decimal place
+  const avgRating = totalReviews > 0 ? averageRating.toFixed(1) : "0.0";
+
   return (
     <>
       <Header />
@@ -39,7 +50,7 @@ export default function ReviewsPage() {
             {/* Rating Summary */}
             <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-16 p-8 bg-brand-cream rounded-premium-lg">
               <div className="text-center">
-                <div className="font-heading text-5xl text-brand-black">4.9</div>
+                <div className="font-heading text-5xl text-brand-black">{avgRating}</div>
                 <div className="flex gap-1 justify-center my-2">
                   {[...Array(5)].map((_, i) => (
                     <svg key={i} className="w-6 h-6 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
@@ -47,7 +58,7 @@ export default function ReviewsPage() {
                     </svg>
                   ))}
                 </div>
-                <p className="text-brand-gray">Based on {TESTIMONIALS.length * 10}+ reviews</p>
+                <p className="text-brand-gray">Based on {totalReviews}+ reviews</p>
               </div>
               <div className="hidden md:block w-px h-20 bg-brand-nude" />
               <p className="text-brand-gray text-center max-w-md">
@@ -58,14 +69,14 @@ export default function ReviewsPage() {
 
             {/* Reviews Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {TESTIMONIALS.map((testimonial, index) => (
+              {reviews.map((review) => (
                 <div
-                  key={testimonial.id}
+                  key={review._id.toString()}
                   className="bg-brand-white rounded-premium p-6 md:p-8 shadow-card"
                 >
                   {/* Stars */}
                   <div className="flex gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
+                    {[...Array(review.rating)].map((_, i) => (
                       <svg
                         key={i}
                         className="w-5 h-5 text-brand-gold"
@@ -79,30 +90,27 @@ export default function ReviewsPage() {
 
                   {/* Quote */}
                   <p className="text-brand-gray leading-relaxed mb-6">
-                    &ldquo;{testimonial.text}&rdquo;
+                    &ldquo;{review.message}&rdquo;
                   </p>
 
                   {/* Author */}
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-brand-sand flex items-center justify-center">
                       <span className="font-heading text-brand-charcoal">
-                        {testimonial.name.charAt(0)}
+                        {review.customerName.charAt(0)}
                       </span>
                     </div>
                     <div>
                       <p className="font-medium text-brand-black text-sm">
-                        {testimonial.name}
-                      </p>
-                      <p className="text-brand-taupe text-xs">
-                        {testimonial.location}
+                        {review.customerName}
                       </p>
                     </div>
                   </div>
                 </div>
               ))}
 
-              {/* Placeholder Reviews */}
-              {[...Array(3)].map((_, index) => (
+              {/* Placeholder Reviews - only show if we have less than 6 real reviews */}
+              {[...Array(Math.max(0, 6 - reviews.length))].map((_, index) => (
                 <div
                   key={`placeholder-${index}`}
                   className="bg-brand-white rounded-premium p-6 md:p-8 shadow-card"
@@ -129,7 +137,7 @@ export default function ReviewsPage() {
                     </div>
                     <div>
                       <p className="font-medium text-brand-black text-sm">
-                        Customer {index + 4}
+                        Customer {index + 1}
                       </p>
                       <p className="text-brand-taupe text-xs">Ghana</p>
                     </div>

@@ -5,6 +5,9 @@ import { Container, Section } from "@/components/ui";
 import { ProductGallery, ProductInfoPanel, RelatedProductsSection } from "@/components/shop";
 import { getProductBySlug, getRelatedProducts } from "@/lib/products";
 
+// Revalidate every 60 seconds to ensure fresh product data
+export const revalidate = 60;
+
 interface ProductPageProps {
   params: Promise<{
     slug: string;

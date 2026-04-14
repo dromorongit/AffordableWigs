@@ -1,15 +1,20 @@
 import { Metadata } from "next";
 import { Header, Footer } from "@/components/layout";
 import { Container, Section, Button } from "@/components/ui";
-import { CONTACT, SOCIALS, PRODUCTS, PAGE_METADATA } from "@/constants";
+import { CONTACT, SOCIALS, PAGE_METADATA } from "@/constants";
+import { getCategories } from "@/lib/products";
 import { FaWhatsapp, FaPhone, FaMapMarkerAlt, FaInstagram, FaTiktok } from "react-icons/fa";
+
+// Revalidate every 60 seconds to ensure fresh category data
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: PAGE_METADATA.contact.title,
   description: PAGE_METADATA.contact.description,
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const categories = await getCategories();
   return (
     <>
       <Header />
@@ -128,12 +133,12 @@ export default function ContactPage() {
                   Click to learn more about any product.
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  {PRODUCTS.map((product) => (
+                  {categories.map((category) => (
                     <span
-                      key={product.id}
+                      key={category._id.toString()}
                       className="bg-brand-white px-4 py-2 rounded-full text-sm"
                     >
-                      {product.name}
+                      {category.name}
                     </span>
                   ))}
                 </div>

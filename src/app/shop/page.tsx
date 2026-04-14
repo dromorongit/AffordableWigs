@@ -6,6 +6,9 @@ import { ShopHero, FilterBar, ProductGrid, EmptyState } from "@/components/shop"
 import { getProducts, getCategories, getProductsCount } from "@/lib/products";
 import { PAGE_METADATA } from "@/constants";
 
+// Revalidate every 60 seconds to ensure fresh product data
+export const revalidate = 60;
+
 interface ShopPageProps {
   searchParams: Promise<{
     category?: string;

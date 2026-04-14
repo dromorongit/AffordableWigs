@@ -1,8 +1,12 @@
 import Link from "next/link";
-import { TESTIMONIALS } from "@/constants";
 import { Container, Section, Button } from "@/components/ui";
+import { getVisibleReviews } from "@/lib/products";
 
-export function TestimonialsPreviewSection() {
+// Revalidate every 60 seconds to ensure fresh review data
+export const revalidate = 60;
+
+export async function TestimonialsPreviewSection() {
+  const reviews = await getVisibleReviews(3);
   return (
     <Section background="cream" padding="lg">
       <Container>
@@ -25,14 +29,14 @@ export function TestimonialsPreviewSection() {
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((testimonial) => (
+          {reviews.map((review) => (
             <div
-              key={testimonial.id}
+              key={review._id.toString()}
               className="bg-background rounded-premium p-6 md:p-8 shadow-card"
             >
               {/* Stars */}
               <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
+                {[...Array(review.rating)].map((_, i) => (
                   <svg
                     key={i}
                     className="w-5 h-5 text-primary"
@@ -46,22 +50,19 @@ export function TestimonialsPreviewSection() {
 
               {/* Quote */}
               <p className="text-text-light leading-relaxed mb-6">
-                &ldquo;{testimonial.text}&rdquo;
+                &ldquo;{review.message}&rdquo;
               </p>
 
               {/* Author */}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-background-sand flex items-center justify-center">
                   <span className="font-heading text-text-secondary">
-                    {testimonial.name.charAt(0)}
+                    {review.customerName.charAt(0)}
                   </span>
                 </div>
                 <div>
                   <p className="font-medium text-text-primary text-sm">
-                    {testimonial.name}
-                  </p>
-                  <p className="text-neutral-taupe text-xs">
-                    {testimonial.location}
+                    {review.customerName}
                   </p>
                 </div>
               </div>

@@ -2,6 +2,9 @@ import Link from "next/link";
 import { Container, Section } from "@/components/ui";
 import { getCategories } from "@/lib/products";
 
+// Revalidate every 60 seconds to ensure fresh category data
+export const revalidate = 60;
+
 export async function CategoriesSection() {
   const categories = await getCategories();
 

@@ -1,14 +1,31 @@
 import { Metadata } from "next";
 import { Header, Footer } from "@/components/layout";
 import { Container, Section, Button } from "@/components/ui";
-import { SERVICES, CONTACT, PAGE_METADATA } from "@/constants";
+import { getServices } from "@/lib/products";
+import { CONTACT, PAGE_METADATA } from "@/constants";
+
+// Revalidate every 60 seconds to ensure fresh service data
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: PAGE_METADATA.services.title,
   description: PAGE_METADATA.services.description,
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getServices();
+  
+  // Define service features
+  const serviceFeatures = [
+    ["Custom cut and style", "Color treatment", "Styling and maintenance tips"],
+    ["Face shape analysis", "Personalized recommendations", "Quality guidance"],
+  ];
+  
+  const serviceIcons = [
+    "M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1l-2.36-2.36c.5-.23 1.05-.36 1.64-.36 2.21 0 4 1.79 4 4s-1.79 4-4 4-4-1.79-4-4c0-.59.13-1.14.36-1.64L7 10H1l7-7 2.64 2.64z",
+    "M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z",
+  ];
+
   return (
     <>
       <Header />
@@ -39,40 +56,31 @@ export default function ServicesPage() {
           <Container>
             <div className="space-y-16">
               {/* Service 1 */}
+              {services[0] && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                 <div className="order-2 lg:order-1">
                   <div className="w-16 h-16 rounded-full bg-brand-gold/10 flex items-center justify-center mb-6">
                     <svg className="w-8 h-8 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1l-2.36-2.36c.5-.23 1.05-.36 1.64-.36 2.21 0 4 1.79 4 4s-1.79 4-4 4-4-1.79-4-4c0-.59.13-1.14.36-1.64L7 10H1l7-7 2.64 2.64z" />
+                      <path d={serviceIcons[0]} />
                     </svg>
                   </div>
                   <h2 className="font-heading text-2xl md:text-3xl text-brand-black mb-4">
-                    {SERVICES[0].name}
+                    {services[0].title}
                   </h2>
                   <p className="text-brand-gray leading-relaxed mb-6">
-                    {SERVICES[0].description}. Our professional stylists are 
+                    {services[0].description}. Our professional stylists are 
                     trained to transform your wig into a stunning look that complements 
                     your features and personal style.
                   </p>
                   <ul className="space-y-3 mb-8">
-                    <li className="flex items-center gap-3 text-brand-gray">
-                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                      </svg>
-                      Custom cut and style
-                    </li>
-                    <li className="flex items-center gap-3 text-brand-gray">
-                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                      </svg>
-                      Color treatment
-                    </li>
-                    <li className="flex items-center gap-3 text-brand-gray">
-                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                      </svg>
-                      Styling and maintenance tips
-                    </li>
+                    {serviceFeatures[0].map((feature, i) => (
+                      <li key={i} className="flex items-center gap-3 text-brand-gray">
+                        <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
                   </ul>
                   <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer">
                     <Button variant="primary" size="md">
@@ -84,8 +92,10 @@ export default function ServicesPage() {
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-sand to-brand-ivory rounded-premium-lg" />
                 </div>
               </div>
+              )}
 
               {/* Service 2 */}
+              {services[1] && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                 <div className="relative aspect-square lg:aspect-[4/5]">
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-sand to-brand-ivory rounded-premium-lg" />
@@ -93,36 +103,26 @@ export default function ServicesPage() {
                 <div>
                   <div className="w-16 h-16 rounded-full bg-brand-gold/10 flex items-center justify-center mb-6">
                     <svg className="w-8 h-8 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
+                      <path d={serviceIcons[1]} />
                     </svg>
                   </div>
                   <h2 className="font-heading text-2xl md:text-3xl text-brand-black mb-4">
-                    {SERVICES[1].name}
+                    {services[1].title}
                   </h2>
                   <p className="text-brand-gray leading-relaxed mb-6">
-                    {SERVICES[1].description}. Not sure which wig suits you best? 
+                    {services[1].description}. Not sure which wig suits you best? 
                     Our expert consultation helps you choose the perfect wig based on 
                     your face shape, lifestyle, and preferences.
                   </p>
                   <ul className="space-y-3 mb-8">
-                    <li className="flex items-center gap-3 text-brand-gray">
-                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                      </svg>
-                      Face shape analysis
-                    </li>
-                    <li className="flex items-center gap-3 text-brand-gray">
-                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                      </svg>
-                      Personalized recommendations
-                    </li>
-                    <li className="flex items-center gap-3 text-brand-gray">
-                      <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                      </svg>
-                      Quality guidance
-                    </li>
+                    {serviceFeatures[1].map((feature, i) => (
+                      <li key={i} className="flex items-center gap-3 text-brand-gray">
+                        <svg className="w-5 h-5 text-brand-gold" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
                   </ul>
                   <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer">
                     <Button variant="primary" size="md">
@@ -131,6 +131,7 @@ export default function ServicesPage() {
                   </a>
                 </div>
               </div>
+              )}
             </div>
           </Container>
         </Section>
