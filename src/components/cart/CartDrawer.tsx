@@ -5,9 +5,17 @@ import { BRAND } from "@/constants";
 import { CartItem } from "@/types/cart";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export function CartDrawer() {
   const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity } = useCart();
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+
+  const handleImageError = (productId: string) => {
+    setImageErrors(prev => new Set(prev).add(productId));
+  };
+
+  const hasImageError = (productId: string) => imageErrors.has(productId);
 
   if (!isCartOpen) return null;
 
@@ -61,12 +69,13 @@ export function CartDrawer() {
                 >
                   {/* Product Image */}
                   <div className="relative w-20 h-24 flex-shrink-0 bg-background-ivory rounded-md overflow-hidden">
-                    {item.product.mainImage ? (
+                    {item.product.mainImage && !hasImageError(item.product._id.toString()) ? (
                       <Image
                         src={item.product.mainImage}
                         alt={item.product.name}
                         fill
                         className="object-cover"
+                        onError={() => handleImageError(item.product._id.toString())}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">

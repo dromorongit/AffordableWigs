@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BRAND } from "@/constants";
 import Image from "next/image";
@@ -10,6 +10,13 @@ import { Container, Section } from "@/components/ui";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+
+  const handleImageError = (productId: string) => {
+    setImageErrors(prev => new Set(prev).add(productId));
+  };
+
+  const hasImageError = (productId: string) => imageErrors.has(productId);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -63,12 +70,13 @@ export default function CartPage() {
                       >
                         {/* Product Image */}
                         <div className="relative w-full sm:w-28 h-32 sm:h-36 flex-shrink-0 bg-background-ivory rounded-md overflow-hidden">
-                          {item.product.mainImage ? (
+                          {item.product.mainImage && !hasImageError(item.product._id.toString()) ? (
                             <Image
                               src={item.product.mainImage}
                               alt={item.product.name}
                               fill
                               className="object-cover"
+                              onError={() => handleImageError(item.product._id.toString())}
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">

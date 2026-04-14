@@ -11,19 +11,29 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ mainImage, images = [], productName }: ProductGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(mainImage);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const allImages = [mainImage, ...images].filter(Boolean);
+
+  // Handle image load error
+  const handleImageError = (imageUrl: string) => {
+    setImageError(imageUrl);
+  };
+
+  // Check if an image has failed
+  const hasImageFailed = (imageUrl: string) => imageError === imageUrl;
 
   if (allImages.length === 1) {
     return (
       <div className="relative aspect-[3/4] bg-gradient-to-br from-background-sand to-background-ivory rounded-premium overflow-hidden">
-        {mainImage ? (
+        {mainImage && !hasImageFailed(mainImage) ? (
           <Image
             src={mainImage}
             alt={productName}
             fill
             className="object-cover"
             priority
+            onError={() => handleImageError(mainImage)}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -40,13 +50,14 @@ export function ProductGallery({ mainImage, images = [], productName }: ProductG
     <div className="space-y-4">
       {/* Main Image */}
       <div className="relative aspect-[3/4] bg-gradient-to-br from-background-sand to-background-ivory rounded-premium overflow-hidden">
-        {selectedImage ? (
+        {selectedImage && !hasImageFailed(selectedImage) ? (
           <Image
             src={selectedImage}
             alt={productName}
             fill
             className="object-cover"
             priority
+            onError={() => handleImageError(selectedImage)}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -69,12 +80,13 @@ export function ProductGallery({ mainImage, images = [], productName }: ProductG
                 : "opacity-70 hover:opacity-100"
             }`}
           >
-            {image ? (
+            {image && !hasImageFailed(image) ? (
               <Image
                 src={image}
                 alt={`${productName} - Image ${index + 1}`}
                 fill
                 className="object-cover"
+                onError={() => handleImageError(image)}
               />
             ) : (
               <div className="w-full h-full bg-background-sand flex items-center justify-center">

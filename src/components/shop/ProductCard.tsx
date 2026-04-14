@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { BRAND } from "@/constants";
 
 interface Product {
@@ -25,6 +26,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const [imageError, setImageError] = useState(false);
   const {
     name,
     slug,
@@ -52,12 +54,13 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="bg-background rounded-premium overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 h-full flex flex-col">
         {/* Product Image */}
         <div className="relative aspect-[3/4] bg-gradient-to-br from-background-sand to-background-ivory overflow-hidden">
-          {mainImage ? (
+          {mainImage && !imageError ? (
             <Image
               src={mainImage}
               alt={name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">

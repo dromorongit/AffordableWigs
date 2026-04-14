@@ -17,7 +17,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <img 
-              src="/assets/images/affordablelogo.jpg" 
+              src="/images/affordablelogo.jpg" 
               alt="Affordable Wigs Gh"
               className="h-12 w-auto object-contain"
             />

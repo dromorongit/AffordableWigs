@@ -76,6 +76,7 @@ export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState<CustomerInfo>({
     fullName: "",
     phone: "",
@@ -91,6 +92,13 @@ export default function CheckoutPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Image error handling
+  const handleImageError = (productId: string) => {
+    setImageErrors(prev => new Set(prev).add(productId));
+  };
+
+  const hasImageError = (productId: string) => imageErrors.has(productId);
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -291,12 +299,13 @@ export default function CheckoutPage() {
                         className="flex gap-3 pb-4 border-b border-neutral-light last:border-0"
                       >
                         <div className="relative w-16 h-20 flex-shrink-0 bg-background-ivory rounded-md overflow-hidden">
-                          {item.product.mainImage ? (
+                          {item.product.mainImage && !hasImageError(item.product._id.toString()) ? (
                             <Image
                               src={item.product.mainImage}
                               alt={item.product.name}
                               fill
                               className="object-cover"
+                              onError={() => handleImageError(item.product._id.toString())}
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">

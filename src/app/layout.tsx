@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/assets/images/affordablelogo.jpg",
+    icon: "/images/affordablelogo.jpg",
   },
 };
 
