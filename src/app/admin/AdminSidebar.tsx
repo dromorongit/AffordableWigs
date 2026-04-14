@@ -10,8 +10,14 @@ import {
   FiStar, 
   FiSettings,
   FiPackage,
-  FiLogOut
+  FiLogOut,
+  FiX
 } from "react-icons/fi";
+
+interface AdminSidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
 const menuItems = [
   { href: "/admin", label: "Dashboard", icon: FiGrid },
@@ -23,7 +29,7 @@ const menuItems = [
   { href: "/admin/settings", label: "Settings", icon: FiSettings },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen = true, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
 
   const handleLogout = async () => {
@@ -35,56 +41,83 @@ export default function AdminSidebar() {
     }
   };
 
-  return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-      {/* Logo */}
-      <div className="h-16 flex items-center px-6 border-b border-gray-200">
-        <Link href="/admin" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-burgundy-700 rounded-lg flex items-center justify-center">
-            <FiShoppingBag className="w-4 h-4 text-white" />
-          </div>
-          <span className="font-serif font-bold text-lg text-gray-900">
-            Admin
-          </span>
-        </Link>
-      </div>
+  const isActive = (href: string) => 
+    pathname === href || 
+    (href !== "/admin" && pathname.startsWith(href));
 
-      {/* Navigation */}
-      <nav className="flex-1 py-6 px-3">
-        <ul className="space-y-1">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href || 
-              (item.href !== "/admin" && pathname.startsWith(item.href));
-            
-            return (
+  return (
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed lg:static inset-y-0 left-0 z-50
+        w-64 bg-white border-r border-gray-200 flex flex-col
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+      `}>
+        {/* Close button for mobile */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden absolute top-4 right-4 p-1"
+            aria-label="Close menu"
+          >
+            <FiX className="w-6 h-6 text-gray-500" />
+          </button>
+        )}
+
+        {/* Logo */}
+        <div className="h-16 flex items-center px-6 border-b border-gray-200">
+          <Link href="/admin" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-[#800020] rounded-lg flex items-center justify-center">
+              <FiShoppingBag className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-semibold text-lg text-gray-900">
+              Admin Panel
+            </span>
+          </Link>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 py-4 px-3 overflow-y-auto">
+          <ul className="space-y-1">
+            {menuItems.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-burgundy-50 text-burgundy-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  onClick={onClose}
+                  className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                    isActive(item.href)
+                      ? "bg-[#800020] text-white"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >
-                  <item.icon className={`w-5 h-5 mr-3 ${isActive ? "text-burgundy-700" : "text-gray-400"}`} />
+                  <item.icon className={`w-5 h-5 mr-3 ${isActive(item.href) ? "text-white" : "text-gray-400"}`} />
                   {item.label}
                 </Link>
               </li>
-            );
-          })}
-        </ul>
-      </nav>
+            ))}
+          </ul>
+        </nav>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-gray-200">
-        <button
-          onClick={handleLogout}
-          className="flex items-center w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
-        >
-          <FiLogOut className="w-5 h-5 mr-3" />
-          Logout
-        </button>
-      </div>
-    </aside>
+        {/* Logout */}
+        <div className="p-4 border-t border-gray-200">
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+          >
+            <FiLogOut className="w-5 h-5 mr-3" />
+            Logout
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
