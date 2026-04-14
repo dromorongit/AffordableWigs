@@ -2,6 +2,7 @@
 
 import { useCart } from "@/context/CartContext";
 import { BRAND } from "@/constants";
+import { CartItem } from "@/types/cart";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -53,7 +54,7 @@ export function CartDrawer() {
             </div>
           ) : (
             <div className="space-y-4">
-              {cart.items.map((item) => (
+              {cart.items.map((item: CartItem) => (
                 <div
                   key={item.product._id}
                   className="flex gap-4 p-4 bg-brand-sand/30 rounded-premium"
