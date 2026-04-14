@@ -19,7 +19,7 @@ export function Header() {
             <img 
               src="/images/affordablelogo.jpg" 
               alt="Affordable Wigs Gh"
-              className="h-12 w-auto object-contain"
+              className="h-16 w-auto object-contain"
             />
           </Link>
 

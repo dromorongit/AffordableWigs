@@ -64,20 +64,11 @@ export function HeroSection() {
             {/* Image/Visual Content */}
             <div className="order-1 lg:order-2 relative">
               <div className="relative aspect-[4/5] max-w-lg mx-auto">
-                {/* Placeholder for Hero Image - Elegant abstract representation */}
-                <div className="absolute inset-0 bg-gradient-to-br from-background-sand to-background-ivory rounded-premium-lg overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center p-8">
-                      <div className="w-40 h-40 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
-                        <svg className="w-20 h-20 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                        </svg>
-                      </div>
-                      <p className="font-heading text-xl text-text-secondary">Luxury Meets Affordability</p>
-                      <p className="text-neutral-taupe text-sm mt-2">Premium Wigs for Every Style</p>
-                    </div>
-                  </div>
-                </div>
+                <img
+                  src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80"
+                  alt="Premium wigs and hair extensions"
+                  className="w-full h-full object-cover rounded-premium-lg shadow-xl"
+                />
                 {/* Decorative elements */}
                 <div className="absolute -top-4 -right-4 w-24 h-24 border border-primary/30 rounded-full" />
                 <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-primary/10 rounded-full" />
