@@ -20,34 +20,48 @@ export async function CategoriesSection() {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {categories.map((category, index) => (
-            <Link
-              key={category._id.toString()}
-              href={`/shop?category=${category.slug}`}
-              className="group"
-            >
-              <div className="relative aspect-square bg-background-cream rounded-premium overflow-hidden transition-all duration-500 group-hover:shadow-premium-hover">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 bg-gradient-to-br from-background-sand to-background-ivory" />
-                
-                {/* Decorative Circle */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-20 h-20 rounded-full bg-background/80 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                    <svg className="w-10 h-10 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                    </svg>
+          {categories.map((category, index) => {
+            // Category images mapping
+            const categoryImages: Record<string, string> = {
+              "ready-to-wear-wigs": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&q=80",
+              "wig-bundles": "https://images.unsplash.com/photo-1603366645788-5f16c7d4911e?w=600&q=80",
+              "closures": "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=600&q=80",
+              "frontals": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80",
+            };
+            
+            const imageUrl = categoryImages[category.slug] || "";
+            
+            return (
+              <Link
+                key={category._id.toString()}
+                href={`/shop?category=${category.slug}`}
+                className="group"
+              >
+                <div className="relative aspect-square rounded-premium overflow-hidden transition-all duration-500 group-hover:shadow-premium-hover">
+                  {/* Category Image */}
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={category.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-background-sand to-background-ivory" />
+                  )}
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                  {/* Bottom Label */}
+                  <div className="absolute bottom-0 left-0 right-0 py-4 px-4 text-center">
+                    <h3 className="font-heading text-base text-white group-hover:text-primary transition-colors">
+                      {category.name}
+                    </h3>
                   </div>
                 </div>
-
-                {/* Bottom Label */}
-                <div className="absolute bottom-0 left-0 right-0 bg-background/90 py-4 px-4 text-center">
-                  <h3 className="font-heading text-base text-text-primary group-hover:text-primary transition-colors">
-                    {category.name}
-                  </h3>
-                </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </Container>
     </Section>
