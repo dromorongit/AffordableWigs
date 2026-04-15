@@ -4,6 +4,9 @@ import Category from "@/models/Category";
 import Product from "@/models/Product";
 import { Types } from "mongoose";
 
+// Disable seed endpoint in production
+const SEED_ENABLED = process.env.NODE_ENV !== "production" || process.env.ALLOW_SEED === "true";
+
 // Category data
 const categories = [
   { name: "Ready-to-Wear Wigs", slug: "ready-to-wear-wigs", description: "Pre-styled wigs ready to wear instantly", isActive: true, sortOrder: 1 },
@@ -27,6 +30,14 @@ function categoryNameToSlug(name: string): string {
 }
 
 export async function POST() {
+  // Disable in production unless explicitly enabled via env var
+  if (!SEED_ENABLED) {
+    return NextResponse.json(
+      { error: "Seed endpoint is disabled in production" },
+      { status: 403 }
+    );
+  }
+
   try {
     await connectDB();
 

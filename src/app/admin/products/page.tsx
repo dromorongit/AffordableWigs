@@ -40,6 +40,9 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -62,16 +65,22 @@ export default function AdminProductsPage() {
       const params = new URLSearchParams();
       if (search) params.append("search", search);
       if (selectedCategory) params.append("category", selectedCategory);
+      params.append("page", currentPage.toString());
+      params.append("limit", "10");
 
       const response = await fetch(`/api/admin/products?${params}`);
       const data = await response.json();
       setProducts(data.products || []);
+      if (data.pagination) {
+        setTotalPages(data.pagination.pages);
+        setTotal(data.pagination.total);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
-  }, [search, selectedCategory]);
+  }, [search, selectedCategory, currentPage]);
 
   const fetchCategories = async () => {
     try {
@@ -376,6 +385,44 @@ export default function AdminProductsPage() {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-gray-600">
+            Showing {(currentPage - 1) * 10 + 1} to {Math.min(currentPage * 10, total)} of {total} results
+          </p>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 text-sm border rounded-lg ${
+                  currentPage === page
+                    ? "bg-burgundy-700 text-white border-burgundy-700"
+                    : "hover:bg-gray-50"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (

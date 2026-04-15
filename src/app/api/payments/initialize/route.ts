@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import PaystackLib from "paystack";
 import { connectDB } from "@/lib/mongodb";
 import Order, { IOrderItem, ICustomerInfo } from "@/models/Order";
+import { rateLimit, RATE_LIMITS, getClientIP } from "@/lib/rateLimit";
+import { validateInput, paymentInitSchema } from "@/lib/validation";
 
 // Initialize Paystack with secret key
 const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY!);
@@ -14,36 +16,40 @@ function generateOrderNumber(): string {
 }
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const clientIP = getClientIP(request.headers);
+  const rateLimitResult = rateLimit(clientIP, RATE_LIMITS.PAYMENT);
+  
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { message: "Too many requests. Please try again later." },
+      { 
+        status: 429,
+        headers: {
+          "Retry-After": Math.ceil(rateLimitResult.resetIn / 1000).toString(),
+        }
+      }
+    );
+  }
+
   try {
-    // Parse request body
+    // Parse and validate request body
     const body = await request.json();
-    const { customer, items, subtotal, total, currency } = body;
-
-    // Validate required fields
-    if (!customer || !items || items.length === 0 || !total) {
+    const validation = validateInput(paymentInitSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { message: "Missing required fields" },
+        { message: validation.errors?.join(", ") || "Invalid input" },
         { status: 400 }
       );
     }
 
-    // Validate customer info
-    if (
-      !customer.fullName ||
-      !customer.phone ||
-      !customer.email ||
-      !customer.deliveryAddress ||
-      !customer.cityOrTown ||
-      !customer.regionOrArea
-    ) {
-      return NextResponse.json(
-        { message: "Complete delivery information is required" },
-        { status: 400 }
-      );
-    }
+    const { customer, items, subtotal, total, currency } = validation.data!;
+
+    console.log("[Payment Init] Starting payment for order, customer:", customer.email);
 
     // Convert cart items to order items
-    const orderItems: IOrderItem[] = items.map((item: any) => ({
+    const orderItems: IOrderItem[] = items.map((item) => ({
       productId: item.product._id,
       name: item.product.name,
       slug: item.product.slug,
@@ -79,7 +85,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!transaction.status) {
-      console.error("Paystack initialization failed:", transaction.message);
+      console.error("[Payment Init] Paystack initialization failed:", transaction.message);
       return NextResponse.json(
         { message: "Failed to initialize payment. Please try again." },
         { status: 500 }
@@ -111,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     await newOrder.save();
 
-    console.log("Order pre-created:", orderNumber, "with reference:", transaction.data.reference);
+    console.log("[Payment Init] Order pre-created:", orderNumber, "with reference:", transaction.data.reference);
 
     // Return authorization URL and order reference
     return NextResponse.json({
@@ -121,7 +127,7 @@ export async function POST(request: NextRequest) {
       orderNumber,
     });
   } catch (error) {
-    console.error("Payment initialization error:", error);
+    console.error("[Payment Init] Error:", error);
     return NextResponse.json(
       { message: "An error occurred. Please try again." },
       { status: 500 }

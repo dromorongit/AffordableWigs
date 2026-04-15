@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { getCurrentAdmin } from "@/lib/auth";
+import { rateLimit, RATE_LIMITS, getClientIP } from "@/lib/rateLimit";
+import { validateInput, productSchema } from "@/lib/validation";
 
 // GET - List all products with optional filtering
 export async function GET(request: NextRequest) {
@@ -69,6 +71,22 @@ export async function GET(request: NextRequest) {
 
 // POST - Create a new product
 export async function POST(request: NextRequest) {
+  // Apply rate limiting
+  const clientIP = getClientIP(request.headers);
+  const rateLimitResult = rateLimit(clientIP, RATE_LIMITS.ADMIN_API);
+  
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { 
+        status: 429,
+        headers: {
+          "Retry-After": Math.ceil(rateLimitResult.resetIn / 1000).toString(),
+        }
+      }
+    );
+  }
+
   try {
     const admin = await getCurrentAdmin();
     if (!admin) {
@@ -79,16 +97,17 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json();
 
-    // Validate required fields
-    if (!data.name || !data.category || !data.price) {
+    // Validate input
+    const validation = validateInput(productSchema, data);
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "Name, category, and price are required" },
+        { error: validation.errors?.join(", ") || "Invalid input" },
         { status: 400 }
       );
     }
 
     // Generate slug from name
-    const slug = data.name
+    const slug = validation.data!.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
@@ -104,7 +123,7 @@ export async function POST(request: NextRequest) {
 
     // Create product
     const product = await Product.create({
-      ...data,
+      ...validation.data,
       slug,
     });
 

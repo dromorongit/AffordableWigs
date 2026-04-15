@@ -2,24 +2,44 @@ import { NextRequest, NextResponse } from "next/server";
 import PaystackLib from "paystack";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
+import { rateLimit, RATE_LIMITS, getClientIP } from "@/lib/rateLimit";
+import { validateInput, paymentVerifySchema } from "@/lib/validation";
 
 // Initialize Paystack with secret key
 const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY!);
 
 export async function POST(request: NextRequest) {
-  try {
-    // Parse request body
-    const body = await request.json();
-    const { reference, orderNumber } = body;
+  // Apply rate limiting
+  const clientIP = getClientIP(request.headers);
+  const rateLimitResult = rateLimit(clientIP, RATE_LIMITS.PAYMENT);
+  
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { message: "Too many requests. Please try again later." },
+      { 
+        status: 429,
+        headers: {
+          "Retry-After": Math.ceil(rateLimitResult.resetIn / 1000).toString(),
+        }
+      }
+    );
+  }
 
-    if (!reference) {
+  try {
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = validateInput(paymentVerifySchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { message: "Payment reference is required" },
+        { message: validation.errors?.join(", ") || "Invalid input" },
         { status: 400 }
       );
     }
 
-    console.log("Verifying payment:", reference, "for order:", orderNumber);
+    const { reference, orderNumber } = validation.data!;
+
+    console.log(`[Payment Verify] Verifying payment: ${reference} for order: ${orderNumber}`);
 
     // Connect to database
     await connectDB();
@@ -28,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (orderNumber) {
       const existingOrder = await Order.findOne({ orderNumber });
       if (existingOrder && existingOrder.paymentStatus === "paid") {
-        console.log("Order already verified:", orderNumber);
+        console.log(`[Payment Verify] Order already verified: ${orderNumber}`);
         return NextResponse.json({
           success: true,
           order: existingOrder,
@@ -41,7 +61,7 @@ export async function POST(request: NextRequest) {
     const transaction = await paystack.transaction.verify(reference);
 
     if (!transaction.status) {
-      console.error("Paystack verification failed:", transaction.message);
+      console.error(`[Payment Verify] Paystack verification failed: ${transaction.message}`);
 
       // Update order status to failed if exists
       if (orderNumber) {
@@ -64,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Check payment status
     if (paymentData.status !== "success") {
-      console.error("Payment not successful:", paymentData.status);
+      console.error(`[Payment Verify] Payment not successful: ${paymentData.status}`);
 
       // Update order status
       if (orderNumber) {
@@ -99,14 +119,14 @@ export async function POST(request: NextRequest) {
       );
 
       if (!updatedOrder) {
-        console.error("Order not found:", orderNumber);
+        console.error(`[Payment Verify] Order not found: ${orderNumber}`);
         return NextResponse.json(
           { message: "Order not found" },
           { status: 404 }
         );
       }
 
-      console.log("Order verified and updated:", orderNumber, "to paid status");
+      console.log(`[Payment Verify] Order verified and updated: ${orderNumber} to paid status`);
 
       return NextResponse.json({
         success: true,
@@ -125,14 +145,14 @@ export async function POST(request: NextRequest) {
       );
 
       if (!orderByRef) {
-        console.error("Order not found for reference:", reference);
+        console.error(`[Payment Verify] Order not found for reference: ${reference}`);
         return NextResponse.json(
           { message: "Order not found" },
           { status: 404 }
         );
       }
 
-      console.log("Order verified by reference:", reference, "to paid status");
+      console.log(`[Payment Verify] Order verified by reference: ${reference} to paid status`);
 
       return NextResponse.json({
         success: true,
@@ -141,7 +161,7 @@ export async function POST(request: NextRequest) {
       });
     }
   } catch (error) {
-    console.error("Payment verification error:", error);
+    console.error("[Payment Verify] Error:", error);
     return NextResponse.json(
       { message: "An error occurred during verification" },
       { status: 500 }
