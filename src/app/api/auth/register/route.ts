@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import User from "@/models/User";
 import { validateInput, registerSchema } from "@/lib/validation";
-import { generateCustomerToken, setCustomerCookie } from "@/lib/customerAuth";
+import { generateCustomerToken, setCustomerCookie, CustomerPayload } from "@/lib/customerAuth";
 import { rateLimit, RATE_LIMITS, getClientIP } from "@/lib/rateLimit";
+
+// Demo mode flag - set to true to enable demo credentials without MongoDB
+const DEMO_MODE = process.env.DEMO_MODE === "true" || !process.env.MONGODB_URI;
+
+// Demo users that work without MongoDB
+const DEMO_USERS: Record<string, { password: string; name: string }> = {
+  "demo@affordablewigsgh.com": { password: "demo1234", name: "Demo Customer" },
+  "test@test.com": { password: "test1234", name: "Test User" },
+};
 
 export async function POST(request: NextRequest) {
   // Apply rate limiting
@@ -38,7 +45,40 @@ export async function POST(request: NextRequest) {
 
     console.log("[Register] Starting registration for:", email);
 
-    // Connect to database
+    // Demo mode - check if trying to register a demo user
+    if (DEMO_MODE) {
+      console.log("[Register] Running in demo mode (no MongoDB)");
+      
+      // Check if the email matches an existing demo user
+      const existingDemo = DEMO_USERS[email.toLowerCase()];
+      if (existingDemo) {
+        return NextResponse.json(
+          { message: "An account with this email already exists" },
+          { status: 409 }
+        );
+      }
+      
+      // Without MongoDB, we can't create new users
+      // Provide a helpful message
+      if (!process.env.MONGODB_URI) {
+        return NextResponse.json(
+          { 
+            message: "Registration is not available in demo mode. Please use the demo credentials: demo@affordablewigsgh.com / demo1234",
+            demoMode: true,
+            demoCredentials: {
+              email: "demo@affordablewigsgh.com",
+              password: "demo1234"
+            }
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Real database registration
+    const { connectDB } = await import("@/lib/mongodb");
+    const User = (await import("@/models/User")).default;
+    
     await connectDB();
 
     // Check if user already exists

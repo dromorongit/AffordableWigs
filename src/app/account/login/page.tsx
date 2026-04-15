@@ -144,6 +144,16 @@ export default function LoginPage() {
                   </Link>
                 </p>
               </div>
+
+              {/* Demo Mode Hint */}
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-premium text-sm text-yellow-800">
+                <p className="font-medium mb-2">Demo Mode Active</p>
+                <p>Use these credentials to log in:</p>
+                <ul className="list-disc list-inside mt-1">
+                  <li>Email: <code className="bg-yellow-100 px-1 rounded">demo@affordablewigsgh.com</code></li>
+                  <li>Password: <code className="bg-yellow-100 px-1 rounded">demo1234</code></li>
+                </ul>
+              </div>
             </div>
           </div>
         </Container>

@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import User from "@/models/User";
 import { validateInput, profileUpdateSchema } from "@/lib/validation";
 import { getCurrentCustomer } from "@/lib/customerAuth";
+
+// Demo mode flag
+const DEMO_MODE = process.env.DEMO_MODE === "true" || !process.env.MONGODB_URI;
+
+// Demo user data
+const DEMO_USER = {
+  id: "demo-user-1",
+  email: "demo@affordablewigsgh.com",
+  name: "Demo Customer",
+  phone: "+233 123 456 789",
+  addresses: [],
+  createdAt: new Date().toISOString(),
+};
 
 export async function GET() {
   try {
@@ -16,7 +27,25 @@ export async function GET() {
       );
     }
 
-    // Connect to database and fetch user profile
+    // Demo mode - return mock user data
+    if (DEMO_MODE) {
+      console.log("[Get Profile] Demo mode - returning mock profile");
+      
+      return NextResponse.json({
+        success: true,
+        user: {
+          ...DEMO_USER,
+          id: customerPayload.id,
+          email: customerPayload.email,
+          name: customerPayload.name,
+        },
+      });
+    }
+
+    // Real database query
+    const { connectDB } = await import("@/lib/mongodb");
+    const User = (await import("@/models/User")).default;
+    
     await connectDB();
     const user = await User.findById(customerPayload.id).select("-password");
 
@@ -70,7 +99,26 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Connect to database
+    // Demo mode - return success without saving
+    if (DEMO_MODE) {
+      console.log("[Update Profile] Demo mode - simulating update");
+      
+      return NextResponse.json({
+        success: true,
+        message: "Profile updated successfully (demo mode)",
+        user: {
+          id: customerPayload.id,
+          email: customerPayload.email,
+          name: validation.data?.name || customerPayload.name,
+          phone: validation.data?.phone,
+        },
+      });
+    }
+
+    // Real database update
+    const { connectDB } = await import("@/lib/mongodb");
+    const User = (await import("@/models/User")).default;
+    
     await connectDB();
 
     // Update user profile
