@@ -7,9 +7,16 @@ import mongoose from "mongoose";
  */
 
 // Use MONGODB_URI from environment variables - no fallback for production safety
+// Only warn if MONGODB_URI is missing AND we're not in a production deployment
+// The warning helps developers know DB features are disabled, but we suppress it
+// during build or when explicitly in production mode (Railway sets this at runtime)
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
+// Only show warning in development mode, not during build or production
+// Railway may not have MONGODB_URI set at build time, only at runtime
+const isDev = process.env.NODE_ENV === "development";
+
+if (!MONGODB_URI && isDev) {
   console.warn("⚠️  MONGODB_URI not set - database features will be disabled");
 }
 
