@@ -37,7 +37,7 @@ const navItems = [
   },
 ];
 
-export default function AccountLayout({ children }: { children: React.ReactNode }) {
+export default function ProtectedAccountLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { customer, isLoading, isAuthenticated, logout } = useAuth();
@@ -49,7 +49,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // Show loading state
+  // Show loading state while checking auth
   if (isLoading) {
     return (
       <main className="pt-20 min-h-screen">
