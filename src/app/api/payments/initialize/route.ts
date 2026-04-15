@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import Order, { IOrderItem, ICustomerInfo } from "@/models/Order";
 import { rateLimit, RATE_LIMITS, getClientIP } from "@/lib/rateLimit";
 import { validateInput, paymentInitSchema } from "@/lib/validation";
+import { getCurrentCustomer } from "@/lib/customerAuth";
 
 // Initialize Paystack with secret key
 const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY!);
@@ -113,6 +114,7 @@ export async function POST(request: NextRequest) {
       paymentReference: transaction.data.reference,
       paymentStatus: "pending",
       orderStatus: "Processing",
+      userId: (await getCurrentCustomer())?.id || undefined,
     });
 
     await newOrder.save();

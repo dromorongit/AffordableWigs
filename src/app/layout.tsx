@@ -2,10 +2,23 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { BRAND, PAGE_METADATA } from "@/constants";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { CartDrawerProvider } from "@/components/providers/CartDrawerProvider";
 import { ToastProvider } from "@/components/ui";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://affordablewigsgh.com";
+
+// Ensure BASE_URL has a valid protocol for URL constructor
+const getValidBaseUrl = (url: string): string => {
+  if (!url) return "https://affordablewigsgh.com";
+  // If no protocol, add https://
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    return `https://${url}`;
+  }
+  return url;
+};
+
+const validBaseUrl = getValidBaseUrl(BASE_URL);
 
 export const metadata: Metadata = {
   title: {
@@ -24,7 +37,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/images/affordablelogo.jpg",
   },
-  metadataBase: new URL(BASE_URL),
+  metadataBase: new URL(validBaseUrl),
   openGraph: {
     type: "website",
     locale: "en_GH",
@@ -61,12 +74,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <CartProvider>
-          <CartDrawerProvider />
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <CartDrawerProvider />
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

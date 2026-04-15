@@ -152,6 +152,50 @@ export const adminLoginSchema = z.object({
     .max(100, "Password cannot exceed 100 characters"),
 });
 
+// Customer registration schema
+export const registerSchema = z.object({
+  email: z.string()
+    .email("Invalid email address")
+    .transform((val: string) => val.toLowerCase().trim()),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .max(100, "Password cannot exceed 100 characters"),
+  name: z.string()
+    .min(1, "Name is required")
+    .max(100, "Name cannot exceed 100 characters")
+    .transform(sanitizeString),
+});
+
+// Customer login schema
+export const loginSchema = z.object({
+  email: z.string()
+    .email("Invalid email address")
+    .transform((val: string) => val.toLowerCase().trim()),
+  password: z.string()
+    .min(1, "Password is required")
+    .max(100, "Password cannot exceed 100 characters"),
+});
+
+// Profile update schema
+export const profileUpdateSchema = z.object({
+  name: z.string()
+    .min(1, "Name is required")
+    .max(100, "Name cannot exceed 100 characters")
+    .transform(sanitizeString)
+    .optional(),
+  phone: z.string()
+    .max(20, "Phone number cannot exceed 20 characters")
+    .optional(),
+  addresses: z.array(z.object({
+    fullName: z.string().min(1).max(100),
+    phone: z.string().min(1).max(20),
+    deliveryAddress: z.string().min(1).max(500),
+    cityOrTown: z.string().min(1).max(100),
+    regionOrArea: z.string().min(1).max(100),
+    isDefault: z.boolean().optional(),
+  })).optional(),
+});
+
 // Payment initialization schema
 export const paymentInitSchema = z.object({
   customer: z.object({

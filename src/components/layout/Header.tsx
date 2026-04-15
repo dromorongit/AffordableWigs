@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { NAV_LINKS, BRAND, CONTACT, SOCIALS } from "@/constants";
 import { Container, Button } from "@/components/ui";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { itemCount, setIsCartOpen } = useCart();
+  const { isAuthenticated, customer } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-neutral-light">
@@ -34,6 +36,21 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            {isAuthenticated ? (
+              <Link
+                href="/account"
+                className="text-text-light hover:text-primary transition-colors duration-300 text-sm font-medium tracking-wide"
+              >
+                My Account
+              </Link>
+            ) : (
+              <Link
+                href="/account/login"
+                className="text-text-light hover:text-primary transition-colors duration-300 text-sm font-medium tracking-wide"
+              >
+                Sign In
+              </Link>
+            )}
           </nav>
 
           {/* Desktop CTA & Cart */}
@@ -148,6 +165,23 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
+              {isAuthenticated ? (
+                <Link
+                  href="/account"
+                  className="text-text-light hover:text-primary transition-colors py-2 text-base font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  My Account
+                </Link>
+              ) : (
+                <Link
+                  href="/account/login"
+                  className="text-text-light hover:text-primary transition-colors py-2 text-base font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
               <a
                 href={CONTACT.whatsappLink}
                 target="_blank"

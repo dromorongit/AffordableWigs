@@ -10,3 +10,5 @@ export { default as Service } from "./Service";
 export type { IService } from "./Service";
 export { default as Review } from "./Review";
 export type { IReview } from "./Review";
+export { default as User } from "./User";
+export type { IUser } from "./User";

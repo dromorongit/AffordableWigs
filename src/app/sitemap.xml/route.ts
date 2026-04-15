@@ -5,6 +5,17 @@ import Category from "@/models/Category";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://affordablewigsgh.com";
 
+// Ensure BASE_URL has a valid protocol for URL constructor
+const getValidBaseUrl = (url: string): string => {
+  if (!url) return "https://affordablewigsgh.com";
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    return `https://${url}`;
+  }
+  return url;
+};
+
+const validBaseUrl = getValidBaseUrl(BASE_URL);
+
 export async function GET() {
   try {
     await connectDB();
@@ -29,21 +40,21 @@ export async function GET() {
     const sitemapEntries = [
       // Static pages
       ...staticPages.map((path) => ({
-        url: `${BASE_URL}${path}`,
+        url: `${validBaseUrl}${path}`,
         lastModified: new Date().toISOString(),
         changeFrequency: "weekly" as const,
         priority: path === "" ? 1.0 : 0.8,
       })),
       // Categories
       ...categories.map((cat) => ({
-        url: `${BASE_URL}/shop?category=${cat.slug}`,
+        url: `${validBaseUrl}/shop?category=${cat.slug}`,
         lastModified: cat.updatedAt?.toISOString() || new Date().toISOString(),
         changeFrequency: "weekly" as const,
         priority: 0.7,
       })),
       // Products
       ...products.map((product) => ({
-        url: `${BASE_URL}/shop/${product.slug}`,
+        url: `${validBaseUrl}/shop/${product.slug}`,
         lastModified: product.updatedAt?.toISOString() || new Date().toISOString(),
         changeFrequency: "weekly" as const,
         priority: 0.6,
