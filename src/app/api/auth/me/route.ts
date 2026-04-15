@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentCustomer } from "/lib/customerAuth";
+import { getCurrentCustomer } from "@/lib/customerAuth";
 
 // Optional: import User for additional validation if DB is available
 // import User from "@/models/User";
