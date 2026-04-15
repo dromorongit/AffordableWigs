@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiEye, FiX } from "react-icons/fi";
+import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiEye, FiX, FiCheck, FiAlertCircle } from "react-icons/fi";
 import ImageUploader from "@/components/admin/ImageUploader";
-import Category from "@/models/Category";
+import { useToast } from "@/components/ui";
 
 interface Product {
   _id: string;
@@ -30,6 +30,7 @@ interface Category {
 }
 
 export default function AdminProductsPage() {
+  const { showToast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +38,8 @@ export default function AdminProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -85,8 +88,38 @@ export default function AdminProductsPage() {
     fetchCategories();
   }, [fetchProducts]);
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      errors.name = "Product name is required";
+    }
+    if (!formData.category) {
+      errors.category = "Please select a category";
+    }
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      errors.price = "Please enter a valid price";
+    }
+    if (!formData.stockQuantity || parseInt(formData.stockQuantity) < 0) {
+      errors.stockQuantity = "Please enter a valid stock quantity";
+    }
+    if (!formData.mainImage) {
+      errors.mainImage = "Main image is required";
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      showToast("error", "Please fix the form errors before submitting");
+      return;
+    }
+    
+    setSubmitting(true);
     
     const payload = {
       ...formData,
@@ -113,13 +146,19 @@ export default function AdminProductsPage() {
         setShowModal(false);
         setEditingProduct(null);
         resetForm();
+        setFormErrors({});
         fetchProducts();
+        showToast("success", editingProduct ? "Product updated successfully" : "Product created successfully");
       } else {
         const data = await response.json();
-        alert(data.error || "Failed to save product");
+        setFormErrors({ submit: data.error || "Failed to save product" });
+        showToast("error", data.error || "Failed to save product");
       }
     } catch (error) {
       console.error("Error saving product:", error);
+      showToast("error", "An unexpected error occurred");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -133,11 +172,13 @@ export default function AdminProductsPage() {
 
       if (response.ok) {
         fetchProducts();
+        showToast("success", "Product deleted successfully");
       } else {
-        alert("Failed to delete product");
+        showToast("error", "Failed to delete product");
       }
     } catch (error) {
       console.error("Error deleting product:", error);
+      showToast("error", "An unexpected error occurred");
     }
   };
 
@@ -177,6 +218,7 @@ export default function AdminProductsPage() {
       isNewArrival: false,
       isActive: true,
     });
+    setFormErrors({});
   };
 
   return (
@@ -364,9 +406,23 @@ export default function AdminProductsPage() {
                   type="text"
                   required
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    if (formErrors.name) {
+                      const { name: _, ...rest } = formErrors;
+                      setFormErrors(rest);
+                    }
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500 ${
+                    formErrors.name ? "border-red-300" : "border-gray-300"
+                  }`}
                 />
+                {formErrors.name && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <FiAlertCircle className="w-4 h-4" />
+                    {formErrors.name}
+                  </p>
+                )}
               </div>
 
               {/* Category */}
@@ -377,8 +433,16 @@ export default function AdminProductsPage() {
                 <select
                   required
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
+                  onChange={(e) => {
+                    setFormData({ ...formData, category: e.target.value });
+                    if (formErrors.category) {
+                      const { category: _, ...rest } = formErrors;
+                      setFormErrors(rest);
+                    }
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500 ${
+                    formErrors.category ? "border-red-300" : "border-gray-300"
+                  }`}
                 >
                   <option value="">Select Category</option>
                   {categories.map((cat) => (
@@ -387,6 +451,12 @@ export default function AdminProductsPage() {
                     </option>
                   ))}
                 </select>
+                {formErrors.category && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <FiAlertCircle className="w-4 h-4" />
+                    {formErrors.category}
+                  </p>
+                )}
               </div>
 
               {/* Price & Stock */}
@@ -400,9 +470,23 @@ export default function AdminProductsPage() {
                     step="0.01"
                     required
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
+                    onChange={(e) => {
+                      setFormData({ ...formData, price: e.target.value });
+                      if (formErrors.price) {
+                      const { price: _, ...rest } = formErrors;
+                      setFormErrors(rest);
+                    }
+                    }}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500 ${
+                      formErrors.price ? "border-red-300" : "border-gray-300"
+                    }`}
                   />
+                  {formErrors.price && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <FiAlertCircle className="w-4 h-4" />
+                      {formErrors.price}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -427,18 +511,44 @@ export default function AdminProductsPage() {
                   type="number"
                   required
                   value={formData.stockQuantity}
-                  onChange={(e) => setFormData({ ...formData, stockQuantity: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
+                  onChange={(e) => {
+                    setFormData({ ...formData, stockQuantity: e.target.value });
+                    if (formErrors.stockQuantity) {
+                      const { stockQuantity: _, ...rest } = formErrors;
+                      setFormErrors(rest);
+                    }
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500 ${
+                    formErrors.stockQuantity ? "border-red-300" : "border-gray-300"
+                  }`}
                 />
+                {formErrors.stockQuantity && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <FiAlertCircle className="w-4 h-4" />
+                    {formErrors.stockQuantity}
+                  </p>
+                )}
               </div>
 
               {/* Images */}
               <div>
                 <ImageUploader
                   value={formData.mainImage}
-                  onChange={(url) => setFormData({ ...formData, mainImage: url })}
+                  onChange={(url) => {
+                    setFormData({ ...formData, mainImage: url });
+                    if (formErrors.mainImage) {
+                      const { mainImage: _, ...rest } = formErrors;
+                      setFormErrors(rest);
+                    }
+                  }}
                   label="Main Image *"
                 />
+                {formErrors.mainImage && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <FiAlertCircle className="w-4 h-4" />
+                    {formErrors.mainImage}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -553,16 +663,29 @@ export default function AdminProductsPage() {
                     setShowModal(false);
                     setEditingProduct(null);
                     resetForm();
+                    setFormErrors({});
                   }}
                   className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-burgundy-700 text-white rounded-lg hover:bg-burgundy-800"
+                  disabled={submitting}
+                  className="px-4 py-2 bg-burgundy-700 text-white rounded-lg hover:bg-burgundy-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 >
-                  {editingProduct ? "Update" : "Create"} Product
+                  {submitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      {editingProduct ? "Updating..." : "Creating..."}
+                    </>
+                  ) : (
+                    editingProduct ? "Update" : "Create"  
+                  )} Product
                 </button>
               </div>
             </form>

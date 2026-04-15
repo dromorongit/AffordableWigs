@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiShoppingBag } from "react-icons/fi";
 
+interface FormErrors {
+  email?: string;
+  password?: string;
+}
+
 export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -12,10 +17,38 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    
+    // Email validation
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    // Password validation
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    
+    // Validate form before submitting
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -88,11 +121,21 @@ export default function AdminLoginPage() {
                   autoComplete="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-burgundy-500 focus:border-burgundy-500 sm:text-sm transition-colors"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) {
+                      setErrors({ ...errors, email: undefined });
+                    }
+                  }}
+                  className={`appearance-none block w-full pl-10 pr-3 py-2 border rounded-lg placeholder-gray-400 focus:outline-none focus:ring-burgundy-500 focus:border-burgundy-500 sm:text-sm transition-colors ${
+                    errors.email ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300"
+                  }`}
                   placeholder="admin@example.com"
                 />
               </div>
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
 
             {/* Password Field */}
@@ -111,8 +154,15 @@ export default function AdminLoginPage() {
                   autoComplete="current-password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-burgundy-500 focus:border-burgundy-500 sm:text-sm transition-colors"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) {
+                      setErrors({ ...errors, password: undefined });
+                    }
+                  }}
+                  className={`appearance-none block w-full pl-10 pr-10 py-2 border rounded-lg placeholder-gray-400 focus:outline-none focus:ring-burgundy-500 focus:border-burgundy-500 sm:text-sm transition-colors ${
+                    errors.password ? "border-red-300 focus:ring-red-500 focus:border-red-500" : "border-gray-300"
+                  }`}
                   placeholder="••••••••"
                 />
                 <button
@@ -127,6 +177,9 @@ export default function AdminLoginPage() {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
             </div>
 
             {/* Submit Button */}

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiX, FiAlertCircle } from "react-icons/fi";
 import ImageUploader from "@/components/admin/ImageUploader";
+import { useToast } from "@/components/ui";
 
 interface Category {
   _id: string;
@@ -15,11 +16,14 @@ interface Category {
 }
 
 export default function AdminCategoriesPage() {
+  const { showToast } = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -50,8 +54,26 @@ export default function AdminCategoriesPage() {
     cat.slug.toLowerCase().includes(search.toLowerCase())
   );
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      errors.name = "Category name is required";
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      showToast("error", "Please fix the form errors before submitting");
+      return;
+    }
+    
+    setSubmitting(true);
 
     const payload = {
       ...formData,
