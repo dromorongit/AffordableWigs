@@ -10,6 +10,11 @@ export const revalidate = 60;
 export async function FeaturedProductsSection() {
   const featuredProducts = await getFeaturedProducts(4);
 
+  // Don't render the section if there are no featured products
+  if (!featuredProducts || featuredProducts.length === 0) {
+    return null;
+  }
+
   return (
     <Section background="cream" padding="lg">
       <Container>
