@@ -24,10 +24,10 @@ export async function CategoriesSection() {
         {/* Categories Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {categories.map((category, index) => {
-            // Category images mapping
+            // Category images mapping with cache-busting
             const categoryImages: Record<string, string> = {
-              "ready-to-wear-wigs": "/images/readywigs.jpg",
-              "wig-bundles": "/images/wigbundles.jpg",
+              "ready-to-wear-wigs": "/images/readywigs.jpg?v=20260416",
+              "wig-bundles": "/images/wigbundles.jpg?v=20260416",
               "closures": "/images/closure.jpg",
               "frontals": "/images/frontal.jpg",
             };
