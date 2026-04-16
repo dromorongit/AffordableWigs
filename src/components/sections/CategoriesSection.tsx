@@ -28,8 +28,8 @@ export async function CategoriesSection() {
             const categoryImages: Record<string, string> = {
               "ready-to-wear-wigs": "/images/readywigs.jpg",
               "wig-bundles": "/images/wigbundles.jpg",
-              "closures": "/images/readywigs.jpg",
-              "frontals": "/images/frontals.jpg",
+              "closures": "/images/closure.jpg",
+              "frontals": "/images/frontal.jpg",
             };
             
             const imageUrl = categoryImages[category.slug] || "";

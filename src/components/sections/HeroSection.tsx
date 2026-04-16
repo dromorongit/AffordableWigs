@@ -89,7 +89,7 @@ export function HeroSection() {
             <div className="order-1 lg:order-2 relative">
               <div className="relative aspect-[4/5] max-w-lg mx-auto">
                 <img
-                  src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80"
+                  src="/images/profile.jpg"
                   alt="Premium wigs and hair extensions"
                   className="w-full h-full object-cover rounded-premium-lg shadow-xl"
                 />
