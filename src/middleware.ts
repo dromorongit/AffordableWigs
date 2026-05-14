@@ -92,7 +92,7 @@ function shouldExcludePath(pathname: string): boolean {
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  console.log(`[Middleware] Request for ${pathname} - Starting maintenance check`);
+  console.log(`[Middleware] Running for: ${pathname}`);
 
   // Quick exclusion check
   if (shouldExcludePath(pathname)) {
@@ -110,16 +110,13 @@ export async function middleware(request: NextRequest) {
     url.pathname = "/maintenance";
     // Preserve the original URL as a query param for potential "back to site" logic
     url.searchParams.set("from", request.nextUrl.pathname);
-    console.log(`[Middleware] Redirecting to /maintenance`);
+    console.log(`[Middleware] Redirecting ${pathname} -> /maintenance`);
     return NextResponse.redirect(url, 302);
   }
 
   return NextResponse.next();
 }
 
-/**
- * Middleware configuration
- */
 // Use Node.js runtime to allow mongoose (DB) usage
 // Edge runtime prohibits dynamic code evaluation used by mongoose
 export const runtime = "nodejs";
