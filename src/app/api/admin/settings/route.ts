@@ -36,16 +36,18 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    console.log(`[Settings API] Updating maintenanceMode to: ${maintenanceMode}`);
     // Update or create the maintenance mode setting
-    await Settings.findOneAndUpdate(
+    const result = await Settings.findOneAndUpdate(
       { key: "maintenanceMode" },
       { value: maintenanceMode },
       { upsert: true, new: true }
     );
+    console.log(`[Settings API] Update result:`, result ? `key=${result.key}, value=${result.value}` : 'null');
     
-    return NextResponse.json({ 
-      success: true, 
-      maintenanceMode 
+    return NextResponse.json({
+      success: true,
+      maintenanceMode
     });
   } catch (error) {
     console.error("Error updating maintenance mode:", error);
