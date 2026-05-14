@@ -21,8 +21,10 @@ async function getMaintenanceMode(request: NextRequest): Promise<boolean> {
     console.log(`[Middleware] Fetching maintenance mode from internal API...`);
     // Call internal API to avoid direct mongoose dependency in middleware
     // This keeps middleware build-clean and production-safe
-    const origin = request.nextUrl.origin;
-    const response = await fetch(`${origin}/api/admin/settings`, {
+    // Use internal HTTP URL to avoid SSL errors when calling from within the container
+    const port = process.env.PORT || 3000;
+    const internalBaseUrl = `http://localhost:${port}`;
+    const response = await fetch(`${internalBaseUrl}/api/admin/settings`, {
       headers: { "Content-Type": "application/json" },
       cache: "no-store" // Always fresh
     });
