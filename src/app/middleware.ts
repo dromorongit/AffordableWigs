@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Settings from "@/models/Settings";
 
-// Explicitly declare Node.js runtime for this middleware
-// This prevents Edge Runtime validation errors when using Node.js modules like mongoose
-export const runtime = "nodejs";
-
 // Cache for maintenance mode setting to avoid DB queries on every request
 let maintenanceModeCache: { value: boolean; timestamp: number } | null = null;
 const CACHE_DURATION = 5000; // 5 seconds cache
@@ -114,8 +110,7 @@ export async function middleware(request: NextRequest) {
 }
 
 /**
- * Matcher configuration - apply middleware to all paths
- * We do filtering inside middleware for better control and debugging
+ * Middleware configuration
  */
 export const config = {
   matcher: [
@@ -130,8 +125,11 @@ export const config = {
      * - /account/login, /account/register (auth pages)
      * - /robots.txt, /sitemap.xml, /manifest.json (essential static files)
      *
-     * We do additional filtering inside middleware for safety.
+     * Additional path filtering is done inside middleware() for safety.
      */
     "/((?!api|_next|admin|maintenance|images|favicon.ico|account/login|account/register|robots.txt|sitemap.xml|manifest.json).*)",
   ],
+  // Use Node.js runtime to allow mongoose (DB) usage
+  // Edge runtime prohibits dynamic code evaluation used by mongoose
+  runtime: "nodejs",
 };
