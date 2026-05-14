@@ -8,7 +8,7 @@ const CACHE_DURATION = 0; // 0 = no cache, force DB read every request
 /**
  * Fetch maintenance mode from database with caching
  */
-async function getMaintenanceMode(): Promise<boolean> {
+async function getMaintenanceMode(request: NextRequest): Promise<boolean> {
   const now = Date.now();
 
   // Return cached value if still valid
@@ -18,23 +18,29 @@ async function getMaintenanceMode(): Promise<boolean> {
   }
 
   try {
-    console.log(`[Middleware] Fetching maintenance mode from DB...`);
-    // Dynamic import to avoid Edge Runtime build errors with mongoose
-    const { connectDB } = await import("@/lib/mongodb");
-    const Settings = (await import("@/models/Settings")).default;
+    console.log(`[Middleware] Fetching maintenance mode from internal API...`);
+    // Call internal API to avoid direct mongoose dependency in middleware
+    // This keeps middleware build-clean and production-safe
+    const origin = request.nextUrl.origin;
+    const response = await fetch(`${origin}/api/admin/settings`, {
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store" // Always fresh
+    });
 
-    await connectDB();
-    const doc = await Settings.findOne({ key: "maintenanceMode" });
-    const value = doc ? Boolean(doc.value) : false;
-    console.log(`[Middleware] DB query result - doc exists: ${!!doc}, raw value:`, doc ? doc.value : 'null', '=> boolean:', value);
+    if (!response.ok) {
+      throw new Error(`API responded with ${response.status}`);
+    }
+
+    const data = await response.json();
+    const value = Boolean(data.maintenanceMode);
+    console.log(`[Middleware] API response:`, data, "=> boolean:", value);
 
     // Update cache
     maintenanceModeCache = { value, timestamp: now };
     return value;
   } catch (error) {
-    console.error("Failed to fetch maintenance mode from DB:", error);
-    // On DB error, default to false to keep site accessible
-    return false;
+    console.error("Failed to fetch maintenance mode:", error);
+    return false; // Keep site accessible on error
   }
 }
 
@@ -103,7 +109,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check maintenance mode
-  const isMaintenance = await getMaintenanceMode();
+  const isMaintenance = await getMaintenanceMode(request);
   console.log(`[Middleware] Maintenance mode is ${isMaintenance ? 'ENABLED' : 'disabled'}`);
 
   if (isMaintenance) {
