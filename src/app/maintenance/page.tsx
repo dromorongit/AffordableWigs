@@ -1,38 +1,129 @@
+"use client";
+
 import Link from "next/link";
+import { BRAND, CONTACT } from "@/constants";
 
 export default function MaintenancePage() {
+  // Build WhatsApp link using the contact constant
+  const whatsappMessage = encodeURIComponent("Hello! I need assistance with my order.");
+  // Extract phone number from the WhatsApp link (remove https://wa.me/ prefix)
+  const phoneNumber = CONTACT.whatsappLink.replace("https://wa.me/", "");
+  const whatsappLink = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <div className="w-20 h-20 mx-auto mb-6 bg-burgundy-100 rounded-full flex items-center justify-center">
-          <svg className="h-8 w-8 text-burgundy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-burgundy-50 flex flex-col items-center justify-center p-4">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-burgundy-100 rounded-full opacity-30 blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-burgundy-50 rounded-full opacity-30 blur-3xl"></div>
+      </div>
+
+      <div className="relative max-w-2xl w-full bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8 md:p-12 text-center">
+        {/* Logo */}
+        <div className="mb-8">
+          <Link href="/admin/login" className="inline-block">
+            <div className="flex items-center justify-center space-x-3">
+              <div className="w-16 h-16 bg-burgundy-600 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-white font-serif font-bold text-2xl">
+                  {BRAND.name.charAt(0)}
+                </span>
+              </div>
+              <div className="text-left">
+                <h2 className="text-2xl font-serif font-bold text-gray-900">
+                  {BRAND.name}
+                </h2>
+                <p className="text-sm text-gray-500">Premium Wigs & Hair Extensions</p>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* Maintenance Icon */}
+        <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-burgundy-500 to-burgundy-700 rounded-full flex items-center justify-center shadow-lg">
+          <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
           </svg>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          We're Currently Under Maintenance
+
+        {/* Main Heading */}
+        <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-4">
+          We'll Be Back Soon
         </h1>
-        <p className="text-lg text-gray-600 mb-6">
-          We're performing some scheduled maintenance to improve your experience.
-          The site will be back online shortly.
+
+        {/* Subtitle */}
+        <p className="text-lg md:text-xl text-gray-600 mb-6 leading-relaxed">
+          {BRAND.name} is undergoing scheduled maintenance to serve you better.
+          <br />
+          <span className="text-burgundy-600 font-semibold">
+            We expect to be back online shortly.
+          </span>
         </p>
-        <div className="flex items-center justify-center space-x-4">
-          <div className="w-4 h-4 bg-burgundy-200 rounded-full animate-pulse"></div>
-          <div className="w-4 h-4 bg-burgundy-200 rounded-full animate-pulse delay-100"></div>
-          <div className="w-4 h-4 bg-burgundy-200 rounded-full animate-pulse delay-200"></div>
+
+        {/* Animated progress indicator */}
+        <div className="flex items-center justify-center space-x-2 mb-8">
+          <div className="w-3 h-3 bg-burgundy-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
+          <div className="w-3 h-3 bg-burgundy-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
+          <div className="w-3 h-3 bg-burgundy-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
         </div>
-        <p className="mt-6 text-sm text-gray-500">
-          If you need immediate assistance, please contact us at
-          <a href="mailto:support@affordablewigsgh.com" className="text-burgundy-600 hover:underline">
-            support@affordablewigsgh.com
+
+        {/* Contact Options */}
+        <div className="space-y-4">
+          {/* WhatsApp Button */}
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center w-full md:w-auto px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+          >
+            <svg className="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            Contact Us on WhatsApp
           </a>
-        </p>
-        <Link
-          href="/admin/login"
-          className="mt-8 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-burgundy-600 hover:bg-burgundy-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-burgundy-500"
-        >
-          Admin Login
-        </Link>
+
+          {/* Email Option */}
+          <div className="text-sm text-gray-600">
+            Or email us at{" "}
+            <a
+              href="mailto:support@affordablewigsgh.com"
+              className="text-burgundy-600 hover:underline font-medium"
+            >
+              support@affordablewigsgh.com
+            </a>
+          </div>
+        </div>
+
+        {/* Admin Login Link */}
+        <div className="mt-10 pt-6 border-t border-gray-200">
+          <p className="text-sm text-gray-500 mb-3">Admin Access</p>
+          <Link
+            href="/admin/login"
+            className="inline-flex items-center px-6 py-3 border-2 border-burgundy-600 text-burgundy-600 font-semibold rounded-xl hover:bg-burgundy-600 hover:text-white transition-all duration-300"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            Admin Login
+          </Link>
+        </div>
+
+        {/* Brand Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-400">
+            &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
+          </p>
+        </div>
       </div>
     </div>
   );
