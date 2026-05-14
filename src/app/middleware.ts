@@ -113,22 +113,8 @@ export async function middleware(request: NextRequest) {
  * Middleware configuration
  */
 export const config = {
-  matcher: [
-    /*
-     * Match all paths except:
-     * - /api/* (API routes)
-     * - /_next/* (Next.js internals)
-     * - /images/* (static images)
-     * - /favicon.ico
-     * - /admin/* (admin panel)
-     * - /maintenance/* (maintenance page)
-     * - /account/login, /account/register (auth pages)
-     * - /robots.txt, /sitemap.xml, /manifest.json (essential static files)
-     *
-     * Additional path filtering is done inside middleware() for safety.
-     */
-    "/((?!api|_next|admin|maintenance|images|favicon.ico|account/login|account/register|robots.txt|sitemap.xml|manifest.json).*)",
-  ],
+  // Match all routes; exclusions are handled inside middleware()
+  matcher: "/:path*",
   // Use Node.js runtime to allow mongoose (DB) usage
   // Edge runtime prohibits dynamic code evaluation used by mongoose
   runtime: "nodejs",
