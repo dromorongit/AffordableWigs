@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Settings from "@/models/Settings";
 
+// Explicitly declare Node.js runtime for this middleware
+// This prevents Edge Runtime validation errors when using Node.js modules like mongoose
+export const runtime = "nodejs";
+
 // Cache for maintenance mode setting to avoid DB queries on every request
 let maintenanceModeCache: { value: boolean; timestamp: number } | null = null;
 const CACHE_DURATION = 5000; // 5 seconds cache
@@ -130,7 +134,4 @@ export const config = {
      */
     "/((?!api|_next|admin|maintenance|images|favicon.ico|account/login|account/register|robots.txt|sitemap.xml|manifest.json).*)",
   ],
-  // Use Node.js runtime because we need mongoose (DB connection)
-  // Edge runtime doesn't support Node.js APIs
-  runtime: "nodejs",
 };
