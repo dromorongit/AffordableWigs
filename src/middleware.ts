@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import Settings from "@/models/Settings";
 
 // Cache for maintenance mode setting to avoid DB queries on every request
 // TEMP: Disabled for debugging - set to 0 to bypass cache
@@ -21,6 +19,10 @@ async function getMaintenanceMode(): Promise<boolean> {
 
   try {
     console.log(`[Middleware] Fetching maintenance mode from DB...`);
+    // Dynamic import to avoid Edge Runtime build errors with mongoose
+    const { connectDB } = await import("@/lib/mongodb");
+    const Settings = (await import("@/models/Settings")).default;
+
     await connectDB();
     const doc = await Settings.findOne({ key: "maintenanceMode" });
     const value = doc ? Boolean(doc.value) : false;
