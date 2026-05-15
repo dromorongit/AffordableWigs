@@ -3,7 +3,7 @@ import Product from "@/models/Product";
 import Category from "@/models/Category";
 import Order from "@/models/Order";
 import Link from "next/link";
-import { FiShoppingBag, FiShoppingCart, FiTag, FiAlertCircle } from "react-icons/fi";
+import { FiShoppingBag, FiShoppingCart, FiTag, FiAlertCircle, FiAlertTriangle, FiXCircle } from "react-icons/fi";
 
 interface DashboardStats {
   totalProducts: number;
@@ -11,12 +11,13 @@ interface DashboardStats {
   totalOrders: number;
   recentOrders: any[];
   lowStockProducts: any[];
+  outOfStockProducts: any[];
 }
 
 async function getDashboardStats(): Promise<DashboardStats> {
   try {
     await connectDB();
-    
+
     const [products, categories, orders] = await Promise.all([
       Product.countDocuments({ isActive: true }),
       Category.countDocuments({ isActive: true }),
@@ -29,12 +30,21 @@ async function getDashboardStats(): Promise<DashboardStats> {
       .limit(5)
       .lean();
 
-    // Get low stock products (less than 5)
-    const lowStockProducts = await Product.find({ 
-      stockQuantity: { $lt: 5 },
-      isActive: true 
+    // Get low stock products (stockQuantity between 1 and 4)
+    const lowStockProducts = await Product.find({
+      stockQuantity: { $gt: 0, $lt: 5 },
+      isActive: true,
     })
       .sort({ stockQuantity: 1 })
+      .limit(5)
+      .lean();
+
+    // Get out of stock products (stockQuantity = 0)
+    const outOfStockProducts = await Product.find({
+      stockQuantity: 0,
+      isActive: true,
+    })
+      .sort({ updatedAt: -1 })
       .limit(5)
       .lean();
 
@@ -44,6 +54,7 @@ async function getDashboardStats(): Promise<DashboardStats> {
       totalOrders: orders,
       recentOrders,
       lowStockProducts,
+      outOfStockProducts,
     };
   } catch (error) {
     console.error("Error fetching dashboard stats:", error);
@@ -53,6 +64,7 @@ async function getDashboardStats(): Promise<DashboardStats> {
       totalOrders: 0,
       recentOrders: [],
       lowStockProducts: [],
+      outOfStockProducts: [],
     };
   }
 }
@@ -69,7 +81,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {/* Total Products */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center">
@@ -112,8 +124,8 @@ export default async function AdminDashboardPage() {
         {/* Low Stock Alert */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center">
-              <FiAlertCircle className="w-6 h-6 text-red-600" />
+            <div className="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center">
+              <FiAlertTriangle className="w-6 h-6 text-amber-600" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Low Stock</p>
@@ -121,17 +133,30 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Out of Stock Alert */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+              <FiXCircle className="w-6 h-6 text-gray-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Out of Stock</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.outOfStockProducts.length}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Orders */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
-              <Link 
-                href="/admin/orders" 
+              <Link
+                href="/admin/orders"
                 className="text-sm text-burgundy-700 hover:text-burgundy-800"
               >
                 View All
@@ -152,8 +177,8 @@ export default async function AdminDashboardPage() {
                     <div className="text-right">
                       <p className="text-sm font-semibold text-gray-900">GH₵{order.total?.toFixed(2)}</p>
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        order.paymentStatus === "paid" 
-                          ? "bg-green-100 text-green-800" 
+                        order.paymentStatus === "paid"
+                          ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-800"
                       }`}>
                         {order.orderStatus}
@@ -171,8 +196,8 @@ export default async function AdminDashboardPage() {
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Low Stock Alert</h2>
-              <Link 
-                href="/admin/products" 
+              <Link
+                href="/admin/products"
                 className="text-sm text-burgundy-700 hover:text-burgundy-800"
               >
                 View All
@@ -185,12 +210,12 @@ export default async function AdminDashboardPage() {
             ) : (
               <div className="space-y-4">
                 {stats.lowStockProducts.map((product: any) => (
-                  <div key={product._id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                  <div key={product._id} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden">
                         {product.mainImage && (
-                          <img 
-                            src={product.mainImage} 
+                          <img
+                            src={product.mainImage}
                             alt={product.name}
                             className="w-full h-full object-cover"
                           />
@@ -202,8 +227,55 @@ export default async function AdminDashboardPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
                         {product.stockQuantity} left
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Out of Stock Products */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Out of Stock</h2>
+              <Link
+                href="/admin/products"
+                className="text-sm text-burgundy-700 hover:text-burgundy-800"
+              >
+                View All
+              </Link>
+            </div>
+          </div>
+          <div className="p-6">
+            {stats.outOfStockProducts.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-4">All products are in stock</p>
+            ) : (
+              <div className="space-y-4">
+                {stats.outOfStockProducts.map((product: any) => (
+                  <div key={product._id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-gray-300 rounded-lg overflow-hidden">
+                        {product.mainImage && (
+                          <img
+                            src={product.mainImage}
+                            alt={product.name}
+                            className="w-full h-full object-cover grayscale"
+                          />
+                        )}
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-gray-900">{product.name}</p>
+                        <p className="text-xs text-gray-500">SKU: {product.slug}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-700">
+                        Out of stock
                       </span>
                     </div>
                   </div>

@@ -12,6 +12,13 @@ interface CartContextType {
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   itemCount: number;
+  /**
+   * Revalidate all cart items against their current stockQuantity.
+   * Returns a list of product names that are now out of stock or have
+   * insufficient quantity compared to what is in the cart.
+   * The caller can use this to show an error or remove the affected items.
+   */
+  revalidateCartStock: () => string[];
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -141,6 +148,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const itemCount = cart.items.reduce((total, item) => total + item.quantity, 0);
 
+  /**
+   * Revalidate all cart items against their stored stockQuantity.
+   * Returns names of products that are now out of stock or have
+   * insufficient quantity relative to what the cart holds.
+   */
+  const revalidateCartStock = useCallback((): string[] => {
+    const problemItems: string[] = [];
+    for (const item of cart.items) {
+      const availableStock = item.product.stockQuantity ?? 0;
+      if (availableStock <= 0) {
+        problemItems.push(`${item.product.name} (out of stock)`);
+      } else if (item.quantity > availableStock) {
+        problemItems.push(
+          `${item.product.name} (only ${availableStock} left, you have ${item.quantity})`
+        );
+      }
+    }
+    return problemItems;
+  }, [cart.items]);
+
   return (
     <CartContext.Provider
       value={{
@@ -152,6 +179,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         isCartOpen,
         setIsCartOpen,
         itemCount,
+        revalidateCartStock,
       }}
     >
       {children}

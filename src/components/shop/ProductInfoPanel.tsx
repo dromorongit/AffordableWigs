@@ -7,7 +7,16 @@ import { CartItemProduct } from "@/types/cart";
 import { IProductPopulated } from "@/types/product";
 import { BRAND, CONTACT } from "@/constants";
 import { Button } from "@/components/ui";
-import { FiCheck, FiMessageCircle, FiShoppingBag } from "react-icons/fi";
+import { FiCheck, FiMessageCircle, FiShoppingBag, FiAlertTriangle } from "react-icons/fi";
+import {
+  getStockStatus,
+  getStockLabel,
+  getStockBadgeClass,
+  getStockAvailabilityMessage,
+  canAddToCart,
+  getMaxQuantity,
+  LOW_STOCK_THRESHOLD,
+} from "@/lib/inventory";
 
 interface ProductInfoPanelProps {
   product: IProductPopulated;
@@ -26,6 +35,7 @@ function convertToCartProduct(product: IProductPopulated): CartItemProduct {
       name: product.category.name,
       slug: product.category.slug,
     } : undefined,
+    stockQuantity: product.stockQuantity,
   };
 }
 
@@ -53,31 +63,41 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
     density,
   } = product;
 
+  const stockStatus = getStockStatus(stockQuantity);
+  const isOutOfStock = stockStatus === "out-of-stock";
+  const isLowStock = stockStatus === "low-stock";
+  const purchasable = canAddToCart(stockQuantity);
+  const maxQty = getMaxQuantity(stockQuantity);
+  const availabilityMsg = getStockAvailabilityMessage(stockQuantity);
+
   // Determine badges
   const badges: { text: string; className: string }[] = [];
   if (isNewArrival) badges.push({ text: "New Arrival", className: "bg-primary text-white" });
   if (isBestSeller) badges.push({ text: "Best Seller", className: "bg-text-primary text-white" });
   if (isFeatured) badges.push({ text: "Featured", className: "bg-text-secondary text-white" });
 
-  const isInStock = stockQuantity > 0;
   const whatsAppMessage = encodeURIComponent(
     `Hi Affordable Wigs Gh, I'm interested in "${name}". Is it available?`
   );
   const whatsAppLink = `${CONTACT.whatsappLink}?text=${whatsAppMessage}`;
 
   const handleAddToCart = () => {
-    if (!isInStock) return;
-    
+    if (!purchasable) return;
+
     setIsAdding(true);
     const cartProduct = convertToCartProduct(product);
     addToCart(cartProduct, quantity);
-    
+
     // Show feedback briefly
     setTimeout(() => {
       setIsAdding(false);
       setIsCartOpen(true);
     }, 500);
   };
+
+  // Clamp quantity to max allowed whenever stockQuantity changes
+  const safeQuantity = Math.min(quantity, maxQty);
+  const effectiveQuantity = purchasable ? safeQuantity : 0;
 
   return (
     <div className="space-y-6">
@@ -132,30 +152,38 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
         )}
       </div>
 
-      {/* Stock Status */}
+      {/* ── Stock Status ── */}
       <div className="flex items-center gap-2">
-        {isInStock ? (
+        {isOutOfStock ? (
           <>
-            <FiCheck className="w-5 h-5 text-green-600" />
-            <span className="text-sm text-green-700 font-medium">
-              In Stock ({stockQuantity} available)
+            <span className="w-5 h-5 rounded-full bg-red-500 inline-block" />
+            <span className="text-sm text-red-600 font-medium">Out of Stock</span>
+          </>
+        ) : isLowStock ? (
+          <>
+            <FiAlertTriangle className="w-5 h-5 text-amber-500" />
+            <span className="text-sm text-amber-600 font-medium">
+              Low Stock — {availabilityMsg}
             </span>
           </>
         ) : (
-          <span className="text-sm text-red-600 font-medium">
-            Out of Stock
-          </span>
+          <>
+            <FiCheck className="w-5 h-5 text-green-600" />
+            <span className="text-sm text-green-700 font-medium">
+              In Stock — {availabilityMsg}
+            </span>
+          </>
         )}
       </div>
 
-      {/* Quantity Selector */}
-      {isInStock && (
+      {/* ── Quantity Selector ── */}
+      {purchasable && (
         <div className="flex items-center gap-4">
           <span className="text-sm text-text-light">Quantity</span>
           <div className="flex items-center border border-neutral-light rounded-premium">
             <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              disabled={quantity <= 1}
+              onClick={() => setQuantity(Math.max(1, effectiveQuantity - 1))}
+              disabled={effectiveQuantity <= 1}
               className="w-10 h-10 flex items-center justify-center text-text-light hover:text-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,11 +191,11 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
               </svg>
             </button>
             <span className="w-12 h-10 flex items-center justify-center border-x border-neutral-light text-text-primary font-medium">
-              {quantity}
+              {effectiveQuantity}
             </span>
             <button
-              onClick={() => setQuantity(Math.min(stockQuantity, quantity + 1))}
-              disabled={quantity >= stockQuantity}
+              onClick={() => setQuantity(Math.min(maxQty, effectiveQuantity + 1))}
+              disabled={effectiveQuantity >= stockQuantity}
               className="w-10 h-10 flex items-center justify-center text-text-light hover:text-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,8 +206,8 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
         </div>
       )}
 
-      {/* Add to Cart Button */}
-      {isInStock && (
+      {/* ── Add to Cart Button ── */}
+      {purchasable ? (
         <Button
           variant="primary"
           size="lg"
@@ -202,6 +230,10 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
             </>
           )}
         </Button>
+      ) : (
+        <div className="w-full py-3.5 bg-gray-200 text-gray-500 text-center rounded-premium font-medium cursor-not-allowed select-none">
+          Out of Stock
+        </div>
       )}
 
       {/* WhatsApp Inquiry Button */}

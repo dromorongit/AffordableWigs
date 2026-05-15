@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiEye, FiX, FiCheck, FiAlertCircle } from "react-icons/fi";
+import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiEye, FiX, FiCheck, FiAlertCircle, FiAlertTriangle } from "react-icons/fi";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { useToast } from "@/components/ui";
+import { getStockStatus, getStockLabel, getStockBadgeClass, LOW_STOCK_THRESHOLD } from "@/lib/inventory";
 
 interface Product {
   _id: string;
@@ -299,87 +300,113 @@ export default function AdminProductsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {products.map((product) => (
-                  <tr key={product._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                          {product.mainImage && (
-                            <img
-                              src={product.mainImage}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                            />
+                {products.map((product) => {
+                  const stockStatus = getStockStatus(product.stockQuantity);
+                  const isLowOrOut = stockStatus === "low-stock" || stockStatus === "out-of-stock";
+
+                  return (
+                    <tr
+                      key={product._id}
+                      className={`hover:bg-gray-50 transition-colors ${
+                        stockStatus === "out-of-stock"
+                          ? "bg-red-50/60"
+                          : stockStatus === "low-stock"
+                          ? "bg-amber-50/40"
+                          : ""
+                      }`}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                            {product.mainImage && (
+                              <img
+                                src={product.mainImage}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium text-gray-900">{product.name}</p>
+                              {stockStatus === "out-of-stock" && (
+                                <FiAlertCircle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" title="Out of stock" />
+                              )}
+                              {stockStatus === "low-stock" && (
+                                <FiAlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" title="Low stock" />
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500">{product.slug}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {typeof product.category === "object" && product.category !== null
+                          ? (product.category as any).name
+                          : "N/A"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        GH₵{product.price.toFixed(2)}
+                        {product.compareAtPrice && (
+                          <span className="ml-2 text-gray-400 line-through text-xs">
+                            GH₵{product.compareAtPrice.toFixed(2)}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full ${getStockBadgeClass(stockStatus)}`}>
+                          {stockStatus === "out-of-stock" && (
+                            <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
+                          )}
+                          {stockStatus === "low-stock" && (
+                            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+                          )}
+                          {stockStatus === "in-stock" && (
+                            <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+                          )}
+                          {getStockLabel(stockStatus)}
+                          {stockStatus !== "out-of-stock" && ` (${product.stockQuantity})`}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-1 flex-wrap">
+                          {product.isFeatured && (
+                            <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">Featured</span>
+                          )}
+                          {product.isBestSeller && (
+                            <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">Best Seller</span>
+                          )}
+                          {product.isNewArrival && (
+                            <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">New</span>
                           )}
                         </div>
-                        <div className="ml-4">
-                          <p className="text-sm font-medium text-gray-900">{product.name}</p>
-                          <p className="text-xs text-gray-500">{product.slug}</p>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            href={`/shop/${product.slug}`}
+                            target="_blank"
+                            className="p-2 text-gray-400 hover:text-gray-600"
+                          >
+                            <FiEye className="w-4 h-4" />
+                          </Link>
+                          <button
+                            onClick={() => openEditModal(product)}
+                            className="p-2 text-gray-400 hover:text-burgundy-600"
+                          >
+                            <FiEdit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product._id)}
+                            className="p-2 text-gray-400 hover:text-red-600"
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {typeof product.category === "object" && product.category !== null 
-                        ? (product.category as any).name 
-                        : "N/A"}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      GH₵{product.price.toFixed(2)}
-                      {product.compareAtPrice && (
-                        <span className="ml-2 text-gray-400 line-through text-xs">
-                          GH₵{product.compareAtPrice.toFixed(2)}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        product.stockQuantity > 10
-                          ? "bg-green-100 text-green-800"
-                          : product.stockQuantity > 0
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
-                      }`}>
-                        {product.stockQuantity} in stock
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-1 flex-wrap">
-                        {product.isFeatured && (
-                          <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">Featured</span>
-                        )}
-                        {product.isBestSeller && (
-                          <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">Best Seller</span>
-                        )}
-                        {product.isNewArrival && (
-                          <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">New</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          href={`/shop/${product.slug}`}
-                          target="_blank"
-                          className="p-2 text-gray-400 hover:text-gray-600"
-                        >
-                          <FiEye className="w-4 h-4" />
-                        </Link>
-                        <button
-                          onClick={() => openEditModal(product)}
-                          className="p-2 text-gray-400 hover:text-burgundy-600"
-                        >
-                          <FiEdit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product._id)}
-                          className="p-2 text-gray-400 hover:text-red-600"
-                        >
-                          <FiTrash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

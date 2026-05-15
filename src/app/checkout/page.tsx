@@ -153,6 +153,19 @@ export default function CheckoutPage() {
     setError(null);
 
     try {
+      // ── Client-side stock revalidation before sending to backend ──
+      const stockIssues = cart.items.filter(
+        (item) => (item.product.stockQuantity ?? 0) < item.quantity
+      );
+      if (stockIssues.length > 0) {
+        const details = stockIssues
+          .map((i) => `${i.product.name} (requested: ${i.quantity}, available: ${i.product.stockQuantity ?? 0})`)
+          .join(", ");
+        throw new Error(
+          `Some items in your cart are no longer available in the requested quantity: ${details}. Please update your cart.`
+        );
+      }
+
       const orderData: OrderData = {
         customer: formData,
         items: cart.items,
