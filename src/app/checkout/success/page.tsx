@@ -30,12 +30,18 @@ function CheckoutSuccessContent() {
   useEffect(() => {
     // If no reference, redirect to home
     if (!reference) {
+      console.log("[Success DEBUG] No reference, redirecting to home");
       router.push("/");
       return;
     }
 
+    console.log("[Success DEBUG] Starting payment verification");
+    console.log("[Success DEBUG] Reference:", reference);
+    console.log("[Success DEBUG] OrderNumber:", orderNumber);
+
     const verifyPayment = async () => {
       try {
+        console.log("[Success DEBUG] Calling /api/payments/verify");
         const response = await fetch("/api/payments/verify", {
           method: "POST",
           headers: {
@@ -44,15 +50,19 @@ function CheckoutSuccessContent() {
           body: JSON.stringify({ reference, orderNumber }),
         });
 
+        console.log("[Success DEBUG] Verify response status:", response.status);
         const data = await response.json();
+        console.log("[Success DEBUG] Verify response data:", data);
 
         if (!response.ok) {
+          console.log("[Success DEBUG] Verify failed:", data.message);
           setVerificationError(data.message || "Payment verification failed");
           setIsVerifying(false);
           return;
         }
 
         if (data.success && data.order) {
+          console.log("[Success DEBUG] Payment verified successfully");
           setOrderDetails({
             orderNumber: data.order.orderNumber,
             total: data.order.total,
@@ -65,12 +75,14 @@ function CheckoutSuccessContent() {
           // Clear the cart after successful payment
           clearCart();
         } else {
+          console.log("[Success DEBUG] Verify unsuccessful:", data.message);
           setVerificationError(data.message || "Unable to verify order");
         }
       } catch (error) {
-        console.error("Verification error:", error);
+        console.error("[Success DEBUG] Verification error:", error);
         setVerificationError("An error occurred during verification");
       } finally {
+        console.log("[Success DEBUG] Verification finished");
         setIsVerifying(false);
       }
     };
