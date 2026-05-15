@@ -30,18 +30,23 @@ function CheckoutSuccessContent() {
   useEffect(() => {
     // If no reference, redirect to home
     if (!reference) {
-      console.log("[Success DEBUG] No reference, redirecting to home");
-      router.push("/");
+      console.error("[Success DEBUG] No reference in URL — user may have arrived here directly or the redirect dropped the query params");
+      console.error("[Success DEBUG] Full URL:", typeof window !== "undefined" ? window.location.href : "N/A (SSR)");
+      setVerificationError(
+        "No payment reference found. If you have already paid, please contact support with your payment confirmation."
+      );
+      setIsVerifying(false);
       return;
     }
 
     console.log("[Success DEBUG] Starting payment verification");
-    console.log("[Success DEBUG] Reference:", reference);
-    console.log("[Success DEBUG] OrderNumber:", orderNumber);
+    console.log("[Success DEBUG] Reference from URL:", reference);
+    console.log("[Success DEBUG] OrderNumber from URL:", orderNumber);
+    console.log("[Success DEBUG] Full URL:", typeof window !== "undefined" ? window.location.href : "N/A (SSR)");
 
     const verifyPayment = async () => {
       try {
-        console.log("[Success DEBUG] Calling /api/payments/verify");
+        console.log("[Success DEBUG] Calling /api/payments/verify with:", { reference, orderNumber });
         const response = await fetch("/api/payments/verify", {
           method: "POST",
           headers: {
@@ -51,18 +56,19 @@ function CheckoutSuccessContent() {
         });
 
         console.log("[Success DEBUG] Verify response status:", response.status);
+        console.log("[Success DEBUG] Verify response ok:", response.ok);
         const data = await response.json();
-        console.log("[Success DEBUG] Verify response data:", data);
+        console.log("[Success DEBUG] Verify response data:", JSON.stringify(data));
 
         if (!response.ok) {
-          console.log("[Success DEBUG] Verify failed:", data.message);
+          console.error("[Success DEBUG] Verify request failed with status:", response.status);
           setVerificationError(data.message || "Payment verification failed");
           setIsVerifying(false);
           return;
         }
 
         if (data.success && data.order) {
-          console.log("[Success DEBUG] Payment verified successfully");
+          console.log("[Success DEBUG] Payment verified successfully — order:", data.order.orderNumber);
           setOrderDetails({
             orderNumber: data.order.orderNumber,
             total: data.order.total,
@@ -75,14 +81,14 @@ function CheckoutSuccessContent() {
           // Clear the cart after successful payment
           clearCart();
         } else {
-          console.log("[Success DEBUG] Verify unsuccessful:", data.message);
+          console.error("[Success DEBUG] Verify returned success=false or no order:", data.message);
           setVerificationError(data.message || "Unable to verify order");
         }
       } catch (error) {
-        console.error("[Success DEBUG] Verification error:", error);
-        setVerificationError("An error occurred during verification");
+        console.error("[Success DEBUG] Verification fetch error:", error);
+        setVerificationError("An error occurred during verification. Please check your connection and try again.");
       } finally {
-        console.log("[Success DEBUG] Verification finished");
+        console.log("[Success DEBUG] Verification finished — isVerifying set to false");
         setIsVerifying(false);
       }
     };

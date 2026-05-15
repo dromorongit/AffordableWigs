@@ -174,6 +174,10 @@ export default function CheckoutPage() {
         currency: BRAND.currency,
       };
 
+      console.log("[Checkout DEBUG] Submitting payment initialization for:", formData.email);
+      console.log("[Checkout DEBUG] Cart items count:", cart.items.length);
+      console.log("[Checkout DEBUG] Total:", cart.subtotal);
+
       const response = await fetch("/api/payments/initialize", {
         method: "POST",
         headers: {
@@ -182,20 +186,33 @@ export default function CheckoutPage() {
         body: JSON.stringify(orderData),
       });
 
+      console.log("[Checkout DEBUG] Initialize response status:", response.status);
+
       const data = await response.json();
 
+      console.log("[Checkout DEBUG] Initialize response data:", data);
+
       if (!response.ok) {
+        console.error("[Checkout DEBUG] Initialize failed:", data.message);
         throw new Error(data.message || "Failed to initialize payment");
       }
 
       // If we got an authorization URL, redirect to Paystack
       if (data.authorizationUrl) {
+        console.log("[Checkout DEBUG] Redirecting to Paystack authorization_url:", data.authorizationUrl);
+        console.log("[Checkout DEBUG] orderNumber:", data.orderNumber);
+        console.log("[Checkout DEBUG] reference:", data.reference);
+        // Use window.location.href for a hard redirect — this ensures we leave
+        // the SPA entirely and let Paystack handle the full payment flow.
+        // router.push() would be intercepted by Next.js navigation and could
+        // cause the redirect to be silently swallowed.
         window.location.href = data.authorizationUrl;
       } else {
+        console.error("[Checkout DEBUG] No authorizationUrl in response");
         throw new Error("Payment authorization URL not received");
       }
     } catch (err) {
-      console.error("Payment initialization error:", err);
+      console.error("[Checkout DEBUG] Payment initialization error:", err);
       setError(
         err instanceof Error
           ? err.message

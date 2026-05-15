@@ -10,6 +10,45 @@ import { getCurrentCustomer } from "@/lib/customerAuth";
 // Initialize Paystack with secret key
 const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY!);
 
+// ── Production URL Guard ──────────────────────────────────────────────
+// NEXT_PUBLIC_SITE_URL MUST be set explicitly in Railway to:
+//   https://affordablewigs-production.up.railway.app
+// If it is missing, localhost, or non-https we throw immediately so the
+// developer / ops engineer sees the problem in Railway logs instead of
+// silently sending customers to a dead redirect URL.
+function getProductionSiteUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+
+  console.log("[Paystack Init DEBUG] NEXT_PUBLIC_SITE_URL raw value:", raw);
+
+  if (!raw) {
+    const msg =
+      "NEXT_PUBLIC_SITE_URL is not set. Set it in Railway to https://affordablewigs-production.up.railway.app";
+    console.error("[Paystack Init DEBUG] FATAL:", msg);
+    throw new Error(msg);
+  }
+
+  // Reject localhost / 127.0.0.1 / 0.0.0.0 in production
+  if (
+    raw.includes("localhost") ||
+    raw.includes("127.0.0.1") ||
+    raw.includes("0.0.0.0")
+  ) {
+    const msg = `NEXT_PUBLIC_SITE_URL points to a local address (${raw}). Set it to https://affordablewigs-production.up.railway.app in Railway.`;
+    console.error("[Paystack Init DEBUG] FATAL:", msg);
+    throw new Error(msg);
+  }
+
+  // Enforce https in production
+  if (!raw.startsWith("https://")) {
+    const msg = `NEXT_PUBLIC_SITE_URL must use https:// (got: ${raw}). Set it to https://affordablewigs-production.up.railway.app in Railway.`;
+    console.error("[Paystack Init DEBUG] FATAL:", msg);
+    throw new Error(msg);
+  }
+
+  return raw.replace(/\/+$/, ""); // strip trailing slashes
+}
+
 // Generate unique order number
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -115,14 +154,31 @@ export async function POST(request: NextRequest) {
     // Calculate amount in kobo (Paystack uses kobo for GHS)
     const amountInKobo = Math.round(total * 100);
 
+    // ── Build production-safe callback URL ────────────────────────────
+    // getProductionSiteUrl() throws if NEXT_PUBLIC_SITE_URL is missing,
+    // localhost, or non-https — so we never silently send customers to a
+    // dead redirect URL.
+    const siteUrl = getProductionSiteUrl();
+    const paystackReference = `${orderNumber}-${Date.now()}`;
+    // Pass reference AND orderNumber as query params so the success page
+    // can read them immediately without relying on session/cookie state.
+    const callbackUrl = `${siteUrl}/checkout/success?reference=${encodeURIComponent(paystackReference)}&order=${encodeURIComponent(orderNumber)}`;
+
+    console.log("[Paystack Init DEBUG] siteUrl:", siteUrl);
+    console.log("[Paystack Init DEBUG] callback_url being sent to Paystack:", callbackUrl);
+    console.log("[Paystack Init DEBUG] orderNumber:", orderNumber);
+    console.log("[Paystack Init DEBUG] paystackReference:", paystackReference);
+    console.log("[Paystack Init DEBUG] amountInKobo:", amountInKobo);
+    console.log("[Paystack Init DEBUG] customer email:", customer.email);
+
     // Initialize Paystack transaction
     const transaction = await paystack.transaction.initialize({
       amount: amountInKobo,
       email: customer.email,
       name: customer.fullName,
       currency: "GHS",
-      reference: `${orderNumber}-${Date.now()}`,
-      callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/success`,
+      reference: paystackReference,
+      callback_url: callbackUrl,
       metadata: {
         orderNumber,
         custom_fields: [
@@ -135,13 +191,20 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log("[Paystack Init DEBUG] Paystack response status:", transaction.status);
+    console.log("[Paystack Init DEBUG] Paystack response message:", transaction.message);
+
     if (!transaction.status) {
-      console.error("[Payment Init] Paystack initialization failed:", transaction.message);
+      console.error("[Paystack Init DEBUG] Paystack initialization FAILED:", transaction.message);
       return NextResponse.json(
         { message: "Failed to initialize payment. Please try again." },
         { status: 500 }
       );
     }
+
+    console.log("[Paystack Init DEBUG] Paystack initialization SUCCESS");
+    console.log("[Paystack Init DEBUG] authorization_url:", transaction.data.authorization_url);
+    console.log("[Paystack Init DEBUG] reference:", transaction.data.reference);
 
     // Pre-create order with pending payment status
     await connectDB();
@@ -170,7 +233,9 @@ export async function POST(request: NextRequest) {
 
     await newOrder.save();
 
-    console.log("[Payment Init] Order pre-created:", orderNumber, "with reference:", transaction.data.reference);
+    console.log("[Paystack Init DEBUG] Order saved to DB:", orderNumber);
+    console.log("[Paystack Init DEBUG] Order paymentReference:", newOrder.paymentReference);
+    console.log("[Paystack Init DEBUG] Order paymentStatus:", newOrder.paymentStatus);
 
     // Return authorization URL and order reference
     return NextResponse.json({
