@@ -31,23 +31,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
-    try {
-      // Parse and validate request body
-      const body = await request.json();
-      const validation = validateInput(paymentVerifySchema, body);
+  try {
+    // Parse and validate request body
+    const body = await request.json();
+    const validation = validateInput(paymentVerifySchema, body);
 
-      if (!validation.success) {
-        console.log("[Verify DEBUG] Validation failed:", validation.errors);
-        return NextResponse.json(
-          { message: validation.errors?.join(", ") || "Invalid input" },
-          { status: 400 }
-        );
-      }
+    if (!validation.success) {
+      console.log("[Verify DEBUG] Validation failed:", validation.errors);
+      return NextResponse.json(
+        { message: validation.errors?.join(", ") || "Invalid input" },
+        { status: 400 }
+      );
+    }
 
-      const { reference, orderNumber } = validation.data!;
+    const { reference, orderNumber } = validation.data!;
 
-      console.log(`[Verify DEBUG] Route hit`);
-      console.log(`[Verify DEBUG] Verifying payment: ${reference} for order: ${orderNumber || "N/A"}`);
+    console.log(`[Verify DEBUG] Route hit`);
+    console.log(`[Verify DEBUG] Verifying payment: ${reference} for order: ${orderNumber || "N/A"}`);
 
     // Connect to database
     await connectDB();
