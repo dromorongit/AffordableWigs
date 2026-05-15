@@ -30,6 +30,7 @@ export interface IOrder extends Document {
   paymentStatus: "pending" | "paid" | "failed" | "cancelled";
   orderStatus: "Processing" | "Paid" | "Shipped" | "Delivered" | "Cancelled";
   userId?: string; // Optional: links order to a registered user
+  stockDeducted: boolean; // Tracks whether inventory has been deducted (idempotency guard)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -159,6 +160,10 @@ const OrderSchema = new Schema<IOrder>(
       type: String,
       trim: true,
     },
+    stockDeducted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -174,6 +179,7 @@ OrderSchema.index({ paymentStatus: 1 });
 OrderSchema.index({ orderStatus: 1 });
 OrderSchema.index({ createdAt: -1 });
 OrderSchema.index({ userId: 1 });
+OrderSchema.index({ stockDeducted: 1 });
 
 const Order: Model<IOrder> =
   mongoose.models?.Order || mongoose.model<IOrder>("Order", OrderSchema);

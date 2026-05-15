@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import PaystackLib from "paystack";
 import { connectDB } from "@/lib/mongodb";
 import Order, { IOrderItem, ICustomerInfo } from "@/models/Order";
+import Product from "@/models/Product";
 import { rateLimit, RATE_LIMITS, getClientIP } from "@/lib/rateLimit";
 import { validateInput, paymentInitSchema } from "@/lib/validation";
 import { getCurrentCustomer } from "@/lib/customerAuth";
@@ -62,6 +63,55 @@ export async function POST(request: NextRequest) {
     // Generate order number
     const orderNumber = generateOrderNumber();
 
+    // ── Inventory Safety: Validate sufficient stock before creating order ──
+    console.log("[Payment Init] Validating stock for", orderItems.length, "item(s)");
+    const outOfStockItems: string[] = [];
+    const insufficientStockItems: { name: string; requested: number; available: number }[] = [];
+
+    for (const item of orderItems) {
+      const product = await Product.findById(item.productId);
+      if (!product) {
+        return NextResponse.json(
+          { message: `Product not found: ${item.name}` },
+          { status: 400 }
+        );
+      }
+      if (product.stockQuantity < item.quantity) {
+        insufficientStockItems.push({
+          name: item.name,
+          requested: item.quantity,
+          available: product.stockQuantity,
+        });
+      } else if (product.stockQuantity === 0) {
+        outOfStockItems.push(item.name);
+      }
+    }
+
+    if (outOfStockItems.length > 0) {
+      console.error("[Payment Init] Out of stock:", outOfStockItems);
+      return NextResponse.json(
+        {
+          message: `The following item(s) are out of stock: ${outOfStockItems.join(", ")}. Please remove them from your cart.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (insufficientStockItems.length > 0) {
+      const details = insufficientStockItems
+        .map((i) => `${i.name} (requested: ${i.requested}, available: ${i.available})`)
+        .join(", ");
+      console.error("[Payment Init] Insufficient stock:", details);
+      return NextResponse.json(
+        {
+          message: `Insufficient stock for: ${details}. Please reduce quantities in your cart.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log("[Payment Init] Stock validation passed for all items");
+
     // Calculate amount in kobo (Paystack uses kobo for GHS)
     const amountInKobo = Math.round(total * 100);
 
@@ -115,6 +165,7 @@ export async function POST(request: NextRequest) {
       paymentStatus: "pending",
       orderStatus: "Processing",
       userId: (await getCurrentCustomer())?.id || undefined,
+      stockDeducted: false,
     });
 
     await newOrder.save();
