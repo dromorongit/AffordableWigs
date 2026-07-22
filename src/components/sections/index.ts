@@ -1,6 +1,9 @@
 export { HeroSection } from "./HeroSection";
 export { CategoriesSection } from "./CategoriesSection";
 export { FeaturedProductsSection } from "./FeaturedProductsSection";
+export { BestSellerProductsSection } from "./BestSellerProductsSection";
+export { NewArrivalProductsSection } from "./NewArrivalProductsSection";
+export { ProductSection } from "./ProductSection";
 export { ServicesSection } from "./ServicesSection";
 export { WhyChooseUsSection } from "./WhyChooseUsSection";
 export { TestimonialsPreviewSection } from "./TestimonialsPreviewSection";

@@ -254,7 +254,7 @@ export async function getRelatedProducts(
 /**
  * Fetch featured products
  */
-export async function getFeaturedProducts(limit = 4) {
+export async function getFeaturedProducts(limit = 8) {
   try {
     const connected = await ensureConnection();
     if (!connected) return [];
@@ -279,7 +279,7 @@ export async function getFeaturedProducts(limit = 4) {
 /**
  * Fetch best seller products
  */
-export async function getBestSellerProducts(limit = 4) {
+export async function getBestSellerProducts(limit = 8) {
   try {
     const connected = await ensureConnection();
     if (!connected) return [];
@@ -304,7 +304,7 @@ export async function getBestSellerProducts(limit = 4) {
 /**
  * Fetch new arrival products
  */
-export async function getNewArrivalProducts(limit = 4) {
+export async function getNewArrivalProducts(limit = 8) {
   try {
     const connected = await ensureConnection();
     if (!connected) return [];

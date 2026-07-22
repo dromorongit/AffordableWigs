@@ -3,9 +3,11 @@ import {
   HeroSection,
   CategoriesSection,
   FeaturedProductsSection,
-  ServicesSection,
+  BestSellerProductsSection,
+  NewArrivalProductsSection,
   WhyChooseUsSection,
   TestimonialsPreviewSection,
+  ServicesSection,
   CTASection,
 } from "@/components/sections";
 
@@ -17,9 +19,11 @@ export default function HomePage() {
         <HeroSection />
         <CategoriesSection />
         <FeaturedProductsSection />
+        <BestSellerProductsSection />
+        <NewArrivalProductsSection />
         <WhyChooseUsSection />
-        <ServicesSection />
         <TestimonialsPreviewSection />
+        <ServicesSection />
         <CTASection />
       </main>
       <Footer />
