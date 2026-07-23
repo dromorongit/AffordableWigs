@@ -4,6 +4,17 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BRAND } from "@/constants";
 
+interface OrderItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  mainImage?: string;
+  stylingType: string;
+  stylingName: string;
+  stylingPrice: number;
+}
+
 interface Order {
   _id: string;
   orderNumber: string;
@@ -12,13 +23,7 @@ interface Order {
   paymentStatus: string;
   orderStatus: string;
   createdAt: string;
-  items: Array<{
-    productId: string;
-    name: string;
-    quantity: number;
-    price: number;
-    mainImage?: string;
-  }>;
+  items: OrderItem[];
 }
 
 export default function OrdersPage() {
@@ -85,7 +90,7 @@ export default function OrdersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-heading text-xl text-text-primary">My Orders</h2>
-        
+
         {/* Filter */}
         <select
           value={filter}
@@ -107,75 +112,83 @@ export default function OrdersPage() {
         </div>
       ) : filteredOrders.length > 0 ? (
         <div className="space-y-4">
-          {filteredOrders.map((order) => (
-            <div
-              key={order._id}
-              className="bg-background rounded-premium border border-neutral-light overflow-hidden"
-            >
-              {/* Order Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-neutral-light/30 border-b border-neutral-light">
-                <div>
-                  <p className="font-medium text-text-primary">
-                    Order #{order.orderNumber}
-                  </p>
-                  <p className="text-sm text-text-light">
-                    {formatDate(order.createdAt)}
-                  </p>
+          {filteredOrders.map((order) => {
+            const stylingCount = order.items?.filter((i) => i.stylingType !== "none").length || 0;
+            return (
+              <div
+                key={order._id}
+                className="bg-background rounded-premium border border-neutral-light overflow-hidden"
+              >
+                {/* Order Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-neutral-light/30 border-b border-neutral-light">
+                  <div>
+                    <p className="font-medium text-text-primary">
+                      Order #{order.orderNumber}
+                    </p>
+                    <p className="text-sm text-text-light">
+                      {formatDate(order.createdAt)}
+                    </p>
+                  </div>
+                  <div className="mt-2 sm:mt-0 flex items-center gap-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.orderStatus)}`}>
+                      {order.orderStatus}
+                    </span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.paymentStatus)}`}>
+                      {order.paymentStatus}
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-2 sm:mt-0 flex items-center gap-3">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.orderStatus)}`}>
-                    {order.orderStatus}
-                  </span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.paymentStatus)}`}>
-                    {order.paymentStatus}
-                  </span>
-                </div>
-              </div>
 
-              {/* Order Items Preview */}
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm text-text-light">
-                    {order.items.length} {order.items.length === 1 ? "item" : "items"}
-                  </span>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {order.items.slice(0, 4).map((item, index) => (
-                    <div
-                      key={index}
-                      className="w-14 h-14 bg-neutral-light rounded-md flex items-center justify-center"
-                    >
-                      <svg className="w-6 h-6 text-neutral-nude" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
-                      </svg>
-                    </div>
-                  ))}
-                  {order.items.length > 4 && (
-                    <div className="w-14 h-14 bg-neutral-light rounded-md flex items-center justify-center text-xs text-text-light">
-                      +{order.items.length - 4}
-                    </div>
-                  )}
-                </div>
-              </div>
+                {/* Order Items Preview */}
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm text-text-light">
+                      {order.items.length} {order.items.length === 1 ? "item" : "items"}
+                    </span>
+                    {stylingCount > 0 && (
+                      <span className="text-xs text-primary font-medium">
+                        {stylingCount} with styling
+                      </span>
+                    )}
+                  </div>
 
-              {/* Order Footer */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border-t border-neutral-light bg-neutral-light/10">
-                <div className="mb-3 sm:mb-0">
-                  <span className="text-text-light text-sm">Total:</span>
-                  <span className="ml-2 text-lg font-bold text-text-primary">
-                    {BRAND.currencySymbol}{order.total.toLocaleString()}
-                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {order.items.slice(0, 4).map((item, index) => (
+                      <div
+                        key={index}
+                        className="w-14 h-14 bg-neutral-light rounded-md flex items-center justify-center"
+                      >
+                        <svg className="w-6 h-6 text-neutral-nude" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                        </svg>
+                      </div>
+                    ))}
+                    {order.items.length > 4 && (
+                      <div className="w-14 h-14 bg-neutral-light rounded-md flex items-center justify-center text-xs text-text-light">
+                        +{order.items.length - 4}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <Link
-                  href={`/account/orders/${order._id}`}
-                  className="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-premium font-medium hover:bg-primary-700 transition-colors"
-                >
-                  View Details
-                </Link>
+
+                {/* Order Footer */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border-t border-neutral-light bg-neutral-light/10">
+                  <div className="mb-3 sm:mb-0">
+                    <span className="text-text-light text-sm">Total:</span>
+                    <span className="ml-2 text-lg font-bold text-text-primary">
+                      {BRAND.currencySymbol}{order.total.toLocaleString()}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/account/orders/${order._id}`}
+                    className="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-premium font-medium hover:bg-primary-700 transition-colors"
+                  >
+                    View Details
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-16 bg-background rounded-premium border border-neutral-light">
@@ -184,8 +197,8 @@ export default function OrdersPage() {
           </svg>
           <h3 className="text-lg font-medium text-text-primary mb-2">No orders found</h3>
           <p className="text-text-light mb-6">
-            {filter !== "all" 
-              ? "No orders match your filter criteria" 
+            {filter !== "all"
+              ? "No orders match your filter criteria"
               : "You haven't placed any orders yet"}
           </p>
           <Link

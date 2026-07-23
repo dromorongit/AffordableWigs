@@ -6,29 +6,21 @@ import Product from "@/models/Product";
 import { rateLimit, RATE_LIMITS, getClientIP } from "@/lib/rateLimit";
 import { validateInput, paymentInitSchema } from "@/lib/validation";
 import { getCurrentCustomer } from "@/lib/customerAuth";
+import { STYLING_OPTIONS } from "@/constants";
 
-// Initialize Paystack with secret key
 const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY!);
 
-// ── Production URL Guard ──────────────────────────────────────────────
-// NEXT_PUBLIC_SITE_URL MUST be set explicitly in Railway to:
-//   https://affordablewigs-production.up.railway.app
-// If it is missing, localhost, or non-https we throw immediately so the
-// developer / ops engineer sees the problem in Railway logs instead of
-// silently sending customers to a dead redirect URL.
 function getProductionSiteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL;
 
   console.log("[Paystack Init DEBUG] NEXT_PUBLIC_SITE_URL raw value:", raw);
 
   if (!raw) {
-    const msg =
-      "NEXT_PUBLIC_SITE_URL is not set. Set it in Railway to https://affordablewigs-production.up.railway.app";
+    const msg = "NEXT_PUBLIC_SITE_URL is not set. Set it in Railway to https://affordablewigs-production.up.railway.app";
     console.error("[Paystack Init DEBUG] FATAL:", msg);
     throw new Error(msg);
   }
 
-  // Reject localhost / 127.0.0.1 / 0.0.0.0 in production
   if (
     raw.includes("localhost") ||
     raw.includes("127.0.0.1") ||
@@ -39,17 +31,15 @@ function getProductionSiteUrl(): string {
     throw new Error(msg);
   }
 
-  // Enforce https in production
   if (!raw.startsWith("https://")) {
     const msg = `NEXT_PUBLIC_SITE_URL must use https:// (got: ${raw}). Set it to https://affordablewigs-production.up.railway.app in Railway.`;
     console.error("[Paystack Init DEBUG] FATAL:", msg);
     throw new Error(msg);
   }
 
-  return raw.replace(/\/+$/, ""); // strip trailing slashes
+  return raw.replace(/\/+$/, "");
 }
 
-// Generate unique order number
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
   const random = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -57,27 +47,25 @@ function generateOrderNumber(): string {
 }
 
 export async function POST(request: NextRequest) {
-  // Apply rate limiting
   const clientIP = getClientIP(request.headers);
   const rateLimitResult = rateLimit(clientIP, RATE_LIMITS.PAYMENT);
-  
+
   if (!rateLimitResult.allowed) {
     return NextResponse.json(
       { message: "Too many requests. Please try again later." },
-      { 
+      {
         status: 429,
         headers: {
           "Retry-After": Math.ceil(rateLimitResult.resetIn / 1000).toString(),
-        }
+        },
       }
     );
   }
 
   try {
-    // Parse and validate request body
     const body = await request.json();
     const validation = validateInput(paymentInitSchema, body);
-    
+
     if (!validation.success) {
       return NextResponse.json(
         { message: validation.errors?.join(", ") || "Invalid input" },
@@ -85,24 +73,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { customer, items, subtotal, total, currency } = validation.data!;
+    const { customer, items, subtotal, stylingTotal = 0, total, currency } = validation.data!;
+
+    const frontendTotal = total;
+    const expectedTotal = subtotal + stylingTotal;
+
+    if (Math.abs(frontendTotal - expectedTotal) > 0.01) {
+      console.error("[Payment Init] Frontend total mismatch. Expected:", expectedTotal, "Got:", frontendTotal);
+      return NextResponse.json(
+        { message: "Invalid totals. Please refresh and try again." },
+        { status: 400 }
+      );
+    }
+
+    const serverStylingTotal = stylingTotal || 0;
+    const serverSubtotal = subtotal || 0;
+    const serverTotal = serverSubtotal + serverStylingTotal;
 
     console.log("[Payment Init] Starting payment for order, customer:", customer.email);
 
-    // Convert cart items to order items
-    const orderItems: IOrderItem[] = items.map((item) => ({
-      productId: item.product._id,
-      name: item.product.name,
-      slug: item.product.slug,
-      price: item.product.price,
-      quantity: item.quantity,
-      mainImage: item.product.mainImage,
-    }));
+    const orderItems: IOrderItem[] = items.map((item) => {
+      const stylingId = item.stylingType || "none";
+      const stylingOption = STYLING_OPTIONS.find((s) => s.id === stylingId) || STYLING_OPTIONS[0];
+      return {
+        productId: item.product._id,
+        name: item.product.name,
+        slug: item.product.slug,
+        price: item.product.price,
+        quantity: item.quantity,
+        mainImage: item.product.mainImage,
+        stylingType: stylingOption.id,
+        stylingName: stylingOption.name,
+        stylingPrice: stylingOption.price,
+      };
+    });
 
-    // Generate order number
     const orderNumber = generateOrderNumber();
 
-    // ── Inventory Safety: Validate sufficient stock before creating order ──
     console.log("[Payment Init] Validating stock for", orderItems.length, "item(s)");
     const outOfStockItems: string[] = [];
     const insufficientStockItems: { name: string; requested: number; available: number }[] = [];
@@ -151,17 +158,10 @@ export async function POST(request: NextRequest) {
 
     console.log("[Payment Init] Stock validation passed for all items");
 
-    // Calculate amount in kobo (Paystack uses kobo for GHS)
-    const amountInKobo = Math.round(total * 100);
+    const amountInKobo = Math.round(serverTotal * 100);
 
-    // ── Build production-safe callback URL ────────────────────────────
-    // getProductionSiteUrl() throws if NEXT_PUBLIC_SITE_URL is missing,
-    // localhost, or non-https — so we never silently send customers to a
-    // dead redirect URL.
     const siteUrl = getProductionSiteUrl();
     const paystackReference = `${orderNumber}-${Date.now()}`;
-    // Pass reference AND orderNumber as query params so the success page
-    // can read them immediately without relying on session/cookie state.
     const callbackUrl = `${siteUrl}/checkout/success?reference=${encodeURIComponent(paystackReference)}&order=${encodeURIComponent(orderNumber)}`;
 
     console.log("[Paystack Init DEBUG] siteUrl:", siteUrl);
@@ -171,7 +171,6 @@ export async function POST(request: NextRequest) {
     console.log("[Paystack Init DEBUG] amountInKobo:", amountInKobo);
     console.log("[Paystack Init DEBUG] customer email:", customer.email);
 
-    // Initialize Paystack transaction
     const transaction = await paystack.transaction.initialize({
       amount: amountInKobo,
       email: customer.email,
@@ -206,7 +205,6 @@ export async function POST(request: NextRequest) {
     console.log("[Paystack Init DEBUG] authorization_url:", transaction.data.authorization_url);
     console.log("[Paystack Init DEBUG] reference:", transaction.data.reference);
 
-    // Pre-create order with pending payment status
     await connectDB();
 
     const newOrder = new Order({
@@ -221,8 +219,9 @@ export async function POST(request: NextRequest) {
         orderNotes: customer.orderNotes || "",
       } as ICustomerInfo,
       items: orderItems,
-      subtotal,
-      total,
+      subtotal: serverSubtotal,
+      stylingTotal: serverStylingTotal,
+      total: serverTotal,
       currency: currency || "GHS",
       paymentReference: transaction.data.reference,
       paymentStatus: "pending",
@@ -236,8 +235,8 @@ export async function POST(request: NextRequest) {
     console.log("[Paystack Init DEBUG] Order saved to DB:", orderNumber);
     console.log("[Paystack Init DEBUG] Order paymentReference:", newOrder.paymentReference);
     console.log("[Paystack Init DEBUG] Order paymentStatus:", newOrder.paymentStatus);
+    console.log("[Paystack Init DEBUG] Order subtotal:", newOrder.subtotal, "stylingTotal:", serverStylingTotal, "total:", newOrder.total);
 
-    // Return authorization URL and order reference
     return NextResponse.json({
       success: true,
       authorizationUrl: transaction.data.authorization_url,

@@ -96,3 +96,11 @@ export const PAGE_METADATA = {
     description: "Complete your purchase securely with Paystack.",
   },
 } as const;
+
+export const STYLING_OPTIONS = [
+  { id: "none", name: "No Styling", price: 0 },
+  { id: "closure", name: "Closure Styling", price: 60 },
+  { id: "frontal", name: "Frontal Styling", price: 80 },
+] as const;
+
+export type StylingType = typeof STYLING_OPTIONS[number]["id"];

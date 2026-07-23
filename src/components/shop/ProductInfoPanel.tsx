@@ -7,6 +7,7 @@ import { CartItemProduct } from "@/types/cart";
 import { IProductPopulated } from "@/types/product";
 import { BRAND, CONTACT } from "@/constants";
 import { Button } from "@/components/ui";
+import { StylingSelector } from "@/components/cart/StylingSelector";
 import { FiCheck, FiMessageCircle, FiShoppingBag, FiAlertTriangle } from "react-icons/fi";
 import {
   getStockStatus,
@@ -43,6 +44,7 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
   const { addToCart, setIsCartOpen } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
+  const [stylingType, setStylingType] = useState("none");
 
   const {
     name,
@@ -86,9 +88,8 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
 
     setIsAdding(true);
     const cartProduct = convertToCartProduct(product);
-    addToCart(cartProduct, quantity);
+    addToCart(cartProduct, quantity, stylingType);
 
-    // Show feedback briefly
     setTimeout(() => {
       setIsAdding(false);
       setIsCartOpen(true);
@@ -175,6 +176,15 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
           </>
         )}
       </div>
+
+      {/* ── Styling Selector ── */}
+      {purchasable && (
+        <StylingSelector
+          value={stylingType}
+          onChange={(type) => setStylingType(type)}
+          disabled={isAdding}
+        />
+      )}
 
       {/* ── Quantity Selector ── */}
       {purchasable && (

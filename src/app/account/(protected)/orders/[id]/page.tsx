@@ -7,6 +7,18 @@ import Image from "next/image";
 import { BRAND } from "@/constants";
 import { Container, Section } from "@/components/ui";
 
+interface OrderDetailItem {
+  productId: string;
+  name: string;
+  slug: string;
+  price: number;
+  quantity: number;
+  mainImage?: string;
+  stylingType: string;
+  stylingName: string;
+  stylingPrice: number;
+}
+
 interface OrderDetail {
   _id: string;
   orderNumber: string;
@@ -18,14 +30,7 @@ interface OrderDetail {
   paymentReference?: string;
   createdAt: string;
   updatedAt: string;
-  items: Array<{
-    productId: string;
-    name: string;
-    slug: string;
-    price: number;
-    quantity: number;
-    mainImage?: string;
-  }>;
+  items: OrderDetailItem[];
   customer: {
     fullName: string;
     phone: string;
@@ -118,6 +123,10 @@ export default function OrderDetailPage() {
     });
   };
 
+  const calculateStylingTotal = (items: OrderDetailItem[]) => {
+    return items.reduce((sum, item) => sum + (item.stylingPrice * item.quantity), 0);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -144,6 +153,7 @@ export default function OrderDetailPage() {
   }
 
   const trackingSteps = getTrackingSteps(order.orderStatus);
+  const stylingTotal = calculateStylingTotal(order.items);
 
   return (
     <div>
@@ -186,10 +196,10 @@ export default function OrderDetailPage() {
             {trackingSteps.map((step) => (
               <div key={step.status} className="relative flex items-start gap-4 pl-8">
                 <div className={`absolute left-2.5 w-3 h-3 rounded-full mt-1.5 ${
-                  step.isCancelled 
-                    ? "bg-red-500" 
-                    : step.completed 
-                      ? "bg-green-500" 
+                  step.isCancelled
+                    ? "bg-red-500"
+                    : step.completed
+                      ? "bg-green-500"
                       : "bg-neutral-light"
                 }`} />
                 <div>
@@ -234,8 +244,13 @@ export default function OrderDetailPage() {
                   <div className="flex-1">
                     <p className="font-medium text-text-primary line-clamp-1">{item.name}</p>
                     <p className="text-sm text-text-light">Qty: {item.quantity}</p>
+                    {item.stylingType !== "none" && (
+                      <p className="text-sm text-primary font-medium">
+                        {item.stylingName}: +{BRAND.currencySymbol}{item.stylingPrice.toLocaleString()}
+                      </p>
+                    )}
                     <p className="text-sm font-medium text-text-primary mt-1">
-                      {BRAND.currencySymbol}{(item.price * item.quantity).toLocaleString()}
+                      {BRAND.currencySymbol}{((item.price + item.stylingPrice) * item.quantity).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -247,6 +262,10 @@ export default function OrderDetailPage() {
               <div className="flex justify-between py-2">
                 <span className="text-text-light">Subtotal</span>
                 <span className="text-text-primary">{BRAND.currencySymbol}{order.subtotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="text-text-light">Styling Total</span>
+                <span className="text-text-primary">{BRAND.currencySymbol}{stylingTotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="font-medium text-text-primary">Total</span>

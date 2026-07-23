@@ -2,22 +2,18 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { CartItem, CartState, CartItemProduct } from "@/types/cart";
+import { BRAND, STYLING_OPTIONS } from "@/constants";
 
 interface CartContextType {
   cart: CartState;
-  addToCart: (product: CartItemProduct, quantity?: number) => void;
+  addToCart: (product: CartItemProduct, quantity?: number, stylingType?: string) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
+  updateStyling: (productId: string, stylingType: string) => void;
   clearCart: () => void;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   itemCount: number;
-  /**
-   * Revalidate all cart items against their current stockQuantity.
-   * Returns a list of product names that are now out of stock or have
-   * insufficient quantity compared to what is in the cart.
-   * The caller can use this to show an error or remove the affected items.
-   */
   revalidateCartStock: () => string[];
 }
 
@@ -25,15 +21,39 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "affordable_wigs_cart";
 
+function getDefaultStyling(): { stylingType: string; stylingName: string; stylingPrice: number } {
+  return { stylingType: "none", stylingName: "No Styling", stylingPrice: 0 };
+}
+
 function getInitialCart(): CartState {
   return {
     items: [],
     subtotal: 0,
+    stylingTotal: 0,
+    total: 0,
   };
 }
 
 function calculateSubtotal(items: CartItem[]): number {
   return items.reduce((total, item) => total + item.product.price * item.quantity, 0);
+}
+
+function calculateStylingTotal(items: CartItem[]): number {
+  return items.reduce((total, item) => total + item.stylingPrice * item.quantity, 0);
+}
+
+function migrateCartItems(items: any[]): CartItem[] {
+  return items.map((item) => {
+    if (item.stylingType !== undefined) {
+      return item as CartItem;
+    }
+    const defaultStyling = getDefaultStyling();
+    return {
+      product: item.product,
+      quantity: item.quantity,
+      ...defaultStyling,
+    };
+  });
 }
 
 function saveCartToStorage(cart: CartState): void {
@@ -54,9 +74,14 @@ function loadCartFromStorage(): CartState {
     const stored = localStorage.getItem(CART_STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
+      const items = migrateCartItems(parsed.items || []);
+      const subtotal = calculateSubtotal(items);
+      const stylingTotal = calculateStylingTotal(items);
       return {
-        items: parsed.items || [],
-        subtotal: calculateSubtotal(parsed.items || []),
+        items,
+        subtotal,
+        stylingTotal,
+        total: subtotal + stylingTotal,
       };
     }
   } catch (error) {
@@ -70,44 +95,42 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     const loadedCart = loadCartFromStorage();
     setCart(loadedCart);
     setIsHydrated(true);
   }, []);
 
-  // Save cart to localStorage whenever cart changes
   useEffect(() => {
     if (isHydrated) {
       saveCartToStorage(cart);
     }
   }, [cart, isHydrated]);
 
-  const addToCart = useCallback((product: CartItemProduct, quantity: number = 1) => {
+  const addToCart = useCallback((product: CartItemProduct, quantity: number = 1, stylingType: string = "none") => {
     setCart((prevCart) => {
       const existingItem = prevCart.items.find(
         (item) => item.product._id === product._id
       );
 
+      const stylingOption = STYLING_OPTIONS.find((s) => s.id === stylingType) || STYLING_OPTIONS[0];
+      const styling = { stylingType: stylingOption.id, stylingName: stylingOption.name, stylingPrice: stylingOption.price };
+
       let newItems: CartItem[];
 
       if (existingItem) {
-        // Update quantity of existing item
         newItems = prevCart.items.map((item) =>
           item.product._id === product._id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, quantity: item.quantity + quantity, ...styling }
             : item
         );
       } else {
-        // Add new item
-        newItems = [...prevCart.items, { product, quantity }];
+        newItems = [...prevCart.items, { product, quantity, ...styling }];
       }
 
-      return {
-        items: newItems,
-        subtotal: calculateSubtotal(newItems),
-      };
+      const subtotal = calculateSubtotal(newItems);
+      const stylingTotal = calculateStylingTotal(newItems);
+      return { items: newItems, subtotal, stylingTotal, total: subtotal + stylingTotal };
     });
   }, []);
 
@@ -116,10 +139,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const newItems = prevCart.items.filter(
         (item) => item.product._id !== productId
       );
-      return {
-        items: newItems,
-        subtotal: calculateSubtotal(newItems),
-      };
+      const subtotal = calculateSubtotal(newItems);
+      const stylingTotal = calculateStylingTotal(newItems);
+      return { items: newItems, subtotal, stylingTotal, total: subtotal + stylingTotal };
     });
   }, []);
 
@@ -132,10 +154,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const newItems = prevCart.items.map((item) =>
         item.product._id === productId ? { ...item, quantity } : item
       );
-      return {
-        items: newItems,
-        subtotal: calculateSubtotal(newItems),
-      };
+      const subtotal = calculateSubtotal(newItems);
+      const stylingTotal = calculateStylingTotal(newItems);
+      return { items: newItems, subtotal, stylingTotal, total: subtotal + stylingTotal };
+    });
+  }, []);
+
+  const updateStyling = useCallback((productId: string, stylingType: string) => {
+    setCart((prevCart) => {
+      const stylingOption = STYLING_OPTIONS.find((s) => s.id === stylingType) || STYLING_OPTIONS[0];
+      const newItems = prevCart.items.map((item) =>
+        item.product._id === productId
+          ? { ...item, stylingType: stylingOption.id, stylingName: stylingOption.name, stylingPrice: stylingOption.price }
+          : item
+      );
+      const subtotal = calculateSubtotal(newItems);
+      const stylingTotal = calculateStylingTotal(newItems);
+      return { items: newItems, subtotal, stylingTotal, total: subtotal + stylingTotal };
     });
   }, []);
 
@@ -148,11 +183,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const itemCount = cart.items.reduce((total, item) => total + item.quantity, 0);
 
-  /**
-   * Revalidate all cart items against their stored stockQuantity.
-   * Returns names of products that are now out of stock or have
-   * insufficient quantity relative to what the cart holds.
-   */
   const revalidateCartStock = useCallback((): string[] => {
     const problemItems: string[] = [];
     for (const item of cart.items) {
@@ -175,6 +205,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         addToCart,
         removeFromCart,
         updateQuantity,
+        updateStyling,
         clearCart,
         isCartOpen,
         setIsCartOpen,

@@ -9,7 +9,6 @@ import { CartItem, CustomerInfo, OrderData } from "@/types/cart";
 import { BRAND, CONTACT } from "@/constants";
 import { Container, Section, Button } from "@/components/ui";
 
-// Form field types
 interface FormField {
   name: keyof CustomerInfo;
   label: string;
@@ -18,57 +17,14 @@ interface FormField {
   required: boolean;
 }
 
-// Form fields configuration
 const formFields: FormField[] = [
-  {
-    name: "fullName",
-    label: "Full Name",
-    placeholder: "Enter your full name",
-    type: "text",
-    required: true,
-  },
-  {
-    name: "phone",
-    label: "Phone Number",
-    placeholder: "Enter your phone number",
-    type: "tel",
-    required: true,
-  },
-  {
-    name: "email",
-    label: "Email Address",
-    placeholder: "Enter your email address",
-    type: "email",
-    required: true,
-  },
-  {
-    name: "deliveryAddress",
-    label: "Delivery Address",
-    placeholder: "Enter your delivery address",
-    type: "textarea",
-    required: true,
-  },
-  {
-    name: "cityOrTown",
-    label: "City/Town",
-    placeholder: "Enter your city or town",
-    type: "text",
-    required: true,
-  },
-  {
-    name: "regionOrArea",
-    label: "Region/Area",
-    placeholder: "Enter your region or area",
-    type: "text",
-    required: true,
-  },
-  {
-    name: "orderNotes",
-    label: "Order Notes (Optional)",
-    placeholder: "Any special instructions for delivery?",
-    type: "textarea",
-    required: false,
-  },
+  { name: "fullName", label: "Full Name", placeholder: "Enter your full name", type: "text", required: true },
+  { name: "phone", label: "Phone Number", placeholder: "Enter your phone number", type: "tel", required: true },
+  { name: "email", label: "Email Address", placeholder: "Enter your email address", type: "email", required: true },
+  { name: "deliveryAddress", label: "Delivery Address", placeholder: "Enter your delivery address", type: "textarea", required: true },
+  { name: "cityOrTown", label: "City/Town", placeholder: "Enter your city or town", type: "text", required: true },
+  { name: "regionOrArea", label: "Region/Area", placeholder: "Enter your region or area", type: "text", required: true },
+  { name: "orderNotes", label: "Order Notes (Optional)", placeholder: "Any special instructions for delivery?", type: "textarea", required: false },
 ];
 
 export default function CheckoutPage() {
@@ -88,38 +44,32 @@ export default function CheckoutPage() {
   });
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof CustomerInfo, string>>>({});
 
-  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Image error handling
   const handleImageError = (productId: string) => {
     setImageErrors(prev => new Set(prev).add(productId));
   };
 
   const hasImageError = (productId: string) => imageErrors.has(productId);
 
-  // Redirect if cart is empty
   useEffect(() => {
     if (cart.items.length === 0 && !isSubmitting) {
       router.push("/cart");
     }
-  }, [cart.items.length, router]);
+  }, [cart.items.length, router, isSubmitting]);
 
-  // Handle input change
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (formErrors[name as keyof CustomerInfo]) {
       setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
-  // Validate form
   const validateForm = (): boolean => {
     const errors: Partial<Record<keyof CustomerInfo, string>> = {};
 
@@ -129,12 +79,10 @@ export default function CheckoutPage() {
       }
     });
 
-    // Validate email format
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = "Please enter a valid email address";
     }
 
-    // Validate phone format (basic)
     if (formData.phone && !/^[\d\s+()-]{8,}$/.test(formData.phone)) {
       errors.phone = "Please enter a valid phone number";
     }
@@ -143,7 +91,6 @@ export default function CheckoutPage() {
     return Object.keys(errors).length === 0;
   };
 
-  // Initialize payment
   const initializePayment = async () => {
     if (!validateForm()) {
       return;
@@ -153,7 +100,6 @@ export default function CheckoutPage() {
     setError(null);
 
     try {
-      // ── Client-side stock revalidation before sending to backend ──
       const stockIssues = cart.items.filter(
         (item) => (item.product.stockQuantity ?? 0) < item.quantity
       );
@@ -170,13 +116,14 @@ export default function CheckoutPage() {
         customer: formData,
         items: cart.items,
         subtotal: cart.subtotal,
-        total: cart.subtotal, // Could add shipping cost here
+        stylingTotal: cart.stylingTotal,
+        total: cart.total,
         currency: BRAND.currency,
       };
 
       console.log("[Checkout DEBUG] Submitting payment initialization for:", formData.email);
       console.log("[Checkout DEBUG] Cart items count:", cart.items.length);
-      console.log("[Checkout DEBUG] Total:", cart.subtotal);
+      console.log("[Checkout DEBUG] Subtotal:", cart.subtotal, "Styling:", cart.stylingTotal, "Total:", cart.total);
 
       const response = await fetch("/api/payments/initialize", {
         method: "POST",
@@ -197,15 +144,10 @@ export default function CheckoutPage() {
         throw new Error(data.message || "Failed to initialize payment");
       }
 
-      // If we got an authorization URL, redirect to Paystack
       if (data.authorizationUrl) {
-        console.log("[Checkout DEBUG] Redirecting to Paystack authorization_url:", data.authorizationUrl);
+        console.log("[Checkout DEBUG] Redirecting to Paystack authorization_url:", data.authorization_url);
         console.log("[Checkout DEBUG] orderNumber:", data.orderNumber);
         console.log("[Checkout DEBUG] reference:", data.reference);
-        // Use window.location.href for a hard redirect — this ensures we leave
-        // the SPA entirely and let Paystack handle the full payment flow.
-        // router.push() would be intercepted by Next.js navigation and could
-        // cause the redirect to be silently swallowed.
         window.location.href = data.authorizationUrl;
       } else {
         console.error("[Checkout DEBUG] No authorizationUrl in response");
@@ -253,7 +195,6 @@ export default function CheckoutPage() {
                     Delivery Details
                   </h2>
 
-                  {/* Error Message */}
                   {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-premium text-red-700">
                       {error}
@@ -357,9 +298,14 @@ export default function CheckoutPage() {
                           <p className="text-xs text-neutral-taupe">
                             Qty: {item.quantity}
                           </p>
+                          {item.stylingType !== "none" && (
+                            <p className="text-xs text-primary">
+                              + {item.stylingName}: +{BRAND.currencySymbol}{item.stylingPrice.toLocaleString()}
+                            </p>
+                          )}
                           <p className="text-sm font-medium text-text-primary mt-1">
                             {BRAND.currencySymbol}
-                            {(item.product.price * item.quantity).toLocaleString()}
+                            {(item.product.price * item.quantity + item.stylingPrice * item.quantity).toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -368,9 +314,17 @@ export default function CheckoutPage() {
 
                   {/* Subtotal */}
                   <div className="flex justify-between items-center py-3 border-t border-neutral-light">
-                    <span className="text-text-light">Subtotal</span>
+                    <span className="text-text-light">Products Subtotal</span>
                     <span className="text-lg font-medium text-text-primary">
                       {BRAND.currencySymbol}{cart.subtotal.toLocaleString()}
+                    </span>
+                  </div>
+
+                  {/* Styling Total */}
+                  <div className="flex justify-between items-center py-3 border-t border-neutral-light">
+                    <span className="text-text-light">Styling Total</span>
+                    <span className="text-lg font-medium text-text-primary">
+                      {BRAND.currencySymbol}{cart.stylingTotal.toLocaleString()}
                     </span>
                   </div>
 
@@ -378,7 +332,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between items-center py-3 border-t border-neutral-light">
                     <span className="font-medium text-text-primary">Total</span>
                     <span className="text-xl font-medium text-text-primary">
-                      {BRAND.currencySymbol}{cart.subtotal.toLocaleString()}
+                      {BRAND.currencySymbol}{cart.total.toLocaleString()}
                     </span>
                   </div>
 
@@ -429,7 +383,7 @@ export default function CheckoutPage() {
                           />
                         </svg>
                         Pay {BRAND.currencySymbol}
-                        {cart.subtotal.toLocaleString()}
+                        {cart.total.toLocaleString()}
                       </>
                     )}
                   </Button>

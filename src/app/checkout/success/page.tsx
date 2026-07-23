@@ -20,7 +20,16 @@ function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { clearCart } = useCart();
-  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [orderDetails, setOrderDetails] = useState<{
+    orderNumber: string;
+    total: number;
+    subtotal: number;
+    stylingTotal: number;
+    customer: {
+      fullName: string;
+      email: string;
+    };
+  } | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 
@@ -68,13 +77,15 @@ function CheckoutSuccessContent() {
         }
 
         if (data.success && data.order) {
-          console.log("[Success DEBUG] Payment verified successfully — order:", data.order.orderNumber);
+          const order = data.order;
           setOrderDetails({
-            orderNumber: data.order.orderNumber,
-            total: data.order.total,
+            orderNumber: order.orderNumber,
+            total: order.total,
+            subtotal: order.subtotal || 0,
+            stylingTotal: order.items?.reduce((sum: number, item: any) => sum + ((item.stylingPrice || 0) * (item.quantity || 1)), 0) || 0,
             customer: {
-              fullName: data.order.customer.fullName,
-              email: data.order.customer.email,
+              fullName: order.customer.fullName,
+              email: order.customer.email,
             },
           });
 
@@ -197,6 +208,22 @@ function CheckoutSuccessContent() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
+                    <span className="text-brand-gray">Products Subtotal</span>
+                    <span className="text-lg font-medium text-brand-black">
+                      {BRAND.currencySymbol}
+                      {orderDetails?.subtotal.toLocaleString()}
+                    </span>
+                  </div>
+                  {orderDetails && orderDetails.stylingTotal > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-brand-gray">Styling Total</span>
+                      <span className="text-lg font-medium text-brand-black">
+                        {BRAND.currencySymbol}
+                        {orderDetails.stylingTotal.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center pt-2 border-t border-brand-light-gray">
                     <span className="text-brand-gray">Amount Paid</span>
                     <span className="text-xl font-medium text-brand-black">
                       {BRAND.currencySymbol}

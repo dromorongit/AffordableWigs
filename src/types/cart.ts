@@ -17,11 +17,16 @@ export interface CartItemProduct {
 export interface CartItem {
   product: CartItemProduct;
   quantity: number;
+  stylingType: string;
+  stylingName: string;
+  stylingPrice: number;
 }
 
 export interface CartState {
   items: CartItem[];
   subtotal: number;
+  stylingTotal: number;
+  total: number;
 }
 
 export interface CustomerInfo {
@@ -38,6 +43,7 @@ export interface OrderData {
   customer: CustomerInfo;
   items: CartItem[];
   subtotal: number;
+  stylingTotal: number;
   total: number;
   currency: string;
 }

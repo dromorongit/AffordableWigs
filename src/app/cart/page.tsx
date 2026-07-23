@@ -7,10 +7,12 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { CartItem } from "@/types/cart";
 import { Container, Section } from "@/components/ui";
+import { StylingSelector } from "@/components/cart/StylingSelector";
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { cart, removeFromCart, updateQuantity, updateStyling, clearCart } = useCart();
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+  const [editingStylingId, setEditingStylingId] = useState<string | null>(null);
 
   const handleImageError = (productId: string) => {
     setImageErrors(prev => new Set(prev).add(productId));
@@ -18,10 +20,14 @@ export default function CartPage() {
 
   const hasImageError = (productId: string) => imageErrors.has(productId);
 
-  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleStylingChange = (item: CartItem) => (stylingType: string) => {
+    updateStyling(item.product._id, stylingType);
+    setEditingStylingId(null);
+  };
 
   return (
     <main className="pt-20">
@@ -100,6 +106,45 @@ export default function CartPage() {
                               >
                                 {item.product.name}
                               </Link>
+                              <div className="mt-2">
+                                {editingStylingId === item.product._id ? (
+                                  <div>
+                                    <StylingSelector
+                                      value={item.stylingType}
+                                      onChange={handleStylingChange(item)}
+                                    />
+                                    <button
+                                      onClick={() => setEditingStylingId(null)}
+                                      className="mt-2 text-xs text-neutral-taupe hover:text-primary transition-colors"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    {item.stylingType === "none" ? (
+                                      <button
+                                        onClick={() => setEditingStylingId(item.product._id)}
+                                        className="text-xs text-neutral-taupe hover:text-primary transition-colors"
+                                      >
+                                        + Add Styling
+                                      </button>
+                                    ) : (
+                                      <div>
+                                        <p className="text-xs text-primary font-medium">
+                                          {item.stylingName}: +{BRAND.currencySymbol}{item.stylingPrice.toLocaleString()}
+                                        </p>
+                                        <button
+                                          onClick={() => setEditingStylingId(item.product._id)}
+                                          className="text-xs text-neutral-taupe hover:text-primary transition-colors mt-1"
+                                        >
+                                          Change Styling
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <button
                               onClick={() => removeFromCart(item.product._id)}
@@ -166,24 +211,27 @@ export default function CartPage() {
                     Order Summary
                   </h2>
 
-                  {/* Subtotal */}
+                  {/* Products Subtotal */}
                   <div className="flex justify-between items-center py-3 border-b border-neutral-light">
-                    <span className="text-text-light">Subtotal</span>
+                    <span className="text-text-light">Products Subtotal</span>
                     <span className="text-lg font-medium text-text-primary">
                       {BRAND.currencySymbol}{cart.subtotal.toLocaleString()}
                     </span>
                   </div>
 
-                  {/* Shipping Note */}
-                  <div className="py-3 text-sm text-text-light">
-                    <p>Shipping will be calculated at checkout.</p>
+                  {/* Styling Total */}
+                  <div className="flex justify-between items-center py-3 border-b border-neutral-light">
+                    <span className="text-text-light">Styling Total</span>
+                    <span className="text-lg font-medium text-text-primary">
+                      {BRAND.currencySymbol}{cart.stylingTotal.toLocaleString()}
+                    </span>
                   </div>
 
                   {/* Total */}
                   <div className="flex justify-between items-center py-3 border-t border-neutral-light">
                     <span className="font-medium text-text-primary">Total</span>
                     <span className="text-xl font-medium text-text-primary">
-                      {BRAND.currencySymbol}{cart.subtotal.toLocaleString()}
+                      {BRAND.currencySymbol}{cart.total.toLocaleString()}
                     </span>
                   </div>
 

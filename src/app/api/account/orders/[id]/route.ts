@@ -16,7 +16,7 @@ const DEMO_ORDERS: Record<string, any> = {
     orderStatus: "Delivered",
     paymentReference: "DEMO-REF-001",
     items: [
-      { productId: "p1", name: "Premium Lace Front Wig", slug: "premium-lace-front-wig", price: 350, quantity: 1, mainImage: null },
+      { productId: "p1", name: "Premium Lace Front Wig", slug: "premium-lace-front-wig", price: 350, quantity: 1, mainImage: null, stylingType: "none", stylingName: "No Styling", stylingPrice: 0 },
     ],
     customer: {
       fullName: "Demo Customer",
@@ -33,15 +33,15 @@ const DEMO_ORDERS: Record<string, any> = {
   "demo-order-2": {
     _id: "demo-order-2",
     orderNumber: "AWG-DEMO-002",
-    total: 280,
+    total: 340,
     subtotal: 280,
     currency: "GHS",
     paymentStatus: "paid",
     orderStatus: "Shipped",
     paymentReference: "DEMO-REF-002",
     items: [
-      { productId: "p2", name: "Bob Cut Wig", slug: "bob-cut-wig", price: 180, quantity: 1, mainImage: null },
-      { productId: "p3", name: "Wig Cap", slug: "wig-cap", price: 50, quantity: 2, mainImage: null },
+      { productId: "p2", name: "Bob Cut Wig", slug: "bob-cut-wig", price: 180, quantity: 1, mainImage: null, stylingType: "closure", stylingName: "Closure Styling", stylingPrice: 60 },
+      { productId: "p3", name: "Wig Cap", slug: "wig-cap", price: 50, quantity: 2, mainImage: null, stylingType: "none", stylingName: "No Styling", stylingPrice: 0 },
     ],
     customer: {
       fullName: "Demo Customer",

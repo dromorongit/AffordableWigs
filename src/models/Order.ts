@@ -7,6 +7,9 @@ export interface IOrderItem {
   price: number;
   quantity: number;
   mainImage?: string;
+  stylingType: string;
+  stylingName: string;
+  stylingPrice: number;
 }
 
 export interface ICustomerInfo {
@@ -24,13 +27,14 @@ export interface IOrder extends Document {
   customer: ICustomerInfo;
   items: IOrderItem[];
   subtotal: number;
+  stylingTotal: number;
   total: number;
   currency: string;
   paymentReference?: string;
   paymentStatus: "pending" | "paid" | "failed" | "cancelled";
   orderStatus: "Processing" | "Paid" | "Shipped" | "Delivered" | "Cancelled";
-  userId?: string; // Optional: links order to a registered user
-  stockDeducted: boolean; // Tracks whether inventory has been deducted (idempotency guard)
+  userId?: string;
+  stockDeducted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +64,23 @@ const OrderItemSchema = new Schema<IOrderItem>(
     },
     mainImage: {
       type: String,
+    },
+    stylingType: {
+      type: String,
+      required: true,
+      enum: ["none", "closure", "frontal"],
+      default: "none",
+    },
+    stylingName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    stylingPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
     },
   },
   { _id: false }
@@ -131,6 +152,12 @@ const OrderSchema = new Schema<IOrder>(
       type: Number,
       required: true,
       min: 0,
+    },
+    stylingTotal: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
     },
     total: {
       type: Number,

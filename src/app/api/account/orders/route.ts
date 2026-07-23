@@ -10,11 +10,12 @@ const DEMO_ORDERS = [
     _id: "demo-order-1",
     orderNumber: "AWG-DEMO-001",
     total: 450,
+    subtotal: 450,
     currency: "GHS",
     paymentStatus: "paid",
     orderStatus: "Delivered",
     items: [
-      { name: "Premium Lace Front Wig", price: 350, quantity: 1 },
+      { productId: "p1", name: "Premium Lace Front Wig", price: 350, quantity: 1, stylingType: "none", stylingName: "No Styling", stylingPrice: 0 },
     ],
     customer: {
       fullName: "Demo Customer",
@@ -26,13 +27,14 @@ const DEMO_ORDERS = [
   {
     _id: "demo-order-2",
     orderNumber: "AWG-DEMO-002",
-    total: 280,
+    total: 340,
+    subtotal: 280,
     currency: "GHS",
     paymentStatus: "paid",
     orderStatus: "Shipped",
     items: [
-      { name: "Bob Cut Wig", price: 180, quantity: 1 },
-      { name: "Wig Cap", price: 50, quantity: 2 },
+      { productId: "p2", name: "Bob Cut Wig", price: 180, quantity: 1, stylingType: "closure", stylingName: "Closure Styling", stylingPrice: 60 },
+      { productId: "p3", name: "Wig Cap", price: 50, quantity: 2, stylingType: "none", stylingName: "No Styling", stylingPrice: 0 },
     ],
     customer: {
       fullName: "Demo Customer",

@@ -7,11 +7,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { isOverStock, getStockAvailabilityMessage } from "@/lib/inventory";
+import { StylingSelector } from "@/components/cart/StylingSelector";
 
 export function CartDrawer() {
-  const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity } = useCart();
+  const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, updateStyling } = useCart();
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
   const [stockWarning, setStockWarning] = useState<string | null>(null);
+  const [editingStylingId, setEditingStylingId] = useState<string | null>(null);
 
   const handleImageError = (productId: string) => {
     setImageErrors(prev => new Set(prev).add(productId));
@@ -19,7 +21,6 @@ export function CartDrawer() {
 
   const hasImageError = (productId: string) => imageErrors.has(productId);
 
-  // Show a temporary warning when user tries to exceed stock
   const showStockWarning = (message: string) => {
     setStockWarning(message);
     setTimeout(() => setStockWarning(null), 3000);
@@ -33,6 +34,11 @@ export function CartDrawer() {
       return;
     }
     updateQuantity(item.product._id, item.quantity + 1);
+  };
+
+  const handleStylingChange = (item: CartItem) => (stylingType: string) => {
+    updateStyling(item.product._id, stylingType);
+    setEditingStylingId(null);
   };
 
   if (!isCartOpen) return null;
@@ -90,88 +96,114 @@ export function CartDrawer() {
               {cart.items.map((item: CartItem) => {
                 const availableStock = item.product.stockQuantity ?? 0;
                 const atStockLimit = item.quantity >= availableStock && availableStock > 0;
+                const isEditing = editingStylingId === item.product._id;
 
                 return (
                   <div
                     key={item.product._id}
-                    className="flex gap-4 p-4 bg-background-sand/30 rounded-premium"
+                    className="p-4 bg-background-sand/30 rounded-premium"
                   >
-                    {/* Product Image */}
-                    <div className="relative w-20 h-24 flex-shrink-0 bg-background-ivory rounded-md overflow-hidden">
-                      {item.product.mainImage && !hasImageError(item.product._id.toString()) ? (
-                        <Image
-                          src={item.product.mainImage}
-                          alt={item.product.name}
-                          fill
-                          className="object-cover"
-                          onError={() => handleImageError(item.product._id.toString())}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <svg className="w-8 h-8 text-neutral-nude" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product Details */}
-                    <div className="flex-1 flex flex-col">
-                      <h3 className="font-heading text-sm font-medium text-text-primary line-clamp-2">
-                        {item.product.name}
-                      </h3>
-                      <p className="text-sm text-neutral-taupe mt-1">
-                        {BRAND.currencySymbol}{item.product.price.toLocaleString()}
-                      </p>
-
-                      {/* Stock warning in cart item */}
-                      {availableStock > 0 && atStockLimit && (
-                        <p className="text-xs text-amber-600 font-medium mt-1">
-                          Max {availableStock} in stock
-                        </p>
-                      )}
-                      {availableStock === 0 && (
-                        <p className="text-xs text-red-600 font-medium mt-1">
-                          Out of stock — remove to proceed
-                        </p>
-                      )}
-
-                      {/* Quantity Controls */}
-                      <div className="flex items-center gap-3 mt-3">
-                        <button
-                          onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
-                          disabled={item.quantity <= 1}
-                          className="w-8 h-8 flex items-center justify-center border border-neutral-light rounded-md text-text-light hover:text-text-primary hover:border-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                          </svg>
-                        </button>
-                        <span className="text-sm font-medium text-text-primary w-8 text-center">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => handleIncreaseQty(item)}
-                          disabled={atStockLimit}
-                          className="w-8 h-8 flex items-center justify-center border border-neutral-light rounded-md text-text-light hover:text-text-primary hover:border-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                          </svg>
-                        </button>
+                    <div className="flex gap-4">
+                      {/* Product Image */}
+                      <div className="relative w-20 h-24 flex-shrink-0 bg-background-ivory rounded-md overflow-hidden">
+                        {item.product.mainImage && !hasImageError(item.product._id.toString()) ? (
+                          <Image
+                            src={item.product.mainImage}
+                            alt={item.product.name}
+                            fill
+                            className="object-cover"
+                            onError={() => handleImageError(item.product._id.toString())}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <svg className="w-8 h-8 text-neutral-nude" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                            </svg>
+                          </div>
+                        )}
                       </div>
-                    </div>
 
-                    {/* Remove Button */}
-                    <button
-                      onClick={() => removeFromCart(item.product._id)}
-                      className="self-start p-1 text-neutral-taupe hover:text-red-500 transition-colors"
-                      aria-label="Remove item"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                      {/* Product Details */}
+                      <div className="flex-1 flex flex-col">
+                        <h3 className="font-heading text-sm font-medium text-text-primary line-clamp-2">
+                          {item.product.name}
+                        </h3>
+                        <p className="text-sm text-neutral-taupe mt-1">
+                          {BRAND.currencySymbol}{item.product.price.toLocaleString()}
+                        </p>
+
+                        {/* Styling info */}
+                        {item.stylingType !== "none" && !isEditing && (
+                          <p className="text-xs text-primary font-medium mt-1">
+                            + {item.stylingName}: +{BRAND.currencySymbol}{item.stylingPrice.toLocaleString()}
+                          </p>
+                        )}
+
+                        {isEditing ? (
+                          <div className="mt-2">
+                            <StylingSelector
+                              value={item.stylingType}
+                              onChange={handleStylingChange(item)}
+                            />
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setEditingStylingId(item.product._id)}
+                            className="mt-1 text-xs text-neutral-taupe hover:text-primary transition-colors text-left"
+                          >
+                            {item.stylingType === "none" ? "Add Styling" : "Change Styling"}
+                          </button>
+                        )}
+
+                        {/* Stock warning in cart item */}
+                        {availableStock > 0 && atStockLimit && (
+                          <p className="text-xs text-amber-600 font-medium mt-1">
+                            Max {availableStock} in stock
+                          </p>
+                        )}
+                        {availableStock === 0 && (
+                          <p className="text-xs text-red-600 font-medium mt-1">
+                            Out of stock — remove to proceed
+                          </p>
+                        )}
+
+                        {/* Quantity Controls */}
+                        <div className="flex items-center gap-3 mt-3">
+                          <button
+                            onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
+                            disabled={item.quantity <= 1}
+                            className="w-8 h-8 flex items-center justify-center border border-neutral-light rounded-md text-text-light hover:text-text-primary hover:border-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                            </svg>
+                          </button>
+                          <span className="text-sm font-medium text-text-primary w-8 text-center">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => handleIncreaseQty(item)}
+                            disabled={atStockLimit}
+                            className="w-8 h-8 flex items-center justify-center border border-neutral-light rounded-md text-text-light hover:text-text-primary hover:border-text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Remove Button */}
+                      <button
+                        onClick={() => removeFromCart(item.product._id)}
+                        className="self-start p-1 text-neutral-taupe hover:text-red-500 transition-colors"
+                        aria-label="Remove item"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -183,10 +215,26 @@ export function CartDrawer() {
         {cart.items.length > 0 && (
           <div className="p-6 border-t border-neutral-light bg-background-sand/20">
             {/* Subtotal */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-text-light">Subtotal</span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-text-light">Products Subtotal</span>
               <span className="text-lg font-medium text-text-primary">
                 {BRAND.currencySymbol}{cart.subtotal.toLocaleString()}
+              </span>
+            </div>
+
+            {/* Styling Total */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-text-light">Styling Total</span>
+              <span className="text-lg font-medium text-text-primary">
+                {BRAND.currencySymbol}{cart.stylingTotal.toLocaleString()}
+              </span>
+            </div>
+
+            {/* Total */}
+            <div className="flex items-center justify-between mb-4 pt-3 border-t border-neutral-light">
+              <span className="font-medium text-text-primary">Total</span>
+              <span className="text-xl font-medium text-text-primary">
+                {BRAND.currencySymbol}{cart.total.toLocaleString()}
               </span>
             </div>
 
