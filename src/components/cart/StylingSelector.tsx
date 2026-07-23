@@ -28,7 +28,10 @@ export function StylingSelector({ value, onChange, disabled }: StylingSelectorPr
         return res.json();
       })
       .then((data) => {
-        setOptions(data.services || []);
+        const services = data.services || [];
+        console.log("[trace] StylingSelector fetched services length:", services.length);
+        console.log("[trace] StylingSelector fetched services:", JSON.stringify(services));
+        setOptions(services);
         setLoading(false);
       })
       .catch(() => {
@@ -45,12 +48,16 @@ export function StylingSelector({ value, onChange, disabled }: StylingSelectorPr
     );
   }
 
+  console.log("[trace] StylingSelector options before JSX render:", JSON.stringify(options));
+  console.log("[trace] StylingSelector options.length before JSX render:", options.length);
+
   return (
     <div className="space-y-3">
       <label className="block text-sm font-medium text-text-primary">
         Choose Styling
       </label>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {console.log("[trace] StylingSelector options array inside JSX map:", JSON.stringify(options))}
         {options.map((option: StylingOption) => {
           const isSelected = value === option._id;
           return (

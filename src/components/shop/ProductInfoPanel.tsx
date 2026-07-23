@@ -181,15 +181,18 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
 
       {/* ── Styling Selector ── */}
       {purchasable && (
-        <StylingSelector
-          value={stylingType}
-          onChange={(type, name, price) => {
-            setStylingType(type);
-            setStylingName(name);
-            setStylingPrice(price);
-          }}
-          disabled={isAdding}
-        />
+        <>
+          {console.log("[trace] ProductInfoPanel -> StylingSelector rendering with value=", stylingType, "stylingName=", stylingName)}
+          <StylingSelector
+            value={stylingType}
+            onChange={(type, name, price) => {
+              setStylingType(type);
+              setStylingName(name);
+              setStylingPrice(price);
+            }}
+            disabled={isAdding}
+          />
+        </>
       )}
 
       {/* ── Quantity Selector ── */}
