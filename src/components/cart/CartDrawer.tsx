@@ -36,8 +36,8 @@ export function CartDrawer() {
     updateQuantity(item.product._id, item.quantity + 1);
   };
 
-  const handleStylingChange = (item: CartItem) => (stylingType: string) => {
-    updateStyling(item.product._id, stylingType);
+  const handleStylingChange = (item: CartItem) => (stylingType: string, stylingName: string, stylingPrice: number) => {
+    updateStyling(item.product._id, stylingType, stylingName, stylingPrice);
     setEditingStylingId(null);
   };
 

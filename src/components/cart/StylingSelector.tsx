@@ -1,8 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BRAND } from "@/constants";
-import { STYLING_OPTIONS, StylingType } from "@/constants";
+
+interface StylingOption {
+  _id: string;
+  name: string;
+  price: number;
+}
 
 interface StylingSelectorProps {
   value: string;
@@ -11,20 +16,47 @@ interface StylingSelectorProps {
 }
 
 export function StylingSelector({ value, onChange, disabled }: StylingSelectorProps) {
+  const [options, setOptions] = useState<StylingOption[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/styling-services")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
+      .then((data) => {
+        setOptions(data.services || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-text-primary">Choose Styling</label>
+        <div className="text-sm text-gray-400">Loading styling options...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       <label className="block text-sm font-medium text-text-primary">
         Choose Styling
       </label>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {STYLING_OPTIONS.map((option) => {
-          const isSelected = value === option.id;
+        {options.map((option: StylingOption) => {
+          const isSelected = value === option._id;
           return (
             <button
-              key={option.id}
+              key={option._id}
               type="button"
               disabled={disabled}
-              onClick={() => onChange(option.id, option.name, option.price)}
+              onClick={() => onChange(option._id, option.name, option.price)}
               className={`relative flex flex-col items-center justify-center p-4 rounded-premium border-2 transition-all text-center ${
                 isSelected
                   ? "border-primary bg-primary/5 shadow-md"

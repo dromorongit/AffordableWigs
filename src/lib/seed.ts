@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
+import StylingService from "@/models/StylingService";
 import { Types } from "mongoose";
 
 interface CategoryData {
@@ -421,6 +422,26 @@ const products: ProductData[] = [
   },
 ];
 
+// Styling services data
+const stylingServices = [
+  {
+    name: "Closure Styling",
+    slug: "closure-styling",
+    description: "Professional closure styling service for a natural, seamless finish.",
+    price: 60,
+    isActive: true,
+    sortOrder: 1,
+  },
+  {
+    name: "Frontal Styling",
+    slug: "frontal-styling",
+    description: "Professional frontal styling service for flawless hairlines.",
+    price: 80,
+    isActive: true,
+    sortOrder: 2,
+  },
+];
+
 // Helper function to convert category name to slug
 function categoryNameToSlug(name: string): string {
   return name.toLowerCase().replace(/ /g, "-");
@@ -449,9 +470,11 @@ async function seedDatabase() {
     // Check existing data
     const existingCategories = await Category.countDocuments();
     const existingProducts = await Product.countDocuments();
+    const existingStylingServices = await StylingService.countDocuments();
     console.log(`📊 Existing data:`);
     console.log(`   Categories: ${existingCategories}`);
     console.log(`   Products: ${existingProducts}`);
+    console.log(`   Styling Services: ${existingStylingServices}`);
     console.log("-----------------------------------");
 
     // Clear existing data (safe for reseeding)
@@ -459,6 +482,14 @@ async function seedDatabase() {
     await Category.deleteMany({});
     await Product.deleteMany({});
     console.log("✅ Cleared existing data");
+    console.log("-----------------------------------");
+
+    // Seed styling services
+    console.log("💇 Inserting styling services...");
+    for (const ss of stylingServices) {
+      await StylingService.updateOne({ slug: ss.slug }, { $set: ss }, { upsert: true });
+    }
+    console.log("✅ Styling services seeded");
     console.log("-----------------------------------");
 
     // Create categories with upsert-style approach
@@ -520,11 +551,13 @@ async function seedDatabase() {
     const finalCategories = await Category.countDocuments();
     const finalProducts = await Product.countDocuments();
     const activeProducts = await Product.countDocuments({ isActive: true });
+    const finalStylingServices = await StylingService.countDocuments();
 
     console.log("📊 Final data:");
     console.log(`   Categories: ${finalCategories}`);
     console.log(`   Products (total): ${finalProducts}`);
     console.log(`   Products (active): ${activeProducts}`);
+    console.log(`   Styling Services: ${finalStylingServices}`);
     console.log("-----------------------------------");
 
     console.log("🎉 Database seeding completed successfully!");

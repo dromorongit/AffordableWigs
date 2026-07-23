@@ -24,8 +24,8 @@ export default function CartPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleStylingChange = (item: CartItem) => (stylingType: string) => {
-    updateStyling(item.product._id, stylingType);
+  const handleStylingChange = (item: CartItem) => (stylingType: string, stylingName: string, stylingPrice: number) => {
+    updateStyling(item.product._id, stylingType, stylingName, stylingPrice);
     setEditingStylingId(null);
   };
 

@@ -6,7 +6,7 @@ import Product from "@/models/Product";
 import { rateLimit, RATE_LIMITS, getClientIP } from "@/lib/rateLimit";
 import { validateInput, paymentInitSchema } from "@/lib/validation";
 import { getCurrentCustomer } from "@/lib/customerAuth";
-import { STYLING_OPTIONS } from "@/constants";
+import StylingService from "@/models/StylingService";
 
 const paystack = PaystackLib(process.env.PAYSTACK_SECRET_KEY!);
 
@@ -86,27 +86,51 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const serverStylingTotal = stylingTotal || 0;
-    const serverSubtotal = subtotal || 0;
-    const serverTotal = serverSubtotal + serverStylingTotal;
+    let serverStylingTotal = 0;
+    const orderItems: IOrderItem[] = [];
 
-    console.log("[Payment Init] Starting payment for order, customer:", customer.email);
-
-    const orderItems: IOrderItem[] = items.map((item) => {
+    for (const item of items) {
       const stylingId = item.stylingType || "none";
-      const stylingOption = STYLING_OPTIONS.find((s) => s.id === stylingId) || STYLING_OPTIONS[0];
-      return {
+      let stylingName = "No Styling";
+      let stylingPrice = 0;
+
+      if (stylingId !== "none") {
+        const stylingService = await StylingService.findById(stylingId);
+        if (!stylingService || !stylingService.isActive) {
+          return NextResponse.json(
+            { message: `Invalid styling service selected: ${stylingId}` },
+            { status: 400 }
+          );
+        }
+        stylingName = stylingService.name;
+        stylingPrice = stylingService.price;
+      }
+
+      serverStylingTotal += stylingPrice * (item.quantity || 1);
+
+      orderItems.push({
         productId: item.product._id,
         name: item.product.name,
         slug: item.product.slug,
         price: item.product.price,
         quantity: item.quantity,
         mainImage: item.product.mainImage,
-        stylingType: stylingOption.id,
-        stylingName: stylingOption.name,
-        stylingPrice: stylingOption.price,
-      };
-    });
+        stylingType: stylingId,
+        stylingName,
+        stylingPrice,
+      });
+    }
+
+    if (Math.abs(serverStylingTotal - stylingTotal) > 0.01) {
+      console.error("[Payment Init] Styling price mismatch. Server calculated:", serverStylingTotal, "Frontend provided:", stylingTotal);
+      return NextResponse.json(
+        { message: "Styling prices have changed. Please refresh and try again." },
+        { status: 400 }
+      );
+    }
+
+    const serverSubtotal = subtotal || 0;
+    const serverTotal = serverSubtotal + serverStylingTotal;
 
     const orderNumber = generateOrderNumber();
 

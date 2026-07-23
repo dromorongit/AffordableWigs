@@ -2,14 +2,14 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { CartItem, CartState, CartItemProduct } from "@/types/cart";
-import { BRAND, STYLING_OPTIONS } from "@/constants";
+import { BRAND } from "@/constants";
 
 interface CartContextType {
   cart: CartState;
-  addToCart: (product: CartItemProduct, quantity?: number, stylingType?: string) => void;
+  addToCart: (product: CartItemProduct, quantity?: number, stylingType?: string, stylingName?: string, stylingPrice?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
-  updateStyling: (productId: string, stylingType: string) => void;
+  updateStyling: (productId: string, stylingType?: string, stylingName?: string, stylingPrice?: number) => void;
   clearCart: () => void;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
@@ -107,14 +107,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cart, isHydrated]);
 
-  const addToCart = useCallback((product: CartItemProduct, quantity: number = 1, stylingType: string = "none") => {
+  const addToCart = useCallback((product: CartItemProduct, quantity: number = 1, stylingType: string = "none", stylingName: string = "No Styling", stylingPrice: number = 0) => {
     setCart((prevCart) => {
       const existingItem = prevCart.items.find(
         (item) => item.product._id === product._id
       );
 
-      const stylingOption = STYLING_OPTIONS.find((s) => s.id === stylingType) || STYLING_OPTIONS[0];
-      const styling = { stylingType: stylingOption.id, stylingName: stylingOption.name, stylingPrice: stylingOption.price };
+      const styling = { stylingType, stylingName, stylingPrice };
 
       let newItems: CartItem[];
 
@@ -160,12 +159,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const updateStyling = useCallback((productId: string, stylingType: string) => {
+  const updateStyling = useCallback((productId: string, stylingType: string = "none", stylingName: string = "No Styling", stylingPrice: number = 0) => {
     setCart((prevCart) => {
-      const stylingOption = STYLING_OPTIONS.find((s) => s.id === stylingType) || STYLING_OPTIONS[0];
       const newItems = prevCart.items.map((item) =>
         item.product._id === productId
-          ? { ...item, stylingType: stylingOption.id, stylingName: stylingOption.name, stylingPrice: stylingOption.price }
+          ? { ...item, stylingType, stylingName, stylingPrice }
           : item
       );
       const subtotal = calculateSubtotal(newItems);

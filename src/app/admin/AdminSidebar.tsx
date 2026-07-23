@@ -10,6 +10,7 @@ import {
   FiStar, 
   FiSettings,
   FiPackage,
+  FiScissors,
   FiLogOut,
   FiX
 } from "react-icons/fi";
@@ -24,6 +25,7 @@ const menuItems = [
   { href: "/admin/products", label: "Products", icon: FiShoppingBag },
   { href: "/admin/categories", label: "Categories", icon: FiTag },
   { href: "/admin/orders", label: "Orders", icon: FiShoppingCart },
+  { href: "/admin/styling-services", label: "Styling Services", icon: FiScissors },
   { href: "/admin/services", label: "Services", icon: FiPackage },
   { href: "/admin/reviews", label: "Reviews", icon: FiStar },
   { href: "/admin/settings", label: "Settings", icon: FiSettings },

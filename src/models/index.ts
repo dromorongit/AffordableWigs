@@ -1,3 +1,5 @@
+export { default as StylingService } from "./StylingService";
+export type { IStylingService } from "./StylingService";
 export { default as Admin } from "./Admin";
 export type { IAdmin } from "./Admin";
 export { default as Category } from "./Category";

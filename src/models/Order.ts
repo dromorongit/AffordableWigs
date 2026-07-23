@@ -68,7 +68,6 @@ const OrderItemSchema = new Schema<IOrderItem>(
     stylingType: {
       type: String,
       required: true,
-      enum: ["none", "closure", "frontal"],
       default: "none",
     },
     stylingName: {

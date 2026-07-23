@@ -97,10 +97,4 @@ export const PAGE_METADATA = {
   },
 } as const;
 
-export const STYLING_OPTIONS = [
-  { id: "none", name: "No Styling", price: 0 },
-  { id: "closure", name: "Closure Styling", price: 60 },
-  { id: "frontal", name: "Frontal Styling", price: 80 },
-] as const;
-
-export type StylingType = typeof STYLING_OPTIONS[number]["id"];
+export type StylingType = string;

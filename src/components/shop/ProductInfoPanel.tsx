@@ -45,6 +45,8 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [stylingType, setStylingType] = useState("none");
+  const [stylingName, setStylingName] = useState("No Styling");
+  const [stylingPrice, setStylingPrice] = useState(0);
 
   const {
     name,
@@ -88,7 +90,7 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
 
     setIsAdding(true);
     const cartProduct = convertToCartProduct(product);
-    addToCart(cartProduct, quantity, stylingType);
+    addToCart(cartProduct, quantity, stylingType, stylingName, stylingPrice);
 
     setTimeout(() => {
       setIsAdding(false);
@@ -181,7 +183,11 @@ export function ProductInfoPanel({ product }: ProductInfoPanelProps) {
       {purchasable && (
         <StylingSelector
           value={stylingType}
-          onChange={(type) => setStylingType(type)}
+          onChange={(type, name, price) => {
+            setStylingType(type);
+            setStylingName(name);
+            setStylingPrice(price);
+          }}
           disabled={isAdding}
         />
       )}
