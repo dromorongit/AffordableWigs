@@ -52,6 +52,7 @@ export async function PUT(
     if (body.price !== undefined) updateData.price = Number(body.price);
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
     if (body.sortOrder !== undefined) updateData.sortOrder = Number(body.sortOrder);
+    if (body.estimatedDuration !== undefined) updateData.estimatedDuration = body.estimatedDuration.trim();
 
     if (body.slug !== undefined) {
       const slug = body.slug.toLowerCase().trim().replace(/[^a-z0-9-]+/g, "-");

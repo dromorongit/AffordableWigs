@@ -20,6 +20,7 @@ export interface CartItem {
   stylingType: string;
   stylingName: string;
   stylingPrice: number;
+  stylingInstructions?: string;
 }
 
 export interface CartState {
@@ -44,6 +45,7 @@ export interface OrderData {
   items: CartItem[];
   subtotal: number;
   stylingTotal: number;
+  shipping?: number;
   total: number;
   currency: string;
 }

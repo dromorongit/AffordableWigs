@@ -7,6 +7,7 @@ export interface IStylingService extends Document {
   price: number;
   isActive: boolean;
   sortOrder: number;
+  estimatedDuration: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +48,12 @@ const StylingServiceSchema = new Schema<IStylingService>(
       type: Number,
       default: 0,
       min: [0, "Sort order cannot be negative"],
+    },
+    estimatedDuration: {
+      type: String,
+      required: [true, "Estimated duration is required"],
+      trim: true,
+      maxlength: [50, "Estimated duration cannot exceed 50 characters"],
     },
   },
   {

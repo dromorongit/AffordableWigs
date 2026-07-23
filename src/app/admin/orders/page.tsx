@@ -13,6 +13,8 @@ interface OrderItem {
   stylingType: string;
   stylingName: string;
   stylingPrice: number;
+  stylingInstructions?: string;
+  estimatedDuration?: string;
 }
 
 interface CustomerInfo {
@@ -31,6 +33,8 @@ interface Order {
   customer: CustomerInfo;
   items: OrderItem[];
   subtotal: number;
+  stylingTotal: number;
+  shipping: number;
   total: number;
   currency: string;
   paymentReference?: string;
@@ -389,48 +393,62 @@ export default function AdminOrdersPage() {
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-600">GH₵{item.price.toFixed(2)}</td>
                           <td className="px-4 py-3 text-sm text-gray-600">{item.quantity}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">
-                            {item.stylingType === "none" ? (
-                              <span className="text-gray-400">None</span>
-                            ) : (
-                              <div>
-                                <p className="text-primary font-medium">{item.stylingName}</p>
-                                <p className="text-xs text-gray-500">+{BRAND.currencySymbol}{item.stylingPrice.toFixed(2)}</p>
-                              </div>
-                            )}
-                          </td>
+                           <td className="px-4 py-3 text-sm text-gray-600">
+                             {item.stylingType === "none" ? (
+                               <span className="text-gray-400">None</span>
+                             ) : (
+                               <div>
+                                 <p className="text-primary font-medium">{item.stylingName}</p>
+                                 <p className="text-xs text-gray-500">+{BRAND.currencySymbol}{item.stylingPrice.toFixed(2)}</p>
+                                 {item.estimatedDuration && (
+                                   <p className="text-xs text-gray-500">Duration: {item.estimatedDuration}</p>
+                                 )}
+                                 {item.stylingInstructions && (
+                                   <p className="text-xs text-gray-500 italic">Instructions: {item.stylingInstructions}</p>
+                                 )}
+                               </div>
+                             )}
+                           </td>
                           <td className="px-4 py-3 text-sm text-gray-900 text-right">
                             GH₵{((item.price + item.stylingPrice) * item.quantity).toFixed(2)}
                           </td>
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-gray-50">
-                      <tr>
-                        <td colSpan={4} className="px-4 py-3 text-sm font-medium text-gray-700 text-right">
-                          Subtotal
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-900 text-right">
-                          GH₵{selectedOrder.subtotal?.toFixed(2)}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colSpan={4} className="px-4 py-3 text-sm font-medium text-gray-700 text-right">
-                          Styling Total
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-900 text-right">
-                          GH₵{calculateOrderStylingTotal(selectedOrder).toFixed(2)}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colSpan={4} className="px-4 py-3 text-sm font-bold text-gray-900 text-right">
-                          Total
-                        </td>
-                        <td className="px-4 py-3 text-sm font-bold text-gray-900 text-right">
-                          GH₵{selectedOrder.total?.toFixed(2)}
-                        </td>
-                      </tr>
-                    </tfoot>
+                     <tfoot className="bg-gray-50">
+                       <tr>
+                         <td colSpan={4} className="px-4 py-3 text-sm font-medium text-gray-700 text-right">
+                           Subtotal
+                         </td>
+                         <td className="px-4 py-3 text-sm text-gray-900 text-right">
+                           GH₵{selectedOrder.subtotal?.toFixed(2)}
+                         </td>
+                       </tr>
+                       <tr>
+                         <td colSpan={4} className="px-4 py-3 text-sm font-medium text-gray-700 text-right">
+                           Styling Total
+                         </td>
+                         <td className="px-4 py-3 text-sm text-gray-900 text-right">
+                           GH₵{calculateOrderStylingTotal(selectedOrder).toFixed(2)}
+                         </td>
+                       </tr>
+                       <tr>
+                         <td colSpan={4} className="px-4 py-3 text-sm font-medium text-gray-700 text-right">
+                           Shipping
+                         </td>
+                         <td className="px-4 py-3 text-sm text-gray-900 text-right">
+                           GH₵{(selectedOrder.shipping || 0).toFixed(2)}
+                         </td>
+                       </tr>
+                       <tr>
+                         <td colSpan={4} className="px-4 py-3 text-sm font-bold text-gray-900 text-right">
+                           Grand Total
+                         </td>
+                         <td className="px-4 py-3 text-sm font-bold text-gray-900 text-right">
+                           GH₵{selectedOrder.total?.toFixed(2)}
+                         </td>
+                       </tr>
+                     </tfoot>
                   </table>
                 </div>
               </div>

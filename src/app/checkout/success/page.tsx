@@ -25,10 +25,12 @@ function CheckoutSuccessContent() {
     total: number;
     subtotal: number;
     stylingTotal: number;
+    shipping: number;
     customer: {
       fullName: string;
       email: string;
     };
+    items?: any[];
   } | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
   const [verificationError, setVerificationError] = useState<string | null>(null);
@@ -83,10 +85,12 @@ function CheckoutSuccessContent() {
             total: order.total,
             subtotal: order.subtotal || 0,
             stylingTotal: order.items?.reduce((sum: number, item: any) => sum + ((item.stylingPrice || 0) * (item.quantity || 1)), 0) || 0,
+            shipping: order.shipping || 0,
             customer: {
               fullName: order.customer.fullName,
               email: order.customer.email,
             },
+            items: order.items,
           });
 
           // Clear the cart after successful payment
@@ -223,6 +227,13 @@ function CheckoutSuccessContent() {
                       </span>
                     </div>
                   )}
+                  <div className="flex justify-between items-center">
+                    <span className="text-brand-gray">Shipping</span>
+                    <span className="text-lg font-medium text-brand-black">
+                      {BRAND.currencySymbol}
+                      {(orderDetails?.shipping || 0).toLocaleString()}
+                    </span>
+                  </div>
                   <div className="flex justify-between items-center pt-2 border-t border-brand-light-gray">
                     <span className="text-brand-gray">Amount Paid</span>
                     <span className="text-xl font-medium text-brand-black">

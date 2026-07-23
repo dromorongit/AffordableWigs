@@ -17,12 +17,16 @@ interface OrderDetailItem {
   stylingType: string;
   stylingName: string;
   stylingPrice: number;
+  stylingInstructions?: string;
+  estimatedDuration?: string;
 }
 
 interface OrderDetail {
   _id: string;
   orderNumber: string;
   subtotal: number;
+  stylingTotal: number;
+  shipping: number;
   total: number;
   currency: string;
   paymentStatus: string;
@@ -214,66 +218,78 @@ export default function OrderDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Order Items */}
-        <div className="lg:col-span-2">
-          <div className="bg-background rounded-premium p-6 border border-neutral-light">
-            <h2 className="font-heading text-xl text-text-primary mb-4">Order Items</h2>
-            <div className="space-y-4">
-              {order.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4 pb-4 border-b border-neutral-light last:border-0"
-                >
-                  <div className="relative w-20 h-24 bg-neutral-light rounded-md overflow-hidden flex-shrink-0">
-                    {item.mainImage && !imageErrors.has(item.productId) ? (
-                      <Image
-                        src={item.mainImage}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                        onError={() => handleImageError(item.productId)}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-neutral-nude" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
-                        </svg>
+              {/* Order Items */}
+              <div className="lg:col-span-2">
+                <div className="bg-background rounded-premium p-6 border border-neutral-light">
+                  <h2 className="font-heading text-xl text-text-primary mb-4">Order Items</h2>
+                  <div className="space-y-4">
+                    {order.items.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-4 pb-4 border-b border-neutral-light last:border-0"
+                      >
+                        <div className="relative w-20 h-24 bg-neutral-light rounded-md overflow-hidden flex-shrink-0">
+                          {item.mainImage && !imageErrors.has(item.productId) ? (
+                            <Image
+                              src={item.mainImage}
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                              onError={() => handleImageError(item.productId)}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <svg className="w-8 h-8 text-neutral-nude" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-text-primary line-clamp-1">{item.name}</p>
+                          <p className="text-sm text-text-light">Qty: {item.quantity}</p>
+                          {item.stylingType !== "none" && (
+                            <>
+                              <p className="text-sm text-primary font-medium">
+                                {item.stylingName}: +{BRAND.currencySymbol}{item.stylingPrice.toLocaleString()}
+                              </p>
+                              {item.estimatedDuration && (
+                                <p className="text-xs text-gray-500">Est. Duration: {item.estimatedDuration}</p>
+                              )}
+                              {item.stylingInstructions && (
+                                <p className="text-xs text-gray-500 italic mt-0.5">Instructions: {item.stylingInstructions}</p>
+                              )}
+                            </>
+                          )}
+                          <p className="text-sm font-medium text-text-primary mt-1">
+                            {BRAND.currencySymbol}{((item.price + item.stylingPrice) * item.quantity).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
-                    )}
+                    ))}
                   </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-text-primary line-clamp-1">{item.name}</p>
-                    <p className="text-sm text-text-light">Qty: {item.quantity}</p>
-                    {item.stylingType !== "none" && (
-                      <p className="text-sm text-primary font-medium">
-                        {item.stylingName}: +{BRAND.currencySymbol}{item.stylingPrice.toLocaleString()}
-                      </p>
-                    )}
-                    <p className="text-sm font-medium text-text-primary mt-1">
-                      {BRAND.currencySymbol}{((item.price + item.stylingPrice) * item.quantity).toLocaleString()}
-                    </p>
+
+                  {/* Order Summary */}
+                  <div className="mt-6 pt-4 border-t border-neutral-light">
+                    <div className="flex justify-between py-2">
+                      <span className="text-text-light">Subtotal</span>
+                      <span className="text-text-primary">{BRAND.currencySymbol}{order.subtotal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="text-text-light">Styling Total</span>
+                      <span className="text-text-primary">{BRAND.currencySymbol}{stylingTotal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="text-text-light">Shipping</span>
+                      <span className="text-text-primary">{BRAND.currencySymbol}{(order.shipping || 0).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span className="font-medium text-text-primary">Total</span>
+                      <span className="text-lg font-bold text-text-primary">{BRAND.currencySymbol}{order.total.toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Order Summary */}
-            <div className="mt-6 pt-4 border-t border-neutral-light">
-              <div className="flex justify-between py-2">
-                <span className="text-text-light">Subtotal</span>
-                <span className="text-text-primary">{BRAND.currencySymbol}{order.subtotal.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between py-2">
-                <span className="text-text-light">Styling Total</span>
-                <span className="text-text-primary">{BRAND.currencySymbol}{stylingTotal.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="font-medium text-text-primary">Total</span>
-                <span className="text-lg font-bold text-text-primary">{BRAND.currencySymbol}{order.total.toLocaleString()}</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Delivery Details */}
         <div className="lg:col-span-1">

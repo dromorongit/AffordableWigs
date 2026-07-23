@@ -12,6 +12,7 @@ interface StylingService {
   price: number;
   isActive: boolean;
   sortOrder: number;
+  estimatedDuration: string;
 }
 
 export default function AdminStylingServicesPage() {
@@ -71,11 +72,13 @@ export default function AdminStylingServicesPage() {
     const slug = (document.getElementById("service-slug") as HTMLInputElement)?.value?.trim() || "";
     const description = (document.getElementById("service-description") as HTMLTextAreaElement)?.value?.trim() || "";
     const price = (document.getElementById("service-price") as HTMLInputElement)?.value?.trim() || "";
+    const estimatedDuration = (document.getElementById("service-estimatedDuration") as HTMLInputElement)?.value?.trim() || "";
 
     if (!name) errors.name = "Service name is required";
     if (!slug) errors.slug = "Slug is required";
     if (!description) errors.description = "Description is required";
     if (!price || isNaN(Number(price)) || Number(price) < 0) errors.price = "Valid price is required";
+    if (!estimatedDuration) errors.estimatedDuration = "Estimated duration is required";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -96,6 +99,7 @@ export default function AdminStylingServicesPage() {
     const description = (document.getElementById("service-description") as HTMLTextAreaElement).value.trim();
     const price = Number((document.getElementById("service-price") as HTMLInputElement).value.trim());
     const sortOrder = parseInt((document.getElementById("service-sortOrder") as HTMLInputElement).value || "0", 10);
+    const estimatedDuration = (document.getElementById("service-estimatedDuration") as HTMLInputElement).value.trim();
     const isActive = (document.getElementById("service-isActive") as HTMLInputElement).checked;
 
     const payload = {
@@ -104,6 +108,7 @@ export default function AdminStylingServicesPage() {
       description,
       price,
       sortOrder,
+      estimatedDuration,
       isActive,
     };
 
@@ -257,16 +262,19 @@ export default function AdminStylingServicesPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Price
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Sort Order
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
+                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                     Sort Order
+                   </th>
+                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                     Est. Duration
+                   </th>
+                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                     Status
+                   </th>
+                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                     Actions
+                   </th>
+                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {services.map((service) => (
@@ -283,21 +291,24 @@ export default function AdminStylingServicesPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       GH₵{service.price.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {service.sortOrder}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <button
-                        onClick={() => handleToggleActive(service)}
-                        className={`inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-medium ${
-                          service.isActive
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
-                      >
-                        {service.isActive ? "Active" : "Inactive"}
-                      </button>
-                    </td>
+                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                       {service.sortOrder}
+                     </td>
+                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                       {service.estimatedDuration}
+                     </td>
+                     <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          onClick={() => handleToggleActive(service)}
+                          className={`inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-medium ${
+                            service.isActive
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {service.isActive ? "Active" : "Inactive"}
+                        </button>
+                      </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-2">
                         <button
@@ -447,30 +458,50 @@ export default function AdminStylingServicesPage() {
                 )}
               </div>
 
-              {/* Sort Order */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sort Order
-                </label>
-                <input
-                  id="service-sortOrder"
-                  type="number"
-                  min="0"
-                  defaultValue={editingService?.sortOrder || 0}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
-                />
-              </div>
+               {/* Sort Order */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                   Sort Order
+                 </label>
+                 <input
+                   id="service-sortOrder"
+                   type="number"
+                   min="0"
+                   defaultValue={editingService?.sortOrder || 0}
+                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500"
+                 />
+               </div>
 
-              {/* Active Toggle */}
-              <label className="flex items-center">
-                <input
-                  id="service-isActive"
-                  type="checkbox"
-                  defaultChecked={editingService?.isActive ?? true}
-                  className="rounded border-gray-300 text-burgundy-600 focus:ring-burgundy-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">Active</span>
-              </label>
+               {/* Estimated Duration */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                   Estimated Duration *
+                 </label>
+                 <input
+                   id="service-estimatedDuration"
+                   type="text"
+                   required
+                   defaultValue={editingService?.estimatedDuration || ""}
+                   placeholder="e.g. Same Day, 1-2 Days, Within 24 Hours"
+                   className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500 ${
+                     formErrors.estimatedDuration ? "border-red-500" : ""
+                   }`}
+                 />
+                 {formErrors.estimatedDuration && (
+                   <p className="mt-1 text-sm text-red-500">{formErrors.estimatedDuration}</p>
+                 )}
+               </div>
+
+               {/* Active Toggle */}
+               <label className="flex items-center">
+                 <input
+                   id="service-isActive"
+                   type="checkbox"
+                   defaultChecked={editingService?.isActive ?? true}
+                   className="rounded border-gray-300 text-burgundy-600 focus:ring-burgundy-500"
+                 />
+                 <span className="ml-2 text-sm text-gray-700">Active</span>
+               </label>
 
               {/* Submit */}
               <div className="flex justify-end gap-3 pt-4">

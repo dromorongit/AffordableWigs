@@ -6,10 +6,10 @@ import { BRAND } from "@/constants";
 
 interface CartContextType {
   cart: CartState;
-  addToCart: (product: CartItemProduct, quantity?: number, stylingType?: string, stylingName?: string, stylingPrice?: number) => void;
+  addToCart: (product: CartItemProduct, quantity?: number, stylingType?: string, stylingName?: string, stylingPrice?: number, stylingInstructions?: string) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
-  updateStyling: (productId: string, stylingType?: string, stylingName?: string, stylingPrice?: number) => void;
+  updateStyling: (productId: string, stylingType?: string, stylingName?: string, stylingPrice?: number, stylingInstructions?: string) => void;
   clearCart: () => void;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
@@ -21,8 +21,8 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "affordable_wigs_cart";
 
-function getDefaultStyling(): { stylingType: string; stylingName: string; stylingPrice: number } {
-  return { stylingType: "none", stylingName: "No Styling", stylingPrice: 0 };
+function getDefaultStyling(): { stylingType: string; stylingName: string; stylingPrice: number; stylingInstructions?: string } {
+  return { stylingType: "none", stylingName: "No Styling", stylingPrice: 0, stylingInstructions: "" };
 }
 
 function getInitialCart(): CartState {
@@ -107,13 +107,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cart, isHydrated]);
 
-  const addToCart = useCallback((product: CartItemProduct, quantity: number = 1, stylingType: string = "none", stylingName: string = "No Styling", stylingPrice: number = 0) => {
+  const addToCart = useCallback((product: CartItemProduct, quantity: number = 1, stylingType: string = "none", stylingName: string = "No Styling", stylingPrice: number = 0, stylingInstructions: string = "") => {
     setCart((prevCart) => {
       const existingItem = prevCart.items.find(
         (item) => item.product._id === product._id
       );
 
-      const styling = { stylingType, stylingName, stylingPrice };
+      const styling = { stylingType, stylingName, stylingPrice, stylingInstructions };
 
       let newItems: CartItem[];
 
@@ -159,11 +159,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const updateStyling = useCallback((productId: string, stylingType: string = "none", stylingName: string = "No Styling", stylingPrice: number = 0) => {
+  const updateStyling = useCallback((productId: string, stylingType: string = "none", stylingName: string = "No Styling", stylingPrice: number = 0, stylingInstructions: string = "") => {
     setCart((prevCart) => {
       const newItems = prevCart.items.map((item) =>
         item.product._id === productId
-          ? { ...item, stylingType, stylingName, stylingPrice }
+          ? { ...item, stylingType, stylingName, stylingPrice, stylingInstructions }
           : item
       );
       const subtotal = calculateSubtotal(newItems);

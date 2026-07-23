@@ -219,9 +219,12 @@ export const paymentInitSchema = z.object({
     stylingType: z.string().optional(),
     stylingName: z.string().optional(),
     stylingPrice: z.number().optional(),
+    stylingInstructions: z.string().max(500).optional(),
+    estimatedDuration: z.string().max(50).optional(),
   })).min(1),
   subtotal: z.number().positive(),
   stylingTotal: z.number().nonnegative(),
+  shipping: z.number().nonnegative().default(0),
   total: z.number().positive(),
   currency: z.string().optional(),
 });

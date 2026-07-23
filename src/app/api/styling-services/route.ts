@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
       description: s.description,
       price: s.price,
       sortOrder: s.sortOrder,
+      estimatedDuration: s.estimatedDuration,
     }));
 
     const result = [

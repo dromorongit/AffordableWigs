@@ -13,6 +13,7 @@ export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, updateStyling, clearCart } = useCart();
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
   const [editingStylingId, setEditingStylingId] = useState<string | null>(null);
+  const [instructions, setInstructions] = useState<Record<string, string>>({});
 
   const handleImageError = (productId: string) => {
     setImageErrors(prev => new Set(prev).add(productId));
@@ -22,11 +23,24 @@ export default function CartPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const initialInstructions: Record<string, string> = {};
+    cart.items.forEach((item) => {
+      initialInstructions[item.product._id] = item.stylingInstructions || "";
+    });
+    setInstructions(initialInstructions);
   }, []);
 
-  const handleStylingChange = (item: CartItem) => (stylingType: string, stylingName: string, stylingPrice: number) => {
-    updateStyling(item.product._id, stylingType, stylingName, stylingPrice);
+  const handleStylingChange = (item: CartItem) => (stylingType: string, stylingName: string, stylingPrice: number, estimatedDuration?: string) => {
+    updateStyling(item.product._id, stylingType, stylingName, stylingPrice, instructions[item.product._id] || "");
     setEditingStylingId(null);
+  };
+
+  const handleInstructionChange = (item: CartItem) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    if (value.length <= 500) {
+      setInstructions((prev) => ({ ...prev, [item.product._id]: value }));
+      updateStyling(item.product._id, item.stylingType, item.stylingName, item.stylingPrice, value);
+    }
   };
 
   return (
@@ -50,7 +64,7 @@ export default function CartPage() {
                 Your cart is empty
               </h2>
               <p className="text-text-light mb-8 max-w-md">
-                Looks like you haven't added any products to your cart yet. Browse our collection to find the perfect wig for you.
+                Looks like you haven&apos;t added any products to your cart yet. Browse our collection to find the perfect wig for you.
               </p>
               <Link
                 href="/shop"
@@ -87,7 +101,7 @@ export default function CartPage() {
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <svg className="w-12 h-12 text-neutral-nude" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-4.48S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
                               </svg>
                             </div>
                           )}
@@ -145,6 +159,26 @@ export default function CartPage() {
                                   </div>
                                 )}
                               </div>
+
+                              {/* Styling Instructions */}
+                              {item.stylingType !== "none" && (
+                                <div className="mt-3">
+                                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                                    Styling Instructions (Optional)
+                                  </label>
+                                  <textarea
+                                    value={instructions[item.product._id] || ""}
+                                    onChange={handleInstructionChange(item)}
+                                    placeholder="Example: Please style with a middle part and soft curls."
+                                    rows={2}
+                                    maxLength={500}
+                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-burgundy-500 focus:border-burgundy-500 resize-none"
+                                  />
+                                  <p className="mt-1 text-xs text-gray-400">
+                                    {(instructions[item.product._id] || "").length}/500
+                                  </p>
+                                </div>
+                              )}
                             </div>
                             <button
                               onClick={() => removeFromCart(item.product._id)}
@@ -224,6 +258,14 @@ export default function CartPage() {
                     <span className="text-text-light">Styling Total</span>
                     <span className="text-lg font-medium text-text-primary">
                       {BRAND.currencySymbol}{cart.stylingTotal.toLocaleString()}
+                    </span>
+                  </div>
+
+                  {/* Shipping */}
+                  <div className="flex justify-between items-center py-3 border-b border-neutral-light">
+                    <span className="text-text-light">Shipping</span>
+                    <span className="text-lg font-medium text-text-primary">
+                      {BRAND.currencySymbol}0
                     </span>
                   </div>
 

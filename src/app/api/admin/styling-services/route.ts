@@ -77,9 +77,9 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    if (!body.name || !body.slug || !body.description || body.price === undefined || body.price === null) {
+    if (!body.name || !body.slug || !body.description || !body.estimatedDuration || body.price === undefined || body.price === null) {
       return NextResponse.json(
-        { error: "Name, slug, description, and price are required" },
+        { error: "Name, slug, description, estimated duration, and price are required" },
         { status: 400 }
       );
     }
@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
       price: Number(body.price),
       isActive: body.isActive !== undefined ? body.isActive : true,
       sortOrder: Number(body.sortOrder) || 0,
+      estimatedDuration: body.estimatedDuration.trim(),
     });
 
     return NextResponse.json({ success: true, service }, { status: 201 });

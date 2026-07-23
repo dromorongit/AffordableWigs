@@ -73,10 +73,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { customer, items, subtotal, stylingTotal = 0, total, currency } = validation.data!;
+    const { customer, items, subtotal, stylingTotal = 0, shipping = 0, total, currency } = validation.data!;
 
     const frontendTotal = total;
-    const expectedTotal = subtotal + stylingTotal;
+    const expectedTotal = subtotal + stylingTotal + shipping;
 
     if (Math.abs(frontendTotal - expectedTotal) > 0.01) {
       console.error("[Payment Init] Frontend total mismatch. Expected:", expectedTotal, "Got:", frontendTotal);
@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
       const stylingId = item.stylingType || "none";
       let stylingName = "No Styling";
       let stylingPrice = 0;
+      let estimatedDuration = "";
 
       if (stylingId !== "none") {
         const stylingService = await StylingService.findById(stylingId);
@@ -104,6 +105,7 @@ export async function POST(request: NextRequest) {
         }
         stylingName = stylingService.name;
         stylingPrice = stylingService.price;
+        estimatedDuration = stylingService.estimatedDuration || "";
       }
 
       serverStylingTotal += stylingPrice * (item.quantity || 1);
@@ -118,6 +120,8 @@ export async function POST(request: NextRequest) {
         stylingType: stylingId,
         stylingName,
         stylingPrice,
+        stylingInstructions: item.stylingInstructions?.trim() || "",
+        estimatedDuration,
       });
     }
 
@@ -129,8 +133,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const serverShipping = shipping || 0;
     const serverSubtotal = subtotal || 0;
-    const serverTotal = serverSubtotal + serverStylingTotal;
+    const serverTotal = serverSubtotal + serverStylingTotal + serverShipping;
 
     const orderNumber = generateOrderNumber();
 
@@ -245,6 +250,7 @@ export async function POST(request: NextRequest) {
       items: orderItems,
       subtotal: serverSubtotal,
       stylingTotal: serverStylingTotal,
+      shipping: serverShipping,
       total: serverTotal,
       currency: currency || "GHS",
       paymentReference: transaction.data.reference,

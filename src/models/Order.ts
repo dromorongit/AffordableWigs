@@ -10,6 +10,8 @@ export interface IOrderItem {
   stylingType: string;
   stylingName: string;
   stylingPrice: number;
+  stylingInstructions?: string;
+  estimatedDuration?: string;
 }
 
 export interface ICustomerInfo {
@@ -28,6 +30,7 @@ export interface IOrder extends Document {
   items: IOrderItem[];
   subtotal: number;
   stylingTotal: number;
+  shipping: number;
   total: number;
   currency: string;
   paymentReference?: string;
@@ -80,6 +83,16 @@ const OrderItemSchema = new Schema<IOrderItem>(
       required: true,
       min: 0,
       default: 0,
+    },
+    stylingInstructions: {
+      type: String,
+      trim: true,
+      maxlength: [500, "Styling instructions cannot exceed 500 characters"],
+    },
+    estimatedDuration: {
+      type: String,
+      trim: true,
+      maxlength: [50, "Estimated duration cannot exceed 50 characters"],
     },
   },
   { _id: false }
@@ -153,6 +166,12 @@ const OrderSchema = new Schema<IOrder>(
       min: 0,
     },
     stylingTotal: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
+    },
+    shipping: {
       type: Number,
       required: true,
       min: 0,

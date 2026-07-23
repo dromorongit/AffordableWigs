@@ -117,6 +117,7 @@ export default function CheckoutPage() {
         items: cart.items,
         subtotal: cart.subtotal,
         stylingTotal: cart.stylingTotal,
+        shipping: 0,
         total: cart.total,
         currency: BRAND.currency,
       };
@@ -299,9 +300,16 @@ export default function CheckoutPage() {
                             Qty: {item.quantity}
                           </p>
                           {item.stylingType !== "none" && (
-                            <p className="text-xs text-primary">
-                              + {item.stylingName}: +{BRAND.currencySymbol}{item.stylingPrice.toLocaleString()}
-                            </p>
+                            <>
+                              <p className="text-xs text-primary">
+                                {item.stylingName}: +{BRAND.currencySymbol}{item.stylingPrice.toLocaleString()}
+                              </p>
+                              {item.stylingInstructions && (
+                                <p className="text-xs text-gray-500 mt-0.5 italic">
+                                  {item.stylingInstructions}
+                                </p>
+                              )}
+                            </>
                           )}
                           <p className="text-sm font-medium text-text-primary mt-1">
                             {BRAND.currencySymbol}
@@ -312,7 +320,7 @@ export default function CheckoutPage() {
                     ))}
                   </div>
 
-                  {/* Subtotal */}
+                  {/* Products Subtotal */}
                   <div className="flex justify-between items-center py-3 border-t border-neutral-light">
                     <span className="text-text-light">Products Subtotal</span>
                     <span className="text-lg font-medium text-text-primary">
@@ -325,6 +333,14 @@ export default function CheckoutPage() {
                     <span className="text-text-light">Styling Total</span>
                     <span className="text-lg font-medium text-text-primary">
                       {BRAND.currencySymbol}{cart.stylingTotal.toLocaleString()}
+                    </span>
+                  </div>
+
+                  {/* Shipping */}
+                  <div className="flex justify-between items-center py-3 border-t border-neutral-light">
+                    <span className="text-text-light">Shipping</span>
+                    <span className="text-lg font-medium text-text-primary">
+                      {BRAND.currencySymbol}0
                     </span>
                   </div>
 

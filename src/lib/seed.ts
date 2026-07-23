@@ -431,6 +431,7 @@ const stylingServices = [
     price: 60,
     isActive: true,
     sortOrder: 1,
+    estimatedDuration: "Same Day",
   },
   {
     name: "Frontal Styling",
@@ -439,6 +440,7 @@ const stylingServices = [
     price: 80,
     isActive: true,
     sortOrder: 2,
+    estimatedDuration: "1-2 Days",
   },
 ];
 
