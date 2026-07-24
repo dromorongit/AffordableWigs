@@ -57,7 +57,6 @@ export function StylingSelector({ value, onChange, disabled }: StylingSelectorPr
         Choose Styling
       </label>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {console.log("[trace] StylingSelector options array inside JSX map:", JSON.stringify(options))}
         {options.map((option: StylingOption) => {
           const isSelected = value === option._id;
           return (
