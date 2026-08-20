@@ -21,6 +21,8 @@ const nextConfig = {
   generateEtags: true,
   // Trailing slash for consistent routing
   trailingSlash: false,
+  // Production standalone output for smaller deployment footprint
+  output: "standalone",
 };
 
 module.exports = nextConfig;

@@ -1,32 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Cache for maintenance mode setting to avoid DB queries on every request
-// TEMP: Disabled for debugging - set to 0 to bypass cache
 let maintenanceModeCache: { value: boolean; timestamp: number } | null = null;
-const CACHE_DURATION = 0; // 0 = no cache, force DB read every request
+const CACHE_DURATION = 30000; // 30 seconds
 
 /**
- * Fetch maintenance mode from database with caching
+ * Fetch maintenance mode from internal API with caching
  */
 async function getMaintenanceMode(request: NextRequest): Promise<boolean> {
   const now = Date.now();
 
   // Return cached value if still valid
   if (maintenanceModeCache && (now - maintenanceModeCache.timestamp) < CACHE_DURATION) {
-    console.log(`[Middleware] Using cached maintenance mode: ${maintenanceModeCache.value}`);
     return maintenanceModeCache.value;
   }
 
   try {
-    console.log(`[Middleware] Fetching maintenance mode from internal API...`);
-    // Call internal API to avoid direct mongoose dependency in middleware
-    // This keeps middleware build-clean and production-safe
-    // Use internal HTTP URL to avoid SSL errors when calling from within the container
     const port = process.env.PORT || 3000;
     const internalBaseUrl = `http://localhost:${port}`;
     const response = await fetch(`${internalBaseUrl}/api/admin/settings`, {
       headers: { "Content-Type": "application/json" },
-      cache: "no-store" // Always fresh
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -35,7 +29,6 @@ async function getMaintenanceMode(request: NextRequest): Promise<boolean> {
 
     const data = await response.json();
     const value = Boolean(data.maintenanceMode);
-    console.log(`[Middleware] API response:`, data, "=> boolean:", value);
 
     // Update cache
     maintenanceModeCache = { value, timestamp: now };

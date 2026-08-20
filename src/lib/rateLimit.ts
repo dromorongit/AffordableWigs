@@ -9,6 +9,7 @@ interface RateLimitEntry {
 }
 
 const rateLimitStore = new Map<string, RateLimitEntry>();
+const MAX_RATE_LIMIT_ENTRIES = 5000;
 
 // Clean up old entries every minute
 setInterval(() => {
@@ -42,6 +43,16 @@ export function rateLimit(
   
   // Reset if window has passed
   if (!entry || entry.resetTime < now) {
+    // Enforce size cap before inserting a new entry
+    if (rateLimitStore.size >= MAX_RATE_LIMIT_ENTRIES) {
+      const entries = Array.from(rateLimitStore.entries());
+      entries.sort((a, b) => a[1].resetTime - b[1].resetTime);
+      const evictCount = Math.ceil(MAX_RATE_LIMIT_ENTRIES * 0.1);
+      for (let i = 0; i < evictCount && i < entries.length; i++) {
+        rateLimitStore.delete(entries[i][0]);
+      }
+    }
+
     entry = {
       count: 0,
       resetTime: now + config.windowMs,

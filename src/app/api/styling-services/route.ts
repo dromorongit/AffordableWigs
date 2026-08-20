@@ -9,19 +9,6 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB();
 
-    console.log("[forensic] mongoose.connection.readyState:", mongoose.connection.readyState);
-    console.log("[forensic] mongoose.connection.host:", mongoose.connection.host);
-    console.log("[forensic] mongoose.connection.db.databaseName:", mongoose.connection.db?.databaseName);
-    console.log("[forensic] StylingService.collection.name:", StylingService.collection.name);
-
-    const allDocs = await StylingService.find({}).lean();
-    console.log("[forensic] allDocs.length:", allDocs.length);
-    console.log("[forensic] allDocs:", JSON.stringify(allDocs));
-
-    const activeDocs = await StylingService.find({ isActive: true }).lean();
-    console.log("[forensic] activeDocs.length:", activeDocs.length);
-    console.log("[forensic] activeDocs:", JSON.stringify(activeDocs));
-
     const uri = process.env.MONGODB_URI || "";
     const maskedUri = (() => {
       try {
@@ -48,11 +35,6 @@ export async function GET(request: NextRequest) {
       estimatedDuration: s.estimatedDuration,
     }));
 
-    console.log(
-      "[forensic] formatted array before prepending No Styling:",
-      JSON.stringify(formatted)
-    );
-
     const result = [
       { _id: "none", name: "No Styling", price: 0, description: "" },
       ...formatted,
@@ -78,8 +60,6 @@ export async function GET(request: NextRequest) {
         routeFile: "src/app/api/styling-services/route.ts",
       }
     };
-
-    console.log("[forensic] final response object:", JSON.stringify(response));
 
     return NextResponse.json(response);
   } catch (error) {
